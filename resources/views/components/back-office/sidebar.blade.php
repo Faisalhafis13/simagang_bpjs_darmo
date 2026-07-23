@@ -32,21 +32,57 @@
 
         </div>
 
-        <a href="#"
-           class="menu-item">
+        <a href="{{ route('back-office.pengajuan') }}"
+           class="menu-item {{ request()->routeIs('back-office.pengajuan') ? 'active' : '' }}">
 
-            <i class="bi bi-people-fill"></i>
+            <i class="bi bi-folder-fill"></i>
 
-            Role User
+            Data Pengajuan
 
         </a>
 
-        <a href="#"
-           class="menu-item">
+        <a href="{{ route('back-office.peserta') }}"
+           class="menu-item {{ request()->routeIs('back-office.peserta') ? 'active' : '' }}">
 
-            <i class="bi bi-shield-lock-fill"></i>
+            <i class="bi bi-people-fill"></i>
 
-            Role Menu
+            Data Peserta
+
+        </a>
+
+        <a href="{{ route('back-office.perguruan-tinggi') }}"
+           class="menu-item {{ request()->routeIs('back-office.perguruan-tinggi') ? 'active' : '' }}">
+
+            <i class="bi bi-building"></i>
+
+            Data Perguruan Tinggi
+
+        </a>
+
+        <a href="{{ route('back-office.logbook') }}"
+           class="menu-item {{ request()->routeIs('back-office.logbook') ? 'active' : '' }}">
+
+            <i class="bi bi-journal-text"></i>
+
+            Monitoring Logbook
+
+        </a>
+
+        <a href="{{ route('back-office.mentor') }}"
+           class="menu-item {{ request()->routeIs('back-office.mentor') ? 'active' : '' }}">
+
+            <i class="bi bi-person-badge-fill"></i>
+
+            Data Mentor
+
+        </a>
+
+        <a href="{{ route('back-office.role-user') }}"
+           class="menu-item {{ request()->routeIs('back-office.role-user') ? 'active' : '' }}">
+
+            <i class="bi bi-people"></i>
+
+            Role User
 
         </a>
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Public;
+namespace App\Http\Controllers\BackOffice;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Public\PengajuanRepository;
+use App\Repositories\BackOffice\PengajuanRepository;
 use Illuminate\Http\Request;
 
 class PengajuanController extends Controller
@@ -20,8 +20,13 @@ class PengajuanController extends Controller
         return $this->repository->index();
     }
 
-    public function store(Request $request)
+    public function getData()
     {
-        return $this->repository->store($request);
+        return $this->repository->getData();
+    }
+
+    public function update(Request $request, $id)
+    {
+        return $this->repository->update($request, $id);
     }
 }

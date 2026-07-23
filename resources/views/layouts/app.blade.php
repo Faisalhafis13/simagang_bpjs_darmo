@@ -38,6 +38,9 @@
         href="{{ asset('assets/css/style.css') }}">
 
     {{-- CSS Khusus Halaman --}}
+
+    <link rel="stylesheet"
+        href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
     @stack('css')
 
 </head>
@@ -61,7 +64,9 @@
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script src="{{ asset('assets/js/ajax.js') }}"></script>
 
-    {{-- JS Khusus Halaman --}}
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
     @stack('js')
 
 </body>

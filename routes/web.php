@@ -11,6 +11,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BackOffice\DashboardController;
 use App\Http\Controllers\BackOffice\RoleUserController;
 use App\Http\Controllers\BackOffice\RoleMenuController;
+use App\Http\Controllers\BackOffice\PesertaController;
+use App\Http\Controllers\BackOffice\MentorController;
+use App\Http\Controllers\BackOffice\PerguruanTinggiController;
+use App\Http\Controllers\BackOffice\LogbookController;
+use App\Http\Controllers\BackOffice\PengajuanController as BackOfficePengajuanController;
 /*
 |--------------------------------------------------------------------------
 | Public
@@ -48,6 +53,8 @@ Route::post('/logout', [LoginController::class,'logout'])
 
 
 
+
+
 Route::middleware('auth')
     ->prefix('back-office')
     ->name('back-office.')
@@ -56,5 +63,40 @@ Route::middleware('auth')
         Route::get('/dashboard', [DashboardController::class,'index'])
             ->name('dashboard');
 
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | Role User
+        |--------------------------------------------------------------------------
+        */
 
+        Route::get('/role-user', [RoleUserController::class,'index'])
+            ->name('role-user');
+
+        Route::get('/role-user/data', [RoleUserController::class,'getData']);
+        Route::get('/role-user/data/{id}', [RoleUserController::class,'show']);
+
+        Route::get('/pengajuan', [BackOfficePengajuanController::class,'index'])
+            ->name('pengajuan');
+
+        Route::get('/peserta', [PesertaController::class,'index'])
+            ->name('peserta');
+
+        Route::get('/mentor', [MentorController::class,'index'])
+            ->name('mentor');
+
+        Route::get('/perguruan-tinggi', [PerguruanTinggiController::class,'index'])
+            ->name('perguruan-tinggi');
+
+        Route::get('/logbook', [LogbookController::class,'index'])
+            ->name('logbook');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Role Menu
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/role-menu', [RoleMenuController::class,'index'])
+            ->name('role-menu');
+
+    });
