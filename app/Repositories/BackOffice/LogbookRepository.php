@@ -2,66 +2,90 @@
 
 namespace App\Repositories\BackOffice;
 
-use App\Models\AnggotaMagang;
 use App\Models\Logbook;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Helpers\ActivityLogger;
 
 class LogbookRepository
 {
     public function index()
     {
-        $peserta = AnggotaMagang::orderBy('nama_anggota')->get();
-        return view('back-office.logbook.index', compact('peserta'));
+        return view('back-office.logbook.index');
     }
 
     public function getData()
     {
-        $entries = Logbook::with('anggota.pengajuan')->latest()->get();
+        $entries = Logbook::with(['user.role', 'user.mentor'])
+            ->latest()
+            ->get();
 
         $data = $entries->map(function ($entry) {
+
             return [
-                'id' => $entry->id,
-                'tanggal' => $entry->tanggal->format('Y-m-d'),
-                'nama_peserta' => $entry->anggota->nama_anggota,
-                'email' => $entry->anggota->email,
-                'no_hp' => $entry->anggota->no_hp,
-                'universitas' => optional($entry->anggota->pengajuan)->universitas,
-                'aktivitas' => $entry->aktivitas,
-                'hasil' => $entry->hasil,
-                'catatan' => $entry->catatan,
+                'id'           => $entry->id,
+                'tanggal'      => optional($entry->tanggal)->format('Y-m-d'),
+                'nama_peserta' => $entry->user->name,
+                'email'        => $entry->user->email,
+                'mentor'       => optional($entry->user->mentor)->nama_mentor,
+                'aktivitas'    => $entry->aktivitas,
+                'hasil'        => $entry->hasil,
+                'catatan'      => $entry->catatan,
             ];
+
         });
 
         return response()->json([
             'status' => 'success',
-            'data' => $data,
+            'data'   => $data,
         ]);
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'anggota_magang_id' => 'required|exists:anggota_magangs,id',
-            'tanggal' => 'required|date',
-            'aktivitas' => 'required|string|max:500',
-            'hasil' => 'required|string|max:500',
-            'catatan' => 'nullable|string|max:1000',
+            'user_id'    => 'required|exists:users,id',
+            'tanggal'    => 'required|date',
+            'aktivitas'  => 'required|string|max:500',
+            'hasil'      => 'required|string|max:500',
+            'catatan'    => 'nullable|string|max:1000',
         ]);
 
-        Logbook::create($data);
+        $logbook = Logbook::create($data);
+
+        ActivityLogger::log(
+            'Logbook',
+            'CREATE',
+            'Menambahkan logbook',
+            null,
+            $logbook->toArray()
+        );
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Logbook berhasil ditambahkan.',
         ]);
     }
 
     public function destroy($id)
     {
-        Logbook::findOrFail($id)->delete();
+        $logbook = Logbook::findOrFail($id);
+
+        $oldData = $logbook->toArray();
+
+        $logbook->delete();
+
+        ActivityLogger::log(
+            'Logbook',
+            'DELETE',
+            'Menghapus logbook',
+            $oldData,
+            null
+        );
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Logbook berhasil dihapus.',
         ]);
     }

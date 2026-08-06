@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Public;
 
+use App\Models\AnggotaMagang;
 use App\Models\PengajuanMagang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,95 +15,108 @@ class PengajuanRepository
         return view('public.pengajuan.index');
     }
 
-public function store(Request $request)
-{
-    $request->validate([
+    public function store(Request $request)
+    {
+        $request->validate([
 
-        'nama_ketua'       => 'required|string|max:255',
+            'nama_ketua'       => 'required|string|max:255',
 
-        'universitas'      => 'required|string|max:255',
+            'universitas'      => 'required|string|max:255',
 
-        'semester'         => 'required',
+            'semester'         => 'required',
 
-        'no_hp'            => 'required|string|max:20',
+            'no_hp'            => 'required|string|max:20',
 
-        'email_ketua'      => 'required|email',
+            'email_ketua'      => 'required|email',
 
-        'tanggal_mulai'    => 'required|date',
+            'tanggal_mulai'    => 'required|date',
 
-        'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
+            'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
 
-        'proposal'         => 'required|mimes:pdf|max:2048',
+            'proposal'         => 'required|mimes:pdf|max:2048',
 
-        'surat_permohonan' => 'required|mimes:pdf|max:2048',
+            'surat_permohonan' => 'required|mimes:pdf|max:2048',
 
-    ]);
+            'anggota'          => 'nullable|array',
 
-$pengajuan = DB::transaction(function () use ($request) {
+            'anggota.*.nama'   => 'nullable|string|max:255',
 
-    $proposal = $request
-        ->file('proposal')
-        ->store('proposal');
+            'anggota.*.email'  => 'nullable|email|max:255',
 
-    $surat = $request
-        ->file('surat_permohonan')
-        ->store('surat_permohonan');
+            'anggota.*.no_hp'  => 'nullable|string|max:20',
 
-    $pengajuan = PengajuanMagang::create([
+        ]);
 
-        'kode_pengajuan' => 'MAGANG-' . strtoupper(substr(md5(uniqid()),0,8)),
+        $pengajuan = DB::transaction(function () use ($request) {
 
-        'nama_ketua' => $request->nama_ketua,
+            $proposal = $request
+                ->file('proposal')
+                ->store('proposal');
 
-        'universitas' => $request->universitas,
+            $surat = $request
+                ->file('surat_permohonan')
+                ->store('surat_permohonan');
 
-        'semester' => $request->semester,
+            $pengajuan = PengajuanMagang::create([
 
-        'no_hp' => $request->no_hp,
+                'kode_pengajuan' => 'MAGANG-' . strtoupper(substr(md5(uniqid()), 0, 8)),
 
-        'email_ketua' => $request->email_ketua,
+                'nama_ketua' => $request->nama_ketua,
 
-        'tanggal_mulai' => $request->tanggal_mulai,
+                'universitas' => $request->universitas,
 
-        'tanggal_selesai' => $request->tanggal_selesai,
+                'semester' => $request->semester,
 
-        'proposal' => $proposal,
+                'no_hp' => $request->no_hp,
 
-        'surat_permohonan' => $surat,
+                'email_ketua' => $request->email_ketua,
 
-        'status' => 'menunggu',
+                'tanggal_mulai' => $request->tanggal_mulai,
 
-    ]);
+                'tanggal_selesai' => $request->tanggal_selesai,
 
-    if ($request->anggota) {
+                'proposal' => $proposal,
 
-        foreach ($request->anggota as $anggota) {
+                'surat_permohonan' => $surat,
 
-            if (!empty($anggota)) {
+                'status' => 'Pending',
 
-                $pengajuan->anggota()->create([
+            ]);
 
-                    'nama_anggota' => $anggota
+            $anggotaList = collect($request->input('anggota', []))
+                ->map(function ($item) {
+                    return [
+                        'nama' => isset($item['nama']) ? trim((string) $item['nama']) : null,
+                        'email' => isset($item['email']) ? trim((string) $item['email']) : null,
+                        'no_hp' => isset($item['no_hp']) ? trim((string) $item['no_hp']) : null,
+                    ];
+                })
+                ->filter(function ($item) {
+                    return !empty($item['nama']);
+                })
+                ->values();
 
+            foreach ($anggotaList as $anggotaItem) {
+                AnggotaMagang::create([
+                    'pengajuan_magang_id' => $pengajuan->id,
+                    'nama_anggota' => $anggotaItem['nama'],
+                    'email' => $anggotaItem['email'] ?? null,
+                    'no_hp' => $anggotaItem['no_hp'] ?? null,
                 ]);
-
             }
 
-        }
+            return $pengajuan;
 
+        });
+
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Pengajuan berhasil dikirim.',
+
+            'kode_pengajuan' => $pengajuan->kode_pengajuan,
+
+        ]);
     }
-
-    return $pengajuan;
-
-});
-
-return response()->json([
-
-    'success' => true,
-
-    'message' => 'Pengajuan berhasil dikirim.',
-
-    'kode_pengajuan' => $pengajuan->kode_pengajuan,
-
-]);
-}}
+}

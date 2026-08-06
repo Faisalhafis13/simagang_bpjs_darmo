@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ActivityLogger;
 
 class LoginController extends Controller
 {
@@ -38,6 +39,19 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+        ActivityLogger::log(
+
+    'Authentication',
+
+    'LOGIN',
+
+    'User Login'
+
+);
+
+        if (Auth::user()->must_change_password) {
+            return redirect()->route('password.change');
+        }
 
         return redirect()->route('back-office.dashboard');
     }
@@ -47,7 +61,16 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout();
+    ActivityLogger::log(
+
+    'Authentication',
+
+    'LOGOUT',
+
+    'User Logout'
+
+);    
+    Auth::logout();
 
         $request->session()->invalidate();
 

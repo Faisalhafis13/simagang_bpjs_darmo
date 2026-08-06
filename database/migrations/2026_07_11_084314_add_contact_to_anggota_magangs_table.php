@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-Schema::table('anggota_magangs', function (Blueprint $table) {
+        Schema::table('anggota_magangs', function (Blueprint $table) {
 
-    $table->string('email')
-        ->nullable()
-        ->after('nama_anggota');
+            $table->string('email')
+                ->nullable()
+                ->after('nama_anggota');
 
-    $table->string('no_hp', 20)
-        ->nullable()
-        ->after('email');
+            $table->string('no_hp', 20)
+                ->nullable()
+                ->after('email');
 
-});    }
+        });
+    }
 
     /**
      * Reverse the migrations.

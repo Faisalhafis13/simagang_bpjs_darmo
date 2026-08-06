@@ -44,4 +44,8 @@ class MentorController extends Controller
     {
         return $this->repository->destroy($id);
     }
+    public function peserta()
+{
+    return $this->repository->peserta();
+}
 }

@@ -4,36 +4,69 @@
 
 @section('content')
 
-<div class="card shadow-sm border-0">
+<div class="container-fluid">
 
-    <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="fw-bold">Data Peserta</h3>
-                <p class="text-muted mb-0">Daftar peserta yang terdaftar dari setiap pengajuan.</p>
-            </div>
+        <div>
+
+            <h3 class="fw-bold mb-1">Data Peserta</h3>
+
+            <small class="text-muted">
+                Daftar peserta yang terdaftar dari setiap pengajuan.
+            </small>
+
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Nama Peserta</th>
-                        <th>Email</th>
-                        <th>No HP</th>
-                        <th>Kode Pengajuan</th>
-                        <th>Universitas</th>
-                        <th>Status Pengajuan</th>
-                    </tr>
-                </thead>
-                <tbody id="pesertaTableBody">
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-5">Memuat data...</td>
-                    </tr>
-                </tbody>
-            </table>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table id="tablePeserta" class="table table-bordered table-hover align-middle w-100">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th width="5%" class="text-center">No</th>
+
+                            <th width="15%" class="text-center">Kode Pengajuan</th>
+                                                        <th width="18%" class="text-center">Universitas</th>
+
+
+                            <th>Nama Peserta</th>
+
+                            <th>Email</th>
+
+                            <th>No HP</th>
+
+
+                            <th width="12%" class="text-center">Status</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td colspan="7" class="text-center">
+                                Memuat data...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
         </div>
 
     </div>
@@ -43,38 +76,158 @@
 @endsection
 
 @push('js')
+
 <script>
-    async function loadPesertaData() {
-        const response = await fetch('/api/back-office/peserta');
-        const result = await response.json();
 
-        const tbody = document.getElementById('pesertaTableBody');
-        tbody.innerHTML = '';
+$(function(){
 
-        if (result.status !== 'success' || !Array.isArray(result.data) || result.data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="8" class="text-center text-muted py-5">Tidak ada peserta.</td>
-                </tr>
-            `;
-            return;
+    $('#tablePeserta').DataTable({
+
+        destroy:true,
+
+        processing:true,
+
+        serverSide:false,
+
+        searching:true,
+
+        ordering:false,
+
+        ajax:{
+
+            url:'/api/back-office/peserta',
+
+            dataSrc:'data'
+
+        },
+
+        columns:[
+
+            {
+                data:null,
+                defaultContent:''
+            },
+
+            {
+                data:'kode_pengajuan',
+                defaultContent:'-'
+            },
+                        {
+                data:'universitas',
+                render:function(data){
+                    return data ?? '-';
+                }
+            },
+
+
+            {
+                data:'nama_peserta'
+            },
+
+            {
+                data:'email',
+                render:function(data){
+                    return data ?? '-';
+                }
+            },
+
+            {
+                data:'no_hp',
+                render:function(data){
+                    return data ?? '-';
+                }
+            },
+
+
+            {
+                data:'status',
+                render:function(data){
+                    const normalized = String(data || '').toLowerCase();
+
+                    if(normalized === 'diterima' || normalized === 'accepted'){
+                        return '<span class="badge bg-success">Diterima</span>';
+                    }
+
+                    if(normalized === 'ditolak' || normalized === 'rejected'){
+                        return '<span class="badge bg-danger">Ditolak</span>';
+                    }
+
+                    return '<span class="badge bg-warning text-dark">Menunggu</span>';
+                }
+            }
+
+        ],
+
+drawCallback: function () {
+
+    let api = this.api();
+    let rows = api.rows({ page: 'current' }).nodes();
+    let data = api.rows({ page: 'current' }).data().toArray();
+
+    let lastKode = '';
+    let nomor = 1;
+
+    data.forEach(function (item, index) {
+
+        let td = $(rows).eq(index).children('td');
+
+        if (item.kode_pengajuan !== lastKode) {
+
+            let jumlah = data.filter(x => x.kode_pengajuan === item.kode_pengajuan).length;
+
+            // No
+            td.eq(0)
+                .attr('rowspan', jumlah)
+                .css({
+                    verticalAlign: 'middle',
+                    textAlign: 'center',
+                    fontWeight: 'bold'
+                })
+                .text(nomor++);
+
+            // Kode Pengajuan
+            td.eq(1)
+                .attr('rowspan', jumlah)
+                .css({
+                    verticalAlign: 'middle',
+                    textAlign: 'center'
+                });
+
+            // Universitas
+            td.eq(2)
+                .attr('rowspan', jumlah)
+                .css({
+                    verticalAlign: 'middle',
+                    textAlign: 'center'
+                });
+
+            // Status
+            td.eq(6)
+                .attr('rowspan', jumlah)
+                .css({
+                    verticalAlign: 'middle',
+                    textAlign: 'center'
+                });
+
+            lastKode = item.kode_pengajuan;
+
+        } else {
+
+            // hapus dari index terbesar ke terkecil
+            td.eq(6).remove(); // Status
+            td.eq(2).remove(); // Universitas
+            td.eq(1).remove(); // Kode Pengajuan
+            td.eq(0).remove(); // No
+
         }
 
-        result.data.forEach((item, index) => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.nama_peserta}</td>
-                    <td>${item.email ?? '-'}</td>
-                    <td>${item.no_hp ?? '-'}</td>
-                    <td>${item.kode_pengajuan ?? '-'}</td>
-                    <td>${item.universitas ?? '-'}</td>
-                    <td>${item.status ?? '-'}</td>
-                </tr>
-            `;
-        });
-    }
+    });
 
-    document.addEventListener('DOMContentLoaded', loadPesertaData);
+}
+    });
+
+});
+
 </script>
+
 @endpush

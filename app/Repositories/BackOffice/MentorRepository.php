@@ -3,7 +3,11 @@
 namespace App\Repositories\BackOffice;
 
 use App\Models\Mentor;
+use App\Models\PengajuanMagang;
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
+use App\Models\User;
+use App\Models\Role;
 
 class MentorRepository
 {
@@ -12,25 +16,65 @@ class MentorRepository
         return view('back-office.mentor.index');
     }
 
-    public function getData()
-    {
-        $mentors = Mentor::latest()->get();
+public function getData()
+{
+    $mentors = Mentor::with([
+        'peserta'
+    ])
+    ->latest()
+    ->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $mentors,
-        ]);
-    }
 
+    $data = $mentors->map(function ($mentor) {
+
+        $pesertaNames = $mentor->peserta
+            ->pluck('name')
+            ->toArray();
+
+
+        return [
+
+            'id' => $mentor->id,
+
+            'nama_mentor' => $mentor->nama_mentor,
+
+            'divisi' => $mentor->divisi,
+
+            'peserta_preview' => count($pesertaNames)
+                ? implode(', ', $pesertaNames)
+                : '-',
+
+        ];
+
+    });
+
+
+    return response()->json([
+
+        'status' => 'success',
+
+        'data' => $data,
+
+    ]);
+}
     public function store(Request $request)
     {
         $data = $request->validate([
             'nama_mentor' => 'required|string|max:255',
             'divisi' => 'required|string|max:255',
-            'tugas' => 'required|string',
         ]);
+            // ensure tugas exists for DB compatibility
+            $data['tugas'] = $data['tugas'] ?? '';
 
-        Mentor::create($data);
+        $mentor = Mentor::create($data);
+
+        ActivityLogger::log(
+            'Mentor',
+            'CREATE',
+            'Menambah Mentor',
+            null,
+            $mentor->toArray()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -38,41 +82,105 @@ class MentorRepository
         ]);
     }
 
-    public function show($id)
-    {
-        $mentor = Mentor::findOrFail($id);
+public function show($id)
+{
+    $mentor = Mentor::findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $mentor,
+    $rolePeserta = Role::where('name', 'Peserta')->first();
+
+    $peserta = User::where('role_id', $rolePeserta->id)
+        ->select('id', 'name', 'email', 'mentor_id')
+        ->orderBy('name')
+        ->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'mentor' => $mentor,
+            'peserta' => $peserta,
+        ],
+    ]);
+}
+public function update(Request $request, $id)
+{
+    $mentor = Mentor::findOrFail($id);
+
+    $oldData = $mentor->toArray();
+
+    $data = $request->validate([
+        'nama_mentor' => 'required|string|max:255',
+        'divisi' => 'required|string|max:255',
+        'peserta' => 'nullable|array',
+    ]);
+
+    $mentor->update([
+        'nama_mentor' => $data['nama_mentor'],
+        'divisi' => $data['divisi'],
+        'tugas' => '',
+    ]);
+
+    // Hapus semua peserta yang sebelumnya dimiliki mentor ini
+    User::where('mentor_id', $mentor->id)
+        ->update([
+            'mentor_id' => null
         ]);
+
+    // Pasangkan peserta yang dipilih
+    if (!empty($data['peserta'])) {
+
+        User::whereIn('id', $data['peserta'])
+            ->update([
+                'mentor_id' => $mentor->id
+            ]);
+
     }
 
-    public function update(Request $request, $id)
-    {
-        $mentor = Mentor::findOrFail($id);
+    ActivityLogger::log(
+        'Mentor',
+        'UPDATE',
+        'Mengubah Mentor',
+        $oldData,
+        $mentor->fresh()->toArray()
+    );
 
-        $data = $request->validate([
-            'nama_mentor' => 'required|string|max:255',
-            'divisi' => 'required|string|max:255',
-            'tugas' => 'required|string',
-        ]);
-
-        $mentor->update($data);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Mentor berhasil diperbarui.',
-        ]);
-    }
-
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Mentor berhasil diperbarui.',
+    ]);
+}
     public function destroy($id)
     {
-        Mentor::findOrFail($id)->delete();
+        $mentor = Mentor::findOrFail($id);
+
+        $oldData = $mentor->toArray();
+
+        $mentor->delete();
+
+        ActivityLogger::log(
+            'Mentor',
+            'DELETE',
+            'Menghapus Mentor',
+            $oldData,
+            null
+        );
 
         return response()->json([
             'status' => 'success',
             'message' => 'Mentor berhasil dihapus.',
         ]);
     }
+    public function peserta()
+{
+    $rolePeserta = Role::where('name', 'Peserta')->first();
+
+    $peserta = User::where('role_id', $rolePeserta->id)
+        ->select('id', 'name', 'email', 'mentor_id')
+        ->orderBy('name')
+        ->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $peserta
+    ]);
+}
 }

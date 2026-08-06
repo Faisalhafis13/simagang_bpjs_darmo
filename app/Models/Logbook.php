@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\AnggotaMagang;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,19 +10,27 @@ class Logbook extends Model
     use HasFactory;
 
     protected $fillable = [
-        'anggota_magang_id',
+
+        'user_id',
+
         'tanggal',
+
         'aktivitas',
+
         'hasil',
+
         'catatan',
+
     ];
 
-    protected $dates = [
-        'tanggal',
+    protected $casts = [
+
+        'tanggal' => 'date',
+
     ];
 
-    public function anggota()
+    public function user()
     {
-        return $this->belongsTo(AnggotaMagang::class, 'anggota_magang_id');
+        return $this->belongsTo(User::class);
     }
 }

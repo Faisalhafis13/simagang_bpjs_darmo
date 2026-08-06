@@ -37,6 +37,8 @@ class PengajuanMagang extends Model
 
         'catatan',
 
+        'mentor_id',
+
     ];
 
     public function anggota()
@@ -45,5 +47,10 @@ class PengajuanMagang extends Model
             AnggotaMagang::class,
             'pengajuan_magang_id'
         );
+    }
+
+    public function mentor()
+    {
+        return $this->belongsTo(Mentor::class, 'mentor_id');
     }
 }

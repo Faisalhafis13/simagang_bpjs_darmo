@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,12 +19,18 @@ class DatabaseSeeder extends Seeder
         // Seeder
         $this->call([
             RoleSeeder::class,
+            MenuGroupSeeder::class,
+            MenuSeeder::class,
+            RoleMenuSeeder::class,
         ]);
 
-        // User default
+        $adminRole = Role::where('name', 'Admin')->first();
+
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+            'role_id' => $adminRole ? $adminRole->id : null,
         ]);
     }
 }

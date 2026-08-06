@@ -6,87 +6,47 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\RoleMenu;
+use App\Repositories\BackOffice\RoleMenuRepository;
 use Illuminate\Http\Request;
 
 class RoleMenuController extends Controller
 {
-    public function index()
-    {
-        $roles = Role::orderBy('name')->get();
-        $menus = Menu::with('group')->orderBy('name')->get();
-        $roleMenus = RoleMenu::with(['role','menu'])->orderBy('id')->get();
+    protected RoleMenuRepository $repository;
 
-        return view('back-office.role-menu.index', compact('roles', 'menus', 'roleMenus'));
+    public function __construct(RoleMenuRepository $repository)
+    {
+        $this->repository = $repository;
     }
 
-    public function apiIndex(Request $request)
+    public function index()
     {
-        $perPage = $request->integer('per_page', 10);
-        $query = RoleMenu::with(['role', 'menu'])->orderBy('id');
+        return $this->repository->index();
+    }
 
-        if ($request->filled('role_id')) {
-            $query->where('role_id', $request->role_id);
-        }
-
-        if ($request->filled('menu_id')) {
-            $query->where('menu_id', $request->menu_id);
-        }
-
-        $roleMenus = $query->paginate($perPage)->withQueryString();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $roleMenus->items(),
-            'meta' => [
-                'current_page' => $roleMenus->currentPage(),
-                'per_page' => $roleMenus->perPage(),
-                'total' => $roleMenus->total(),
-                'last_page' => $roleMenus->lastPage(),
-            ],
-        ]);
+    public function getData(Request $request)
+    {
+        return $this->repository->getData($request);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'role_id' => ['required', 'exists:roles,id'],
-            'menu_id' => ['required', 'exists:menus,id'],
-            'status' => ['required', 'in:active,inactive'],
-        ]);
-
-        $roleMenu = RoleMenu::create($data);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Role menu berhasil dibuat.',
-            'data' => $roleMenu->load(['role', 'menu']),
-        ]);
+        return $this->repository->store($request);
     }
 
     public function update(Request $request, RoleMenu $roleMenu)
     {
-        $data = $request->validate([
-            'role_id' => ['required', 'exists:roles,id'],
-            'menu_id' => ['required', 'exists:menus,id'],
-            'status' => ['required', 'in:active,inactive'],
-        ]);
-
-        $roleMenu->update($data);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Role menu berhasil diperbarui.',
-            'data' => $roleMenu->load(['role', 'menu']),
-        ]);
+        return $this->repository->update($request, $roleMenu);
     }
 
     public function destroy(RoleMenu $roleMenu)
     {
-        $roleMenu->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Role menu berhasil dihapus.',
-        ]);
+        return $this->repository->destroy($roleMenu);
     }
+    public function show(RoleMenu $roleMenu)
+{
+    return response()->json([
+        'status' => 'success',
+        'data' => $roleMenu
+    ]);
+}
 }

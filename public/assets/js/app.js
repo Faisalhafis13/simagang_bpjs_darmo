@@ -1,84 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("SIMAGANG BPJS");
-});
 document.addEventListener("DOMContentLoaded", function () {
 
-    const swiper = new Swiper(".gallerySwiper", {
+    let anggotaIndex = 0;
 
-        loop: true,
+    window.tambahAnggota = function () {
 
-        speed: 700,
+        let wrapper = document.getElementById("anggota-wrapper");
 
-        spaceBetween: 25,
+        if (!wrapper) return;
 
-        slidesPerView: 1,
+        anggotaIndex++;
 
-        grabCursor: true,
-
-        centeredSlides: false,
-
-        autoplay: {
-
-            delay: 3000,
-
-            disableOnInteraction: false,
-
-        },
-
-        navigation: {
-
-            nextEl: ".swiper-button-next",
-
-            prevEl: ".swiper-button-prev",
-
-        },
-
-        pagination: {
-
-            el: ".swiper-pagination",
-
-            clickable: true,
-
-        },
-
-        breakpoints: {
-
-            768: {
-
-                slidesPerView: 2,
-
-            },
-
-            1200: {
-
-                slidesPerView: 3,
-
-            }
-
-        }
-
-    });
-
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-
-window.tambahAnggota = function () {
-
-    let wrapper = document.getElementById("anggota-wrapper");
-
-    if (!wrapper) return;
-
-    let jumlah = wrapper.querySelectorAll(".anggota-item").length + 1;
-
-    let html = `
+        let html = `
 
         <div class="anggota-item card border-0 shadow-sm rounded-3 p-3 mb-3">
 
             <div class="d-flex justify-content-between align-items-center mb-2">
 
                 <h6 class="mb-0">
-                    Anggota ${jumlah}
+                    Anggota ${anggotaIndex}
                 </h6>
 
                 <i
@@ -89,19 +28,60 @@ window.tambahAnggota = function () {
 
             </div>
 
-            <input
-                type="text"
-                name="anggota[]"
-                class="form-control"
-                placeholder="Masukkan nama anggota">
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Nama Anggota
+                    </label>
+
+                    <input
+                        type="text"
+                        name="anggota[${anggotaIndex}][nama]"
+                        class="form-control"
+                        placeholder="Masukkan nama anggota">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Email Anggota
+                    </label>
+
+                    <input
+                        type="email"
+                        name="anggota[${anggotaIndex}][email]"
+                        class="form-control"
+                        placeholder="Masukkan email anggota">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Nomor HP Anggota
+                    </label>
+
+                    <input
+                        type="text"
+                        name="anggota[${anggotaIndex}][no_hp]"
+                        class="form-control"
+                        placeholder="Masukkan nomor HP anggota">
+
+                </div>
+
+            </div>
 
         </div>
 
-    `;
+        `;
 
-    wrapper.insertAdjacentHTML("beforeend", html);
+        wrapper.insertAdjacentHTML("beforeend", html);
 
-}
+    }
+
     window.hapusAnggota = function(button){
 
         button.closest('.anggota-item').remove();

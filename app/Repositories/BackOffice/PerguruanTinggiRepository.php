@@ -14,6 +14,7 @@ class PerguruanTinggiRepository
     public function getData()
     {
         $pengajuans = PengajuanMagang::with('anggota')
+            ->where('status', 'Diterima')
             ->latest()
             ->get();
 
@@ -37,20 +38,9 @@ class PerguruanTinggiRepository
 
             $universitas[$key]['pengajuan_count']++;
             $universitas[$key]['peserta_count'] += 1 + $pengajuan->anggota->count();
-            $universitas[$key]['statuses'][] = $pengajuan->status;
-            $universitas[$key]['peserta_list'][] = $pengajuan->nama_ketua;
-
-            foreach ($pengajuan->anggota as $anggota) {
-                $universitas[$key]['peserta_list'][] = $anggota->nama_anggota;
-            }
         }
 
         $data = array_values(array_map(function ($item) {
-            $item['status'] = implode(', ', array_unique($item['statuses']));
-            $item['peserta_preview'] = implode(', ', array_slice($item['peserta_list'], 0, 5));
-            if (count($item['peserta_list']) > 5) {
-                $item['peserta_preview'] .= '...';
-            }
             unset($item['statuses']);
             unset($item['peserta_list']);
             return $item;

@@ -23,7 +23,7 @@
         <small class="text-muted">
 
             Role :
-            {{ auth()->user()->role->name }}
+            {{ optional(auth()->user()->role)->name ?? 'Belum ada role' }}
 
         </small>
 

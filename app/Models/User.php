@@ -19,6 +19,9 @@ class User extends Authenticatable
         'password',
 
         'role_id',
+          'mentor_id',
+
+        'must_change_password',
 
     ];
 
@@ -41,8 +44,17 @@ class User extends Authenticatable
         ];
     }
 
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
+public function role()
+{
+    return $this->belongsTo(Role::class);
 }
+
+public function mentor()
+{
+    return $this->belongsTo(Mentor::class);
+}
+
+public function logbooks()
+{
+    return $this->hasMany(Logbook::class);
+}}

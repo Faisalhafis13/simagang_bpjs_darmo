@@ -22,8 +22,6 @@
                             <th>Perguruan Tinggi</th>
                             <th>Jumlah Pengajuan</th>
                             <th>Jumlah Peserta</th>
-                            <th>Status Pengajuan</th>
-                            <th>Contoh Peserta</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -37,36 +35,53 @@
 
 @push('js')
 <script>
-    async function loadPerguruanTinggiData() {
-        const response = await fetch('/api/back-office/perguruan-tinggi');
-        const result = await response.json();
-        const body = document.querySelector('#universitasTable tbody');
+    $(function(){
 
-        body.innerHTML = '';
+        $('#universitasTable').DataTable({
 
-        if (result.status !== 'success' || !Array.isArray(result.data) || result.data.length === 0) {
-            body.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center text-muted py-4">Tidak ada data perguruan tinggi.</td>
-                </tr>
-            `;
-            return;
-        }
+            destroy:true,
 
-        result.data.forEach((item, index) => {
-            body.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.universitas}</td>
-                    <td>${item.pengajuan_count}</td>
-                    <td>${item.peserta_count}</td>
-                    <td>${item.status}</td>
-                    <td>${item.peserta_preview || '-'}</td>
-                </tr>
-            `;
+            processing:true,
+
+            serverSide:false,
+
+            ajax:{
+
+                url:'/api/back-office/perguruan-tinggi',
+
+                dataSrc:function(response){
+
+                    return response.data || [];
+
+                }
+
+            },
+
+            columns:[
+
+                {
+
+                    data:null,
+
+                    render:function(data,type,row,meta){
+
+                        return meta.row + 1;
+
+                    }
+
+                },
+
+                { data:'universitas' },
+
+                { data:'pengajuan_count' },
+
+                { data:'peserta_count' }
+
+            ]
+
         });
-    }
 
-    document.addEventListener('DOMContentLoaded', loadPerguruanTinggiData);
+    });
+
 </script>
 @endpush

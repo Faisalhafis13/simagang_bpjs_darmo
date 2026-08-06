@@ -4,6 +4,7 @@ namespace App\Repositories\BackOffice;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Helpers\ActivityLogger;
 
 class RoleUserRepository
 {
@@ -38,12 +39,20 @@ class RoleUserRepository
 
     public function store($request)
     {
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => bcrypt($request->password),
-            'role_id' => $request->role_id,
+            'role_id'  => $request->role_id,
         ]);
+
+        ActivityLogger::log(
+            'Role User',
+            'CREATE',
+            'Menambah User',
+            null,
+            $user->toArray()
+        );
 
         return response()->json([
             'message' => 'User berhasil ditambahkan.'
@@ -54,19 +63,28 @@ class RoleUserRepository
     {
         $user = User::findOrFail($id);
 
+        // Simpan data lama
+        $oldData = $user->toArray();
+
         $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'    => $request->name,
+            'email'   => $request->email,
             'role_id' => $request->role_id,
         ]);
 
         if ($request->filled('password')) {
-
             $user->password = bcrypt($request->password);
-
             $user->save();
-
         }
+
+        // Simpan log
+        ActivityLogger::log(
+            'Role User',
+            'UPDATE',
+            'Mengubah User',
+            $oldData,
+            $user->fresh()->toArray()
+        );
 
         return response()->json([
             'message' => 'User berhasil diubah.'
@@ -75,7 +93,20 @@ class RoleUserRepository
 
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::findOrFail($id);
+
+        // Simpan data sebelum dihapus
+        $oldData = $user->toArray();
+
+        $user->delete();
+
+        ActivityLogger::log(
+            'Role User',
+            'DELETE',
+            'Menghapus User',
+            $oldData,
+            null
+        );
 
         return response()->json([
             'message' => 'User berhasil dihapus.'

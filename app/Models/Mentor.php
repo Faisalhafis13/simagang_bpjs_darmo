@@ -14,4 +14,16 @@ class Mentor extends Model
         'divisi',
         'tugas',
     ];
-}
+
+    public function pengajuans()
+    {
+        return $this->hasMany(PengajuanMagang::class, 'mentor_id');
+    }
+public function peserta()
+{
+    return $this->hasMany(
+        User::class,
+        'mentor_id'
+    );
+}}
+

@@ -412,13 +412,15 @@ $('#formUser').submit(function(e){
 
         error:function(xhr){
 
-            Swal.fire({
+const message = xhr.responseJSON?.message || xhr.statusText || 'Terjadi kesalahan saat menghubungi server.';
 
-                icon:'error',
+                Swal.fire({
 
-                title:'Oops...',
+                    icon:'error',
 
-                text:xhr.responseJSON.message
+                    title:'Oops...',
+
+                    text: message
 
             });
 

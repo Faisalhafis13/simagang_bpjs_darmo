@@ -2,7 +2,7 @@
 
 namespace App\Repositories\BackOffice;
 
-use App\Models\AnggotaMagang;
+use App\Models\PengajuanMagang;
 
 class PesertaRepository
 {
@@ -13,39 +13,42 @@ class PesertaRepository
 
     public function getData()
     {
-        $pengajuan = \App\Models\PengajuanMagang::with('anggota')
+        $pengajuan = PengajuanMagang::with('anggota')
+            ->where('status', 'Diterima')
             ->latest()
             ->get();
 
         $peserta = [];
 
-        foreach ($pengajuan as $pengajuanItem) {
+        foreach ($pengajuan as $item) {
+
+            // Ketua
             $peserta[] = [
-                'id' => 'ketua-' . $pengajuanItem->id,
-                'nama_peserta' => $pengajuanItem->nama_ketua,
-                'email' => $pengajuanItem->email_ketua,
-                'no_hp' => $pengajuanItem->no_hp,
-                'kode_pengajuan' => $pengajuanItem->kode_pengajuan,
-                'universitas' => $pengajuanItem->universitas,
-                'status' => $pengajuanItem->status,
+                'kode_pengajuan' => $item->kode_pengajuan,
+                'nama_peserta'   => $item->nama_ketua,
+                'email'          => $item->email_ketua,
+                'no_hp'          => $item->no_hp,
+                'universitas'    => $item->universitas,
+                'status'         => $item->status,
             ];
 
-            foreach ($pengajuanItem->anggota as $anggota) {
+            // Anggota
+            foreach ($item->anggota as $anggota) {
+
                 $peserta[] = [
-                    'id' => 'anggota-' . $anggota->id,
-                    'nama_peserta' => $anggota->nama_anggota,
-                    'email' => $anggota->email,
-                    'no_hp' => $anggota->no_hp,
-                    'kode_pengajuan' => $pengajuanItem->kode_pengajuan,
-                    'universitas' => $pengajuanItem->universitas,
-                    'status' => $pengajuanItem->status,
+                    'kode_pengajuan' => $item->kode_pengajuan,
+                    'nama_peserta'   => $anggota->nama_anggota,
+                    'email'          => $anggota->email,
+                    'no_hp'          => $anggota->no_hp,
+                    'universitas'    => $item->universitas,
+                    'status'         => $item->status,
                 ];
+
             }
         }
 
         return response()->json([
-            'status' => 'success',
-            'data' => $peserta,
+            'data' => $peserta
         ]);
     }
 }

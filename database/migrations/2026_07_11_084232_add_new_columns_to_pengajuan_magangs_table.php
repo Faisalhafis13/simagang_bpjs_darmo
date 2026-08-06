@@ -11,20 +11,20 @@ return new class extends Migration
      */
 public function up(): void
 {
-    Schema::table('pengajuan_magangs', function (Blueprint $table) {
-
-        $table->text('catatan')
-            ->nullable()
-            ->after('status');
-
-    });
+    if (! Schema::hasColumn('pengajuan_magangs', 'catatan')) {
+        Schema::table('pengajuan_magangs', function (Blueprint $table) {
+            $table->text('catatan')
+                ->nullable()
+                ->after('status');
+        });
+    }
 }
 
 public function down(): void
 {
-    Schema::table('pengajuan_magangs', function (Blueprint $table) {
-
-        $table->dropColumn('catatan');
-
-    });
+    if (Schema::hasColumn('pengajuan_magangs', 'catatan')) {
+        Schema::table('pengajuan_magangs', function (Blueprint $table) {
+            $table->dropColumn('catatan');
+        });
+    }
 }};

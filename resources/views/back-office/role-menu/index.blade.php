@@ -13,41 +13,36 @@
 
 <div id="alertPlaceholder"></div>
 
-<div class="card shadow-sm border-0 mb-4">
+<div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editRoleMenuModal">Tambah</button>
+            <button type="button" class="btn btn-success" id="btnTambahRoleMenu">
+                <i class="bi bi-plus-circle"></i>
+                Tambah
+            </button>
         </div>
     </div>
 </div>
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-0">
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-bordered table-hover align-middle w-100" id="roleMenuTable">
                 <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Role</th>
-                        <th>Menu</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
+<tr>
+
+    <th>No</th>
+
+    <th>Role</th>
+
+    <th>Menu Yang Bisa Diakses</th>
+
+    <th>Status</th>
+
+    <th>Aksi</th>
+
+</tr>
                 </thead>
-                <tbody id="roleMenuTableBody">
-                    @foreach($roleMenus as $roleMenu)
-                        <tr data-role-menu-id="{{ $roleMenu->id }}" data-role-id="{{ $roleMenu->role_id }}" data-menu-id="{{ $roleMenu->menu_id }}" data-status="{{ $roleMenu->status }}">
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $roleMenu->role->name }}</td>
-                            <td>{{ $roleMenu->menu->name }}</td>
-                            <td>{{ ucfirst($roleMenu->status) }}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-primary btn-edit-role-menu me-2" data-bs-toggle="modal" data-bs-target="#editRoleMenuModal">Edit</button>
-                                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-role-menu" data-role-menu-id="{{ $roleMenu->id }}">Hapus</button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
             </table>
         </div>
     </div>
@@ -78,23 +73,26 @@
 
                     <div class="mb-3">
                         <label class="form-label">Menu</label>
-                        <select id="roleMenuMenu" class="form-select">
-                            <option value="">Pilih menu</option>
+                        <div id="roleMenuMenusContainer">
                             @foreach($menus as $menu)
-                                <option value="{{ $menu->id }}">{{ $menu->name }}</option>
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input role-menu-checkbox"
+                                        type="checkbox"
+                                        id="roleMenuCheckbox{{ $menu->id }}"
+                                        value="{{ $menu->id }}"
+                                        data-menu-id="{{ $menu->id }}">
+
+                                    <label class="form-check-label" for="roleMenuCheckbox{{ $menu->id }}">
+                                        {{ $menu->name }}
+                                    </label>
+                                </div>
                             @endforeach
-                        </select>
-                        <div class="invalid-feedback" id="errorRoleMenuMenu"></div>
+                        </div>
+                        <div class="invalid-feedback d-block" id="errorRoleMenuMenu"></div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select id="roleMenuStatus" class="form-select">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        <div class="invalid-feedback" id="errorRoleMenuStatus"></div>
-                    </div>
+                    
                 </form>
             </div>
             <div class="modal-footer">
@@ -119,103 +117,264 @@
     }
 
     function resetRoleMenuErrors() {
-        ['Role','Menu','Status'].forEach(field => {
-            document.getElementById(`roleMenu${field}`).classList.remove('is-invalid');
-            document.getElementById(`errorRoleMenu${field}`).textContent = '';
+        ['Role', 'Menu'].forEach(field => {
+            const input = document.getElementById(`roleMenu${field}`);
+            const error = document.getElementById(`errorRoleMenu${field}`);
+            if (input) input.classList.remove('is-invalid');
+            if (error) error.textContent = '';
         });
     }
 
-    document.querySelectorAll('.btn-edit-role-menu').forEach(button => {
-        button.addEventListener('click', function () {
-            const row = this.closest('tr');
-            document.getElementById('roleMenuId').value = row.dataset.roleMenuId;
-            document.getElementById('roleMenuRole').value = row.dataset.roleId;
-            document.getElementById('roleMenuMenu').value = row.dataset.menuId;
-            document.getElementById('roleMenuStatus').value = row.dataset.status;
-            resetRoleMenuErrors();
-            document.getElementById('roleMenuModalAlert').innerHTML = '';
+    const roleMenuTable = $('#roleMenuTable').DataTable({
+        destroy: true,
+        processing: true,
+        ajax: {
+            url: roleMenuApiBase,
+            dataSrc: function(response) {
+                return response.data || [];
+            }
+        },
+columns: [
+
+{
+    data: null,
+    render: function(data, type, row, meta){
+        return meta.row + 1;
+    }
+},
+
+{
+    data: 'role'
+},
+
+{
+    data: 'menus',
+    render: function(data){
+
+        if(data.length==0){
+            return '<span class="text-muted">Belum ada menu</span>';
+        }
+
+        let html='';
+
+        data.forEach(function(menu){
+
+            html += `
+            <div class="form-check">
+
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    ${menu.status=='active'?'checked':''}
+                    disabled>
+
+                <label class="form-check-label">
+
+                    ${menu.name}
+
+                </label>
+
+            </div>
+            `;
+
         });
+
+        return html;
+
+    }
+},
+
+{
+    data:'status',
+    render:function(data){
+
+        if(data=='active'){
+
+            return `<span class="badge bg-success">
+                        Active
+                    </span>`;
+
+        }
+
+        return `<span class="badge bg-secondary">
+                    Inactive
+                </span>`;
+
+    }
+},
+
+{
+    data: 'menus',
+    orderable: false,
+    searchable: false,
+    render: function(data, type, row) {
+        return `
+            <button class="btn btn-warning btn-sm btn-edit-role-menu" data-role="${row.id}">
+                <i class="bi bi-pencil"></i>
+            </button>
+        `;
+    }
+}
+]
     });
 
-    document.getElementById('saveRoleMenuBtn').addEventListener('click', async function () {
+    const roleMenuModal = new bootstrap.Modal(document.getElementById('editRoleMenuModal'));
+
+    $('#btnTambahRoleMenu').on('click', function() {
+        $('#roleMenuForm')[0].reset();
+        $('#roleMenuId').val('');
+        // clear checkboxes
+        $('.role-menu-checkbox').each(function() {
+            $(this).prop('checked', false);
+            $(this).attr('data-role-menu-id', '');
+            $(this).attr('data-original-status', '');
+        });
         resetRoleMenuErrors();
-        const id = document.getElementById('roleMenuId').value;
-        const payload = {
-            role_id: document.getElementById('roleMenuRole').value,
-            menu_id: document.getElementById('roleMenuMenu').value,
-            status: document.getElementById('roleMenuStatus').value,
-        };
+        $('#roleMenuModalAlert').html('');
+        roleMenuModal.show();
+    });
 
-        const url = id ? `${roleMenuApiBase}/${id}` : roleMenuApiBase;
-        const method = id ? 'PUT' : 'POST';
+$(document).on('click', '.btn-edit-role-menu', function() {
 
-        const response = await fetch(url, {
-            method,
+    const roleId = $(this).data('role');
+
+    const rows = roleMenuTable.rows().data().toArray();
+    const row = rows.find(r => r.id == roleId);
+
+    if (!row) {
+        showRoleMenuAlert('#alertPlaceholder', 'Data role tidak ditemukan.', 'danger');
+        return;
+    }
+
+    // reset form
+    $('#roleMenuForm')[0].reset();
+    $('#roleMenuId').val('');
+    $('#roleMenuRole').val(roleId);
+
+    // clear checkboxes and data attributes
+    $('.role-menu-checkbox').each(function() {
+        $(this).prop('checked', false);
+        $(this).attr('data-role-menu-id', '');
+        $(this).attr('data-original-status', '');
+    });
+
+    // populate checkboxes from row.menus
+    row.menus.forEach(function(menu) {
+        const checkbox = $(`#roleMenuCheckbox${menu.menu_id}`);
+        if (checkbox.length) {
+            checkbox.prop('checked', menu.status === 'active');
+            checkbox.attr('data-role-menu-id', menu.role_menu_id);
+            checkbox.attr('data-original-status', menu.status);
+        }
+    });
+
+    resetRoleMenuErrors();
+    $('#roleMenuModalAlert').html('');
+    roleMenuModal.show();
+
+});
+    $('#saveRoleMenuBtn').on('click', async function() {
+        resetRoleMenuErrors();
+
+        const roleId = $('#roleMenuRole').val();
+        if (!roleId) {
+            $('#roleMenuRole').addClass('is-invalid');
+            $('#errorRoleMenuRole').text('Role harus dipilih.');
+            return;
+        }
+
+        const checkboxes = $('.role-menu-checkbox');
+        const promises = [];
+
+        checkboxes.each(function() {
+            const cb = this;
+            const menuId = cb.value;
+            const roleMenuId = cb.getAttribute('data-role-menu-id');
+            const originalStatus = cb.getAttribute('data-original-status') || '';
+            const checked = cb.checked;
+
+            if (roleMenuId) {
+                if (checked) {
+                    if (originalStatus !== 'active') {
+                        const payload = { role_id: roleId, menu_id: menuId, status: 'active' };
+                        promises.push(fetch(`${roleMenuApiBase}/${roleMenuId}`, {
+                            method: 'PUT',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify(payload),
+                        }).then(r => r.json().then(data => ({ ok: r.ok, data }))));
+                    }
+                } else {
+                    // unchecked => delete existing
+                    promises.push(fetch(`${roleMenuApiBase}/${roleMenuId}`, {
+                        method: 'DELETE',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                    }).then(r => r.json().then(data => ({ ok: r.ok, data }))));
+                }
+            } else {
+                if (checked) {
+                    const payload = { role_id: roleId, menu_id: menuId, status: 'active' };
+                    promises.push(fetch(roleMenuApiBase, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify(payload),
+                    }).then(r => r.json().then(data => ({ ok: r.ok, data }))));
+                }
+            }
+        });
+
+        const results = await Promise.all(promises);
+
+        const errors = results.filter(r => !r.ok);
+        if (errors.length) {
+            showRoleMenuAlert('#roleMenuModalAlert', errors[0].data.message || 'Terjadi kesalahan saat menyimpan.', 'danger');
+            return;
+        }
+
+        showRoleMenuAlert('#alertPlaceholder', 'Perubahan role menu berhasil disimpan.', 'success');
+        roleMenuModal.hide();
+        $('#roleMenuForm')[0].reset();
+        $('#roleMenuId').val('');
+        roleMenuTable.ajax.reload();
+    });
+
+    $(document).on('click', '.btn-delete-role-menu', async function() {
+        const id = $(this).data('id');
+        if (!confirm('Yakin ingin menghapus role menu ini?')) {
+            return;
+        }
+
+        const response = await fetch(`${roleMenuApiBase}/${id}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             },
-            body: JSON.stringify(payload),
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            if (result.errors) {
-                Object.entries(result.errors).forEach(([key, messages]) => {
-                    const input = document.getElementById(`roleMenu${key.charAt(0).toUpperCase() + key.slice(1)}`);
-                    const error = document.getElementById(`errorRoleMenu${key.charAt(0).toUpperCase() + key.slice(1)}`);
-                    if (input && error) {
-                        input.classList.add('is-invalid');
-                        error.textContent = messages[0];
-                    }
-                });
-            } else {
-                showRoleMenuAlert('#roleMenuModalAlert', result.message || 'Terjadi kesalahan.', 'danger');
-            }
+            showRoleMenuAlert('#alertPlaceholder', result.message || 'Gagal menghapus role menu.', 'danger');
             return;
         }
 
         showRoleMenuAlert('#alertPlaceholder', result.message, 'success');
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editRoleMenuModal'));
-        modal.hide();
-        window.location.reload();
-    });
-
-    document.querySelectorAll('.btn-delete-role-menu').forEach(button => {
-        button.addEventListener('click', async function () {
-            const id = this.dataset.roleMenuId;
-            if (!confirm('Yakin ingin menghapus role menu ini?')) {
-                return;
-            }
-
-            const response = await fetch(`${roleMenuApiBase}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Accept': 'application/json',
-                },
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                showRoleMenuAlert('#alertPlaceholder', result.message || 'Gagal menghapus role menu.', 'danger');
-                return;
-            }
-
-            showRoleMenuAlert('#alertPlaceholder', result.message, 'success');
-            window.location.reload();
-        });
-    });
-
-    document.getElementById('btnFilter').addEventListener('click', function () {
-        const roleId = document.getElementById('filterRole').value;
-        const menuId = document.getElementById('filterMenu').value;
-        let url = "{{ url('back-office/role-menu') }}";
-        const params = new URLSearchParams();
-        if (roleId) params.append('role_id', roleId);
-        if (menuId) params.append('menu_id', menuId);
-        window.location.href = `${url}?${params.toString()}`;
+roleMenuTable.ajax.reload();
     });
 </script>
 @endpush
