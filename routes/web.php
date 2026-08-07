@@ -13,14 +13,17 @@ use App\Http\Controllers\BackOffice\DashboardController;
 use App\Http\Controllers\BackOffice\HistoryController;
 use App\Http\Controllers\BackOffice\RoleUserController;
 use App\Http\Controllers\BackOffice\RoleMenuController;
-use App\Http\Controllers\BackOffice\PesertaController;
+use App\Http\Controllers\BackOffice\PesertaController as BackOfficePesertaController;
 use App\Http\Controllers\BackOffice\MentorController;
 use App\Http\Controllers\BackOffice\PerguruanTinggiController;
 use App\Http\Controllers\BackOffice\LogbookController as AdminLogbookController;
 use App\Http\Controllers\BackOffice\PengajuanController as BackOfficePengajuanController;
 
+use App\Http\Controllers\Peserta\PesertaController as PesertaPesertaController;
 use App\Http\Controllers\Peserta\LogbookController as PesertaLogbookController;
+
 use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -28,11 +31,15 @@ use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [HomeController::class,'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])
+    ->name('home');
 
-Route::get('/pengajuan', [PengajuanController::class,'index'])->name('pengajuan');
+Route::get('/pengajuan', [PengajuanController::class, 'index'])
+    ->name('pengajuan');
 
-Route::get('/hasil', [HasilController::class,'index'])->name('hasil');
+Route::get('/hasil', [HasilController::class, 'index'])
+    ->name('hasil');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,25 +47,43 @@ Route::get('/hasil', [HasilController::class,'index'])->name('hasil');
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login',[LoginController::class,'index'])->name('login');
+Route::get('/login', [LoginController::class, 'index'])
+    ->name('login');
 
-Route::post('/login',[LoginController::class,'login'])->name('login.post');
+Route::post('/login', [LoginController::class, 'login'])
+    ->name('login.post');
 
-Route::post('/logout',[LoginController::class,'logout'])
+Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-Route::get('/password/change',[PasswordChangeController::class,'show'])
+
+/*
+|--------------------------------------------------------------------------
+| Password
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/password/change', [PasswordChangeController::class, 'show'])
     ->middleware('auth')
     ->name('password.change');
 
-Route::post('/password/change',[PasswordChangeController::class,'update'])
+Route::post('/password/change', [PasswordChangeController::class, 'update'])
     ->middleware('auth')
     ->name('password.change.post');
 
-Route::get('/file/preview/{type}/{filename}',
-    [\App\Http\Controllers\BackOffice\FileController::class,'preview']
+
+/*
+|--------------------------------------------------------------------------
+| File Preview
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/file/preview/{type}/{filename}',
+    [\App\Http\Controllers\BackOffice\FileController::class, 'preview']
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -69,47 +94,152 @@ Route::get('/file/preview/{type}/{filename}',
 Route::middleware('auth')
     ->prefix('back-office')
     ->name('back-office.')
-    ->group(function(){
+    ->group(function () {
 
-    Route::get('/dashboard',[DashboardController::class,'index'])
-        ->name('dashboard');
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get('/role-user',[RoleUserController::class,'index'])
-        ->name('role-user');
+        Route::get(
+            '/dashboard',
+            [DashboardController::class, 'index']
+        )->name('dashboard');
 
-    Route::get('/role-user/data',[RoleUserController::class,'getData']);
 
-    Route::get('/role-user/data/{id}',[RoleUserController::class,'show']);
+        /*
+        |--------------------------------------------------------------------------
+        | Role User
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get('/role-menu',[RoleMenuController::class,'index'])
-        ->name('role-menu');
+        Route::get(
+            '/role-user',
+            [RoleUserController::class, 'index']
+        )->name('role-user');
 
-    Route::get('/pengajuan',[BackOfficePengajuanController::class,'index'])
-        ->name('pengajuan');
+        Route::get(
+            '/role-user/data',
+            [RoleUserController::class, 'getData']
+        );
 
-    Route::get('/peserta',[PesertaController::class,'index'])
-        ->name('peserta');
+        Route::get(
+            '/role-user/data/{id}',
+            [RoleUserController::class, 'show']
+        );
 
-    Route::get('/mentor',[MentorController::class,'index'])
-        ->name('mentor');
 
-    Route::get('/perguruan-tinggi',[PerguruanTinggiController::class,'index'])
-        ->name('perguruan-tinggi');
+        /*
+        |--------------------------------------------------------------------------
+        | Role Menu
+        |--------------------------------------------------------------------------
+        */
 
-    Route::get('/logbook',[AdminLogbookController::class,'index'])
-        ->name('logbook');
+        Route::get(
+            '/role-menu',
+            [RoleMenuController::class, 'index']
+        )->name('role-menu');
 
-    Route::get('/history',[HistoryController::class,'index'])
-        ->name('history');
 
-    Route::get('/history/data',[HistoryController::class,'getData']);
-});
+        /*
+        |--------------------------------------------------------------------------
+        | Pengajuan
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/pengajuan',
+            [BackOfficePengajuanController::class, 'index']
+        )->name('pengajuan');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Peserta - ADMIN
+        |--------------------------------------------------------------------------
+        */
+
+Route::get(
+    '/peserta',
+    [BackOfficePesertaController::class, 'index']
+)->name('peserta');
+
+Route::get(
+    '/peserta/data',
+    [BackOfficePesertaController::class, 'getData']
+);
+
+Route::post(
+    '/peserta/{id}/surat-penerimaan',
+    [BackOfficePesertaController::class, 'uploadSuratPenerimaan']
+)->name('peserta.surat-penerimaan.upload');
+
+Route::delete(
+    '/peserta/{id}/surat-penerimaan',
+    [BackOfficePesertaController::class, 'deleteSuratPenerimaan']
+)->name('peserta.surat-penerimaan.delete');
+        /*
+        |--------------------------------------------------------------------------
+        | Mentor - ADMIN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/mentor',
+            [MentorController::class, 'index']
+        )->name('mentor');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Perguruan Tinggi
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/perguruan-tinggi',
+            [PerguruanTinggiController::class, 'index']
+        )->name('perguruan-tinggi');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logbook - ADMIN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/logbook',
+            [AdminLogbookController::class, 'index']
+        )->name('logbook');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | History
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/history',
+            [HistoryController::class, 'index']
+        )->name('history');
+
+        Route::get(
+            '/history/data',
+            [HistoryController::class, 'getData']
+        );
+    });
 
 
 /*
 |--------------------------------------------------------------------------
 | Peserta
 |--------------------------------------------------------------------------
+|
+| Semua halaman di bawah ini adalah milik USER/PESERTA yang login.
+|
 */
 
 Route::middleware('auth')
@@ -117,54 +247,78 @@ Route::middleware('auth')
     ->name('peserta.')
     ->group(function () {
 
-        Route::get('/logbook', [PesertaLogbookController::class,'index'])
-            ->name('logbook.index');
+        Route::get(
+            '/',
+            [PesertaPesertaController::class, 'index']
+        )->name('index');
 
-        Route::get('/logbook/data', [PesertaLogbookController::class,'getData']);
+        Route::get(
+            '/logbook',
+            [PesertaLogbookController::class, 'index']
+        )->name('logbook.index');
 
-        Route::post('/logbook', [PesertaLogbookController::class,'store']);
+        Route::get(
+            '/logbook/data',
+            [PesertaLogbookController::class, 'getData']
+        )->name('logbook.data');
 
-        Route::get('/logbook/{id}', [PesertaLogbookController::class,'show']);
+        Route::post(
+            '/logbook',
+            [PesertaLogbookController::class, 'store']
+        );
 
-        Route::put('/logbook/{id}', [PesertaLogbookController::class,'update']);
+        Route::get(
+            '/logbook/{id}',
+            [PesertaLogbookController::class, 'show']
+        );
 
-        Route::delete('/logbook/{id}', [PesertaLogbookController::class,'destroy']);
+        Route::put(
+            '/logbook/{id}',
+            [PesertaLogbookController::class, 'update']
+        );
 
+        Route::delete(
+            '/logbook/{id}',
+            [PesertaLogbookController::class, 'destroy']
+        );
     });
+/*
+|--------------------------------------------------------------------------
+| Mentor
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware('auth')
     ->prefix('mentor')
     ->name('mentor.')
     ->group(function () {
 
+        /*
+        |--------------------------------------------------------------------------
+        | Monitoring Logbook Mentor
+        |--------------------------------------------------------------------------
+        */
 
-        Route::get('/logbook',
-            [
-                MentorLogbookController::class,
-                'index'
-            ]
-        )
-        ->name('logbook.index');
-
-
-
-        Route::get('/logbook/peserta',
-            [
-                MentorLogbookController::class,
-                'peserta'
-            ]
-        )
-        ->name('logbook.peserta');
+        Route::get(
+            '/logbook',
+            [MentorLogbookController::class, 'index']
+        )->name('logbook.index');
 
 
+        /*
+        | Daftar peserta milik mentor
+        */
+        Route::get(
+            '/logbook/peserta',
+            [MentorLogbookController::class, 'peserta']
+        )->name('logbook.peserta');
 
-        Route::get('/logbook/data',
-            [
-                MentorLogbookController::class,
-                'getData'
-            ]
-        )
-        ->name('logbook.data');
 
-
+        /*
+        | Data logbook peserta
+        */
+        Route::get(
+            '/logbook/data',
+            [MentorLogbookController::class, 'getData']
+        )->name('logbook.data');
     });

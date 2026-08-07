@@ -12,34 +12,27 @@ class PengajuanMagang extends Model
     protected $table = 'pengajuan_magangs';
 
     protected $fillable = [
-
         'kode_pengajuan',
-
         'nama_ketua',
-
         'universitas',
-
         'semester',
-
         'no_hp',
-
         'email_ketua',
-
         'tanggal_mulai',
-
         'tanggal_selesai',
-
         'proposal',
-
         'surat_permohonan',
-
+        'surat_penerimaan',
         'status',
-
         'catatan',
-
         'mentor_id',
-
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Anggota Kelompok
+    |--------------------------------------------------------------------------
+    */
 
     public function anggota()
     {
@@ -49,8 +42,17 @@ class PengajuanMagang extends Model
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mentor
+    |--------------------------------------------------------------------------
+    */
+
     public function mentor()
     {
-        return $this->belongsTo(Mentor::class, 'mentor_id');
+        return $this->belongsTo(
+            Mentor::class,
+            'mentor_id'
+        );
     }
 }
