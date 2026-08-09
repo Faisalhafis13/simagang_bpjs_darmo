@@ -54,7 +54,7 @@
                             width="18%"
                             class="text-center"
                         >
-                            Universitas
+                            Perguruann Tinggi
                         </th>
 
                         <th>

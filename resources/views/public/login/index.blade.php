@@ -16,16 +16,16 @@
 
                     <div class="text-center mb-4">
 
-                        <img
+                        <!-- <img
                             src="{{ asset('images/bpjslogo.png') }}"
-                            width="90">
+                            width="90"> -->
 
                         <h3 class="mt-3 fw-bold">
-                            Login Administrator
+                            Login Sesuai Akun
                         </h3>
 
                         <p class="text-muted">
-                            SIMAGANG BPJS Kesehatan
+                            SIMAGANG BPJS Ketenagakerjaan
                         </p>
 
                     </div>

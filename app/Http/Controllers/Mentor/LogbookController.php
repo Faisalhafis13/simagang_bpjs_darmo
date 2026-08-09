@@ -42,5 +42,13 @@ class LogbookController extends Controller
             $this->repository->getData($request)
         );
     }
+public function approve(Request $request, $id)
+{
+    return $this->repository->approve($request, $id);
+}
 
+public function feedback(Request $request, $id)
+{
+    return $this->repository->feedback($request, $id);
+}
 }

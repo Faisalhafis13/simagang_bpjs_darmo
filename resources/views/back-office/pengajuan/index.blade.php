@@ -40,7 +40,7 @@
 
                             <th>Nomor HP</th>
 
-                            <th>Universitas</th>
+                            <th>Perguruan Tinggi</th>
 
                             <th>Semester</th>
 
@@ -66,7 +66,7 @@
 
                         <tr>
 
-                            <td colspan="12" class="text-center text-muted py-5">Memuat data...</td>
+                            <td colspan="14" class="text-center text-muted py-5">Memuat data...</td>
 
                         </tr>
 
@@ -202,69 +202,144 @@
 
                 {
 
-                    data:'proposal',
+    data: 'proposal',
+    orderable: false,
+    searchable: false,
 
-                    orderable:false,
+    render: function(data) {
 
-                    searchable:false,
+        if (!data) {
+            return `
+                <span class="text-muted small">
+                    <i class="bi bi-file-earmark-x me-1"></i>
+                    Tidak tersedia
+                </span>
+            `;
+        }
 
-                    render:function(data){
+        const filename = String(data).split('/').pop();
 
-                        if(!data) return '<span class="text-muted">-</span>';
+        const url =
+            `/file/preview/proposal/${encodeURIComponent(filename)}`;
 
-                        const url = (typeof data === 'string' && data.match(/^https?:\/\//)) ? data : ('/' + String(data).replace(/^\/?/, ''));
+        return `
+            <a
+                href="${url}"
+                target="_blank"
+                class="btn btn-sm btn-outline-primary"
+            >
+                <i class="bi bi-eye me-1"></i>
+                Lihat
+            </a>
+        `;
+    }
+},
 
-                        // extract filename from possible stored path
-                        const filenameProp = String(data).split('/').pop();
-                        return `<button class="btn btn-sm btn-outline-primary btn-preview" data-filename="${filenameProp}" data-title="Proposal" data-type="proposal">Lihat</button>`;
+{
+    data: 'surat_permohonan',
+    orderable: false,
+    searchable: false,
 
-                    }
+    render: function(data) {
 
-                },
+        if (!data) {
+            return `
+                <span class="text-muted small">
+                    <i class="bi bi-file-earmark-x me-1"></i>
+                    Tidak tersedia
+                </span>
+            `;
+        }
 
-                {
+        const filename = String(data).split('/').pop();
 
-                    data:'surat_permohonan',
+        const url =
+            `/file/preview/surat_permohonan/${encodeURIComponent(filename)}`;
 
-                    orderable:false,
+        return `
+            <a
+                href="${url}"
+                target="_blank"
+                class="btn btn-sm btn-outline-primary"
+            >
+                <i class="bi bi-eye me-1"></i>
+                Lihat
+            </a>
+        `;
+    }
+},
 
-                    searchable:false,
+{
+    data: null,
+    orderable: false,
+    searchable: false,
 
-                    render:function(data){
+    render: function(data) {
 
-                        if(!data) return '<span class="text-muted">-</span>';
+        const status = String(data.status || '').toLowerCase();
 
-                        const url = (typeof data === 'string' && data.match(/^https?:\/\//)) ? data : ('/' + String(data).replace(/^\/?/, ''));
+        const sudahDiputus =
+            status === 'diterima' ||
+            status === 'accepted' ||
+            status === 'ditolak' ||
+            status === 'rejected';
 
-                        const filenameSurat = String(data).split('/').pop();
-                        return `<button class="btn btn-sm btn-outline-primary btn-preview" data-filename="${filenameSurat}" data-title="Surat Permohonan" data-type="surat_permohonan">Lihat</button>`;
+        if (sudahDiputus) {
 
-                    }
+            return `
+                <div class="d-flex flex-column gap-1">
 
-                },
+                    <button
+                        type="button"
+                        class="btn btn-success btn-sm"
+                        disabled
+                    >
+                        <i class="bi bi-check-circle me-1"></i>
+                        Approve
+                    </button>
 
-                {
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        disabled
+                    >
+                        <i class="bi bi-x-circle me-1"></i>
+                        Reject
+                    </button>
 
-                    data:null,
+                    <small class="text-muted text-center">
+                        Sudah diputuskan
+                    </small>
 
-                    orderable:false,
+                </div>
+            `;
+        }
 
-                    searchable:false,
+        return `
+            <div class="d-flex flex-column gap-1">
 
-                    render:function(data){
+                <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    onclick="updatePengajuanStatus(${data.id}, 'Diterima')"
+                >
+                    <i class="bi bi-check-circle me-1"></i>
+                    Terima
+                </button>
 
-                        return `
+                <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="updatePengajuanStatus(${data.id}, 'Ditolak')"
+                >
+                    <i class="bi bi-x-circle me-1"></i>
+                    Tolak
+                </button>
 
-                            <button class="btn btn-success btn-sm me-1" onclick="updatePengajuanStatus(${data.id}, 'Diterima')">Approve</button>
-
-                            <button class="btn btn-danger btn-sm" onclick="updatePengajuanStatus(${data.id}, 'Ditolak')">Reject</button>
-
-                        `;
-
-                    }
-
-                }
-
+            </div>
+        `;
+    }
+}
             ]
 
         });
@@ -357,47 +432,5 @@
 
     }
 
-</script>
-@endpush
-
-<div class="modal fade" id="filePreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4">
-            <div class="modal-header">
-                <h5 class="modal-title" id="filePreviewTitle">Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-0" style="min-height:60vh;">
-                <iframe id="filePreviewFrame" src="" frameborder="0" style="width:100%;height:60vh;"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
-
-@push('js')
-<script>
-    const filePreviewModalEl = document.getElementById('filePreviewModal');
-    const filePreviewModal = new bootstrap.Modal(filePreviewModalEl);
-
-    $(document).on('click', '.btn-preview', function(){
-        const filename = $(this).data('filename');
-        const type = $(this).data('type');
-        const title = $(this).data('title') || 'Preview';
-
-        if(!filename || !type){
-            Swal.fire({ icon:'error', title:'File tidak ditemukan' });
-            return;
-        }
-
-        const url = `/back-office/file/preview/${type}/${encodeURIComponent(filename)}`;
-
-        $('#filePreviewTitle').text(title);
-        $('#filePreviewFrame').attr('src', url);
-        filePreviewModal.show();
-    });
-
-    filePreviewModalEl.addEventListener('hidden.bs.modal', function(){
-        $('#filePreviewFrame').attr('src','');
-    });
 </script>
 @endpush

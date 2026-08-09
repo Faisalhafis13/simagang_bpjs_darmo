@@ -10,23 +10,23 @@ class Logbook extends Model
     use HasFactory;
 
     protected $fillable = [
-
         'user_id',
-
         'tanggal',
-
         'aktivitas',
-
         'hasil',
-
         'catatan',
-
+        'bukti',
+        'status',
+        'catatan_mentor',
     ];
 
+
+
+
+
+    
     protected $casts = [
-
         'tanggal' => 'date',
-
     ];
 
     public function user()

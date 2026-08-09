@@ -203,18 +203,21 @@ Route::delete(
         )->name('perguruan-tinggi');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Logbook - ADMIN
-        |--------------------------------------------------------------------------
-        */
+/*
+|--------------------------------------------------------------------------
+| Logbook - ADMIN
+|--------------------------------------------------------------------------
+*/
 
-        Route::get(
-            '/logbook',
-            [AdminLogbookController::class, 'index']
-        )->name('logbook');
+Route::get(
+    '/logbook',
+    [AdminLogbookController::class, 'index']
+)->name('logbook');
 
-
+Route::get(
+    '/logbook/data',
+    [AdminLogbookController::class, 'getData']
+);
         /*
         |--------------------------------------------------------------------------
         | History
@@ -293,32 +296,28 @@ Route::middleware('auth')
     ->name('mentor.')
     ->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Monitoring Logbook Mentor
-        |--------------------------------------------------------------------------
-        */
-
         Route::get(
             '/logbook',
             [MentorLogbookController::class, 'index']
         )->name('logbook.index');
 
-
-        /*
-        | Daftar peserta milik mentor
-        */
         Route::get(
             '/logbook/peserta',
             [MentorLogbookController::class, 'peserta']
         )->name('logbook.peserta');
 
-
-        /*
-        | Data logbook peserta
-        */
         Route::get(
             '/logbook/data',
             [MentorLogbookController::class, 'getData']
         )->name('logbook.data');
+
+        Route::put(
+            '/logbook/{id}/approve',
+            [MentorLogbookController::class, 'approve']
+        )->name('logbook.approve');
+
+        Route::put(
+            '/logbook/{id}/feedback',
+            [MentorLogbookController::class, 'feedback']
+        )->name('logbook.feedback');
     });

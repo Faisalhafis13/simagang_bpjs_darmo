@@ -5,6 +5,7 @@ namespace App\Repositories\Peserta;
 use App\Models\AnggotaMagang;
 use App\Models\PengajuanMagang;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PesertaRepository
 {
@@ -26,18 +27,6 @@ class PesertaRepository
         |--------------------------------------------------------------------------
         | Ambil mentor dari akun User
         |--------------------------------------------------------------------------
-        |
-        | Mentor peserta disimpan pada:
-        |
-        | users.mentor_id
-        |
-        | Relasi sudah tersedia di User.php:
-        |
-        | public function mentor()
-        | {
-        |     return $this->belongsTo(Mentor::class);
-        | }
-        |
         */
 
         $mentorUser = $user
@@ -81,20 +70,34 @@ class PesertaRepository
                 ->latest()
                 ->first();
 
-
             if ($anggota) {
 
-                $pengajuanAnggota =
-                    $anggota->pengajuan;
+                $pengajuanAnggota = $anggota->pengajuan;
             }
         }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Tentukan pengajuan peserta
+        |--------------------------------------------------------------------------
+        */
+
         $pengajuan =
             $pengajuanKetua
             ?? $pengajuanAnggota;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Data peserta
+        |--------------------------------------------------------------------------
+        */
+
         $peserta = null;
+
         if ($pengajuan) {
+
             if ($pengajuanKetua) {
 
                 $peserta = [
@@ -113,8 +116,7 @@ class PesertaRepository
 
                 ];
 
-            }
-            elseif ($anggota) {
+            } elseif ($anggota) {
 
                 $peserta = [
 
@@ -133,13 +135,135 @@ class PesertaRepository
                 ];
             }
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mentor
+        |--------------------------------------------------------------------------
+        */
+
         $mentor =
             $mentorUser
             ?? ($pengajuan?->mentor);
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | INFORMASI WAKTU MAGANG
+        |--------------------------------------------------------------------------
+        */
+
+        $statusWaktuMagang = null;
+
+        $sisaHariMagang = null;
+
+        $totalHariMagang = null;
+
+        $hariBerjalan = null;
+
+        if (
+            $pengajuan &&
+            $pengajuan->tanggal_mulai &&
+            $pengajuan->tanggal_selesai
+        ) {
+
+            $tanggalMulai = Carbon::parse(
+                $pengajuan->tanggal_mulai
+            )->startOfDay();
+
+            $tanggalSelesai = Carbon::parse(
+                $pengajuan->tanggal_selesai
+            )->startOfDay();
+
+            $hariIni = Carbon::today();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Total durasi magang
+            |--------------------------------------------------------------------------
+            */
+
+            $totalHariMagang =
+                $tanggalMulai->diffInDays(
+                    $tanggalSelesai
+                ) + 1;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Belum mulai
+            |--------------------------------------------------------------------------
+            */
+
+            if ($hariIni->lt($tanggalMulai)) {
+
+                $statusWaktuMagang = 'belum_mulai';
+
+                $sisaHariMagang =
+                    $hariIni->diffInDays(
+                        $tanggalMulai
+                    );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sedang berlangsung
+            |--------------------------------------------------------------------------
+            */
+
+            } elseif ($hariIni->lte($tanggalSelesai)) {
+
+                $statusWaktuMagang = 'berlangsung';
+
+                /*
+                | Hari yang tersisa termasuk hari ini.
+                */
+
+                $sisaHariMagang =
+                    $hariIni->diffInDays(
+                        $tanggalSelesai
+                    );
+
+                /*
+                | Hari yang sudah berjalan.
+                */
+
+                $hariBerjalan =
+                    $tanggalMulai->diffInDays(
+                        $hariIni
+                    ) + 1;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sudah selesai
+            |--------------------------------------------------------------------------
+            */
+
+            } else {
+
+                $statusWaktuMagang = 'selesai';
+
+                $sisaHariMagang = 0;
+
+                $hariBerjalan =
+                    $totalHariMagang;
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
+
         return view(
             'peserta.peserta.index',
             [
+
                 'user' =>
                     $user,
 
@@ -151,6 +275,22 @@ class PesertaRepository
 
                 'mentor' =>
                     $mentor,
+
+                /*
+                | Informasi waktu magang
+                */
+
+                'statusWaktuMagang' =>
+                    $statusWaktuMagang,
+
+                'sisaHariMagang' =>
+                    $sisaHariMagang,
+
+                'totalHariMagang' =>
+                    $totalHariMagang,
+
+                'hariBerjalan' =>
+                    $hariBerjalan,
             ]
         );
     }

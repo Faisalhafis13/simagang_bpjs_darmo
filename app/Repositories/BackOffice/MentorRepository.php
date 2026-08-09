@@ -18,80 +18,94 @@ class MentorRepository
 
 public function getData()
 {
-    $mentors = Mentor::with([
-        'peserta'
-    ])
-    ->latest()
-    ->get();
-
+    $mentors = Mentor::with('peserta')
+        ->latest()
+        ->get();
 
     $data = $mentors->map(function ($mentor) {
 
         $pesertaNames = $mentor->peserta
             ->pluck('name')
+            ->filter()
+            ->values()
             ->toArray();
 
-
         return [
-
             'id' => $mentor->id,
-
             'nama_mentor' => $mentor->nama_mentor,
-
             'divisi' => $mentor->divisi,
-
-            'peserta_preview' => count($pesertaNames)
+            'peserta_preview' => !empty($pesertaNames)
                 ? implode(', ', $pesertaNames)
                 : '-',
-
         ];
-
     });
 
-
     return response()->json([
-
         'status' => 'success',
-
         'data' => $data,
-
     ]);
 }
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'nama_mentor' => 'required|string|max:255',
-            'divisi' => 'required|string|max:255',
-        ]);
-            // ensure tugas exists for DB compatibility
-            $data['tugas'] = $data['tugas'] ?? '';
+public function store(Request $request)
+{
+    $data = $request->validate([
+        'nama_mentor' => 'required|string|max:255',
+        'divisi' => 'required|string|max:255',
+        'peserta' => 'nullable|array',
+        'peserta.*' => 'integer|exists:users,id',
+    ]);
 
-        $mentor = Mentor::create($data);
+    // Pastikan tugas tetap tersedia untuk kompatibilitas database
+    $data['tugas'] = '';
 
-        ActivityLogger::log(
-            'Mentor',
-            'CREATE',
-            'Menambah Mentor',
-            null,
-            $mentor->toArray()
-        );
+    // Buat mentor
+    $mentor = Mentor::create([
+        'nama_mentor' => $data['nama_mentor'],
+        'divisi' => $data['divisi'],
+        'tugas' => $data['tugas'],
+    ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Mentor berhasil ditambahkan.',
-        ]);
+    /*
+    |--------------------------------------------------------------------------
+    | Hubungkan peserta ke mentor
+    |--------------------------------------------------------------------------
+    */
+
+    if (!empty($data['peserta'])) {
+
+        User::whereIn('id', $data['peserta'])
+            ->update([
+                'mentor_id' => $mentor->id,
+            ]);
     }
 
+    ActivityLogger::log(
+        'Mentor',
+        'CREATE',
+        'Menambah Mentor',
+        null,
+        $mentor->fresh()->load('peserta')->toArray()
+    );
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Mentor berhasil ditambahkan.',
+        'data' => $mentor->fresh()->load('peserta'),
+    ]);
+}
 public function show($id)
 {
     $mentor = Mentor::findOrFail($id);
 
     $rolePeserta = Role::where('name', 'Peserta')->first();
 
-    $peserta = User::where('role_id', $rolePeserta->id)
-        ->select('id', 'name', 'email', 'mentor_id')
-        ->orderBy('name')
-        ->get();
+    $peserta = collect();
+
+    if ($rolePeserta) {
+        $peserta = User::where('role_id', $rolePeserta->id)
+            ->select('id', 'name', 'email', 'mentor_id')
+            ->orderBy('name')
+            ->get();
+    }
 
     return response()->json([
         'status' => 'success',

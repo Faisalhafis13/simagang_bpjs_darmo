@@ -28,78 +28,124 @@ class PengajuanRepository
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $data = $request->validate([
-            'status' => ['required', 'in:menunggu,Menunggu,pending,Pending,diterima,Diterima,accepted,Accepted,ditolak,Ditolak,rejected,Rejected'],
-            'catatan' => ['nullable', 'string'],
-        ]);
+public function update(Request $request, $id)
+{
+    $data = $request->validate([
+        'status' => [
+            'required',
+            'in:menunggu,Menunggu,pending,Pending,diterima,Diterima,accepted,Accepted,ditolak,Ditolak,rejected,Rejected'
+        ],
+        'catatan' => ['nullable', 'string'],
+    ]);
 
-        $statusMap = [
-            'menunggu' => 'Pending',
-            'pending' => 'Pending',
-            'diterima' => 'Diterima',
-            'accepted' => 'Diterima',
-            'ditolak' => 'Ditolak',
-            'rejected' => 'Ditolak',
-        ];
+    $statusMap = [
+        'menunggu' => 'Pending',
+        'pending' => 'Pending',
+        'diterima' => 'Diterima',
+        'accepted' => 'Diterima',
+        'ditolak' => 'Ditolak',
+        'rejected' => 'Ditolak',
+    ];
 
-        $statusKey = strtolower($data['status']);
-        $status = $statusMap[$statusKey] ?? $data['status'];
+    $statusKey = strtolower($data['status']);
 
-        $pengajuan = PengajuanMagang::with('anggota')->findOrFail($id);
+    $status = $statusMap[$statusKey] ?? $data['status'];
 
-        $oldData = $pengajuan->toArray();
+    $pengajuan = PengajuanMagang::with('anggota')
+        ->findOrFail($id);
 
-        $pengajuan->update([
-            'status' => $status,
-            'catatan' => $data['catatan'] ?? $pengajuan->catatan,
-        ]);
 
-        // Jika diterima, buat akun ketua dan seluruh anggota
-        if ($status === 'Diterima') {
+    /*
+    |--------------------------------------------------------------------------
+    | Pengajuan yang sudah diputus tidak boleh diubah lagi
+    |--------------------------------------------------------------------------
+    */
 
-            // Ketua
-            $this->createPesertaAccount(
-                $pengajuan->nama_ketua,
-                $pengajuan->email_ketua,
-                $pengajuan->kode_pengajuan
-            );
-
-            // Semua anggota
-            foreach ($pengajuan->anggota as $anggota) {
-
-                // Lewati jika email kosong
-                if (empty($anggota->email)) {
-                    continue;
-                }
-
-                $this->createPesertaAccount(
-                    $anggota->nama_anggota,
-                    $anggota->email,
-                    $pengajuan->kode_pengajuan
-                );
-            }
-        }
-
-        ActivityLogger::log(
-            'Pengajuan Magang',
-            'UPDATE',
-            'Mengubah status pengajuan magang',
-            $oldData,
-            $pengajuan->fresh()->toArray()
-        );
+    if (in_array($pengajuan->status, ['Diterima', 'Ditolak'])) {
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Status pengajuan berhasil diperbarui.',
-            'data' => $pengajuan,
-        ]);
+            'status' => 'error',
+            'message' => 'Pengajuan ini sudah memiliki keputusan dan tidak dapat diubah lagi.',
+        ], 422);
     }
 
-    /**
-     * Membuat atau memperbarui akun peserta
-     */
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan data lama untuk activity log
+    |--------------------------------------------------------------------------
+    */
+
+    $oldData = $pengajuan->toArray();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update status
+    |--------------------------------------------------------------------------
+    */
+
+    $pengajuan->update([
+        'status' => $status,
+        'catatan' => array_key_exists('catatan', $data)
+            ? $data['catatan']
+            : $pengajuan->catatan,
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jika diterima, buat akun peserta
+    |--------------------------------------------------------------------------
+    */
+
+    if ($status === 'Diterima') {
+
+        // Ketua
+        $this->createPesertaAccount(
+            $pengajuan->nama_ketua,
+            $pengajuan->email_ketua,
+            $pengajuan->kode_pengajuan
+        );
+
+
+        // Anggota
+        foreach ($pengajuan->anggota as $anggota) {
+
+            if (empty($anggota->email)) {
+                continue;
+            }
+
+            $this->createPesertaAccount(
+                $anggota->nama_anggota,
+                $anggota->email,
+                $pengajuan->kode_pengajuan
+            );
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
+
+    ActivityLogger::log(
+        'Pengajuan Magang',
+        'UPDATE',
+        'Mengubah status pengajuan magang',
+        $oldData,
+        $pengajuan->fresh()->toArray()
+    );
+
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Status pengajuan berhasil diperbarui.',
+        'data' => $pengajuan->fresh(),
+    ]);
+}
     protected function createPesertaAccount($nama, $email, $passwordAwal): void
     {
         $role = Role::firstOrCreate([
