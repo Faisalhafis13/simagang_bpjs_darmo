@@ -4,254 +4,393 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+    <h3 class="fw-bold mb-1">
+        Logbook Saya
+    </h3>
 
-        <div>
-            <h3 class="fw-bold mb-1">
-                Logbook Saya
-            </h3>
+    <small class="text-muted">
+        Kelola logbook kegiatan magang Anda.
+    </small>
+</div>
 
-            <small class="text-muted">
-                Kelola logbook kegiatan magang Anda.
-            </small>
-        </div>
+<button
+    type="button"
+    class="btn btn-primary"
+    id="btnTambah"
+>
+    <i class="bi bi-plus-circle me-1"></i>
+    Tambah Logbook
+</button>
 
-        <button
-            class="btn btn-primary"
-            id="btnTambah"
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+
+<div class="card-body">
+
+    <div class="table-responsive">
+
+        <table
+            class="table table-bordered table-hover align-middle w-100"
+            id="tableLogbook"
         >
-            <i class="bi bi-plus-circle"></i>
-            Tambah Logbook
-        </button>
 
-    </div>
+            <thead class="table-light">
 
+                <tr>
 
-    <div class="card border-0 shadow-sm rounded-4">
+                    <th width="5%" class="text-center">
+                        No
+                    </th>
 
-        <div class="card-body">
+                    <th>
+                        Tanggal
+                    </th>
 
-            <div class="table-responsive">
+                    <th>
+                        Aktivitas
+                    </th>
 
-                <table
-                    class="table table-bordered table-hover align-middle w-100"
-                    id="tableLogbook"
-                >
+                    <th>
+                        Hasil
+                    </th>
 
-                    <thead class="table-light">
+                    <th>
+                        Catatan
+                    </th>
 
-                        <tr>
-                            <th>No</th>
-                            <th>Tanggal</th>
-                            <th>Aktivitas</th>
-                            <th>Hasil</th>
-                            <th>Catatan</th>
-                            <th>Bukti</th>
-                            <th>Status</th>
-                            <th>Catatan Mentor</th>
-                            <th>Aksi</th>
-                        </tr>
+                    <th>
+                        Bukti
+                    </th>
 
-                    </thead>
+                    <th class="text-center">
+                        Status
+                    </th>
 
-                </table>
+                    <th>
+                        Catatan Mentor
+                    </th>
 
-            </div>
+                    <th width="16%" class="text-center">
+                        Aksi
+                    </th>
 
-        </div>
+                </tr>
+
+            </thead>
+
+            <tbody></tbody>
+
+        </table>
 
     </div>
 
 </div>
 
+</div>
 
-{{-- MODAL LOGBOOK --}}
+{{-- =========================================================
+MODAL LOGBOOK
+========================================================= --}}
+
 <div
     class="modal fade"
     id="modalLogbook"
     tabindex="-1"
+    aria-labelledby="modalLogbookLabel"
+    aria-hidden="true"
 >
 
-    <div class="modal-dialog modal-lg">
+<div class="modal-dialog modal-lg modal-dialog-centered">
 
-        <div class="modal-content border-0 rounded-4">
+    <div class="modal-content border-0 rounded-4 shadow">
 
-            <form id="formLogbook">
+        <form id="formLogbook">
 
-                @csrf
+            @csrf
 
-                <input
-                    type="hidden"
-                    id="id"
+            <input
+                type="hidden"
+                id="id"
+                name="id"
+            >
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title fw-bold"
+                    id="modalLogbookLabel"
+                >
+                    Logbook
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+
+                    <label
+                        for="tanggal"
+                        class="form-label fw-semibold"
+                    >
+                        Tanggal
+                    </label>
+
+                    <input
+                        type="date"
+                        class="form-control"
+                        id="tanggal"
+                        name="tanggal"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="aktivitas"
+                        class="form-label fw-semibold"
+                    >
+                        Aktivitas
+                    </label>
+
+                    <textarea
+                        id="aktivitas"
+                        name="aktivitas"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Jelaskan aktivitas yang dilakukan..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="hasil"
+                        class="form-label fw-semibold"
+                    >
+                        Hasil
+                    </label>
+
+                    <textarea
+                        id="hasil"
+                        name="hasil"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Jelaskan hasil dari aktivitas..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="catatan"
+                        class="form-label fw-semibold"
+                    >
+                        Catatan
+                    </label>
+
+                    <textarea
+                        id="catatan"
+                        name="catatan"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Tambahkan catatan jika diperlukan..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label
+                        for="bukti"
+                        class="form-label fw-bold"
+                    >
+                        Bukti Kegiatan
+                    </label>
+
+                    <input
+                        type="file"
+                        class="form-control"
+                        id="bukti"
+                        name="bukti"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+
+                    <small class="text-muted">
+                        Upload foto atau screenshot sebagai bukti kegiatan.
+                        Maksimal 5 MB.
+                    </small>
+
+                </div>
+
+
+                <div
+                    id="previewBukti"
+                    class="mt-3"
+                ></div>
+
+
+                {{-- FEEDBACK MENTOR --}}
+
+                <div
+                    id="feedbackMentor"
+                    class="alert alert-info d-none mt-3"
                 >
 
-                <div class="modal-header">
+                    <div class="d-flex">
 
-                    <h5 class="modal-title">
-                        Logbook
-                    </h5>
+                        <i class="bi bi-chat-left-text me-2"></i>
 
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                    ></button>
+                        <div>
 
-                </div>
+                            <strong>
+                                Feedback Mentor
+                            </strong>
 
+                            <div
+                                id="isiFeedbackMentor"
+                                class="mt-1"
+                            ></div>
 
-                <div class="modal-body">
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Tanggal
-                        </label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                            id="tanggal"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Aktivitas
-                        </label>
-
-                        <textarea
-                            id="aktivitas"
-                            class="form-control"
-                            rows="4"
-                            required
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Hasil
-                        </label>
-
-                        <textarea
-                            id="hasil"
-                            class="form-control"
-                            rows="4"
-                            required
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Catatan
-                        </label>
-
-                        <textarea
-                            id="catatan"
-                            class="form-control"
-                            rows="3"
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="mb-3">
-
-                        <label class="form-label fw-bold">
-                            Bukti Kegiatan
-                        </label>
-
-                        <input
-                            type="file"
-                            class="form-control"
-                            id="bukti"
-                            accept="image/jpeg,image/png,image/webp"
-                        >
-
-                        <small class="text-muted">
-                            Upload foto atau screenshot sebagai bukti kegiatan.
-                            Maksimal 5 MB.
-                        </small>
-
-                    </div>
-
-
-                    <div
-                        id="previewBukti"
-                        class="mt-3"
-                    ></div>
-
-
-                    {{-- FEEDBACK MENTOR --}}
-                    <div
-                        id="feedbackMentor"
-                        class="alert alert-info d-none mt-3"
-                    >
-
-                        <strong>
-                            Feedback Mentor:
-                        </strong>
-
-                        <div
-                            id="isiFeedbackMentor"
-                            class="mt-1"
-                        ></div>
+                        </div>
 
                     </div>
 
                 </div>
 
+            </div>
 
-                <div class="modal-footer">
 
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        Batal
-                    </button>
+            <div class="modal-footer">
 
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        id="btnSimpan"
-                    >
-                        Simpan
-                    </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Batal
+                </button>
 
-                </div>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="btnSimpan"
+                >
+                    <i class="bi bi-save me-1"></i>
+                    Simpan
+                </button>
 
-            </form>
+            </div>
 
-        </div>
+        </form>
 
     </div>
+
+</div>
 
 </div>
 
 @endsection
 
-
 @push('js')
 
 <script>
 
-let modalLogbook;
+let modalLogbook = null;
+let tableLogbook = null;
 
-let tableLogbook;
+
+/*
+|--------------------------------------------------------------------------
+| CSRF TOKEN
+|--------------------------------------------------------------------------
+*/
+
+function getCsrfToken()
+{
+    return $('meta[name="csrf-token"]').attr('content')
+        || $('#formLogbook input[name="_token"]').val()
+        || '';
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ESCAPE HTML
+|--------------------------------------------------------------------------
+*/
+
+function escapeHtml(value)
+{
+    return $('<div>')
+        .text(value ?? '')
+        .html();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ESCAPE ATTRIBUTE
+|--------------------------------------------------------------------------
+*/
+
+function escapeAttribute(value)
+{
+    return escapeHtml(value);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| NORMALIZE STATUS
+|--------------------------------------------------------------------------
+*/
+
+function normalizeStatus(status)
+{
+    return String(status || 'Menunggu')
+        .trim()
+        .toLowerCase();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHECK APPROVED
+|--------------------------------------------------------------------------
+*/
+
+function isApproved(status)
+{
+    const normalized = normalizeStatus(status);
+
+    return [
+        'disetujui',
+        'approved'
+    ].includes(normalized);
+}
 
 
 /*
@@ -262,17 +401,11 @@ let tableLogbook;
 
 function statusBadge(status)
 {
-    const normalized =
-        String(status || 'Menunggu').toLowerCase();
-
-    if (
-        normalized === 'disetujui' ||
-        normalized === 'approved'
-    ) {
+    if (isApproved(status)) {
 
         return `
             <span class="badge bg-success">
-                <i class="bi bi-check-circle"></i>
+                <i class="bi bi-check-circle me-1"></i>
                 Disetujui
             </span>
         `;
@@ -281,7 +414,7 @@ function statusBadge(status)
 
     return `
         <span class="badge bg-warning text-dark">
-            <i class="bi bi-clock"></i>
+            <i class="bi bi-clock me-1"></i>
             Menunggu
         </span>
     `;
@@ -290,32 +423,18 @@ function statusBadge(status)
 
 /*
 |--------------------------------------------------------------------------
-| AKSI EDIT & HAPUS
+| ACTION BUTTONS
 |--------------------------------------------------------------------------
-|
-| Menunggu:
-|   Edit aktif
-|   Hapus aktif
-|
-| Disetujui:
-|   Edit disabled
-|   Hapus disabled
-|
-| Data lainnya tetap tampil.
-|
 */
 
 function actionButtons(data)
 {
-    const approved =
-        String(data.status || '')
-            .toLowerCase() === 'disetujui';
+    const id = escapeAttribute(data.id);
 
-
-    if (approved) {
+    if (isApproved(data.status)) {
 
         return `
-            <div class="d-flex gap-1">
+            <div class="d-flex justify-content-center gap-1">
 
                 <button
                     type="button"
@@ -339,17 +458,15 @@ function actionButtons(data)
 
             </div>
         `;
-
     }
 
-
     return `
-        <div class="d-flex gap-1">
+        <div class="d-flex justify-content-center gap-1">
 
             <button
                 type="button"
                 class="btn btn-sm btn-warning btn-edit"
-                data-id="${data.id}"
+                data-id="${id}"
                 title="Edit logbook"
             >
                 <i class="bi bi-pencil-square"></i>
@@ -359,7 +476,7 @@ function actionButtons(data)
             <button
                 type="button"
                 class="btn btn-sm btn-danger btn-delete"
-                data-id="${data.id}"
+                data-id="${id}"
                 title="Hapus logbook"
             >
                 <i class="bi bi-trash"></i>
@@ -373,28 +490,141 @@ function actionButtons(data)
 
 /*
 |--------------------------------------------------------------------------
+| API JSON HELPER
+|--------------------------------------------------------------------------
+*/
+
+async function fetchJson(url, options = {})
+{
+    const response = await fetch(url, {
+        ...options,
+
+        headers: {
+            'Accept': 'application/json',
+            ...(options.headers || {})
+        }
+    });
+
+    let result = null;
+
+    try {
+        result = await response.json();
+    } catch (error) {
+        result = null;
+    }
+
+    if (!response.ok) {
+
+        throw new Error(
+            result?.message ||
+            'Terjadi kesalahan pada server.'
+        );
+    }
+
+    return result;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| RESET MODAL
+|--------------------------------------------------------------------------
+*/
+
+function resetModal()
+{
+    $('#formLogbook')[0].reset();
+
+    $('#id').val('');
+
+    $('#previewBukti').empty();
+
+    $('#feedbackMentor')
+        .addClass('d-none');
+
+    $('#isiFeedbackMentor')
+        .empty();
+
+    $('#btnSimpan')
+        .prop('disabled', false)
+        .html(`
+            <i class="bi bi-save me-1"></i>
+            Simpan
+        `);
+
+    $('#modalLogbookLabel')
+        .text('Tambah Logbook');
+}
+
+
+/*
+|--------------------------------------------------------------------------
 | DOCUMENT READY
 |--------------------------------------------------------------------------
 */
 
 $(function () {
 
-    modalLogbook = new bootstrap.Modal(
-        document.getElementById('modalLogbook')
-    );
+    const modalElement =
+        document.getElementById('modalLogbook');
 
+    if (modalElement) {
+
+        modalLogbook =
+            bootstrap.Modal.getOrCreateInstance(
+                modalElement
+            );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE
+    |--------------------------------------------------------------------------
+    */
 
     tableLogbook = $('#tableLogbook').DataTable({
 
         processing: true,
 
+        responsive: false,
+
+        autoWidth: false,
+
+        pageLength: 10,
+
+        order: [
+            [1, 'desc']
+        ],
+
         ajax: {
 
             url: '/peserta/logbook/data',
 
+            type: 'GET',
+
             dataSrc: function (response) {
 
+                if (
+                    !response ||
+                    response.status !== 'success'
+                ) {
+
+                    return response?.data || [];
+
+                }
+
                 return response.data || [];
+
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    'Gagal memuat logbook:',
+                    xhr.responseText
+                );
 
             }
 
@@ -412,6 +642,12 @@ $(function () {
             {
                 data: null,
 
+                className: 'text-center',
+
+                orderable: false,
+
+                searchable: false,
+
                 render: function (
                     data,
                     type,
@@ -419,7 +655,11 @@ $(function () {
                     meta
                 ) {
 
-                    return meta.row + 1;
+                    return (
+                        meta.settings._iDisplayStart +
+                        meta.row +
+                        1
+                    );
 
                 }
 
@@ -435,9 +675,13 @@ $(function () {
             {
                 data: 'tanggal',
 
+                defaultContent: '-',
+
                 render: function (data) {
 
-                    return data || '-';
+                    return escapeHtml(
+                        data || '-'
+                    );
 
                 }
 
@@ -453,9 +697,26 @@ $(function () {
             {
                 data: 'aktivitas',
 
+                defaultContent: '-',
+
                 render: function (data) {
 
-                    return data || '-';
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <div
+                            style="
+                                min-width: 200px;
+                                max-width: 350px;
+                                white-space: normal;
+                                word-break: break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
 
                 }
 
@@ -471,9 +732,26 @@ $(function () {
             {
                 data: 'hasil',
 
+                defaultContent: '-',
+
                 render: function (data) {
 
-                    return data || '-';
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <div
+                            style="
+                                min-width: 200px;
+                                max-width: 350px;
+                                white-space: normal;
+                                word-break: break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
 
                 }
 
@@ -489,9 +767,26 @@ $(function () {
             {
                 data: 'catatan',
 
+                defaultContent: '-',
+
                 render: function (data) {
 
-                    return data || '-';
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <div
+                            style="
+                                min-width: 180px;
+                                max-width: 300px;
+                                white-space: normal;
+                                word-break: break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
 
                 }
 
@@ -507,30 +802,34 @@ $(function () {
             {
                 data: null,
 
+                className: 'text-center',
+
                 orderable: false,
 
                 searchable: false,
 
                 render: function (data) {
 
-                    if (!data.bukti_url) {
+                    if (
+                        !data ||
+                        !data.bukti_url
+                    ) {
 
                         return `
                             <span class="text-muted">
-                                Tidak ada bukti
+                                Tidak ada
                             </span>
                         `;
 
                     }
 
-
                     return `
                         <button
                             type="button"
                             class="btn btn-sm btn-outline-primary btn-bukti"
-                            data-url="${data.bukti_url}"
+                            data-url="${escapeAttribute(data.bukti_url)}"
                         >
-                            <i class="bi bi-image"></i>
+                            <i class="bi bi-image me-1"></i>
                             Lihat
                         </button>
                     `;
@@ -548,6 +847,8 @@ $(function () {
 
             {
                 data: 'status',
+
+                className: 'text-center',
 
                 render: function (data) {
 
@@ -567,6 +868,8 @@ $(function () {
             {
                 data: 'catatan_mentor',
 
+                defaultContent: '-',
+
                 render: function (data) {
 
                     if (!data) {
@@ -579,9 +882,15 @@ $(function () {
 
                     }
 
-
                     return `
-                        <div class="text-start">
+                        <div
+                            style="
+                                min-width: 180px;
+                                max-width: 300px;
+                                white-space: normal;
+                                word-break: break-word;
+                            "
+                        >
                             ${escapeHtml(data)}
                         </div>
                     `;
@@ -600,6 +909,8 @@ $(function () {
             {
                 data: null,
 
+                className: 'text-center',
+
                 orderable: false,
 
                 searchable: false,
@@ -612,38 +923,76 @@ $(function () {
 
             }
 
-        ]
+        ],
+
+
+        language: {
+
+            processing: 'Memuat data...',
+
+            search: 'Cari:',
+
+            lengthMenu:
+                'Tampilkan _MENU_ data',
+
+            info:
+                'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+
+            infoEmpty:
+                'Tidak ada data',
+
+            zeroRecords:
+                'Data logbook tidak ditemukan',
+
+            emptyTable:
+                'Belum ada data logbook',
+
+            paginate: {
+
+                first: 'Pertama',
+
+                last: 'Terakhir',
+
+                next: '›',
+
+                previous: '‹'
+
+            }
+
+        }
 
     });
 
-});
+
+    /*
+    |--------------------------------------------------------------------------
+    | TAMBAH LOGBOOK
+    |--------------------------------------------------------------------------
+    */
+
+    $('#btnTambah').on('click', function () {
+
+        resetModal();
+
+        modalLogbook.show();
+
+    });
 
 
-/*
-|--------------------------------------------------------------------------
-| TAMBAH LOGBOOK
-|--------------------------------------------------------------------------
-*/
+    /*
+    |--------------------------------------------------------------------------
+    | RESET SAAT MODAL DITUTUP
+    |--------------------------------------------------------------------------
+    */
 
-$('#btnTambah').on('click', function () {
+    $('#modalLogbook').on(
+        'hidden.bs.modal',
+        function () {
 
-    $('#formLogbook')[0].reset();
+            resetModal();
 
-    $('#id').val('');
-
-    $('#previewBukti').html('');
-
-    $('#feedbackMentor')
-        .addClass('d-none');
-
-    $('#isiFeedbackMentor')
-        .html('');
-
-    $('#btnSimpan')
-        .prop('disabled', false)
-        .text('Simpan');
-
-    modalLogbook.show();
+        }
+    );
 
 });
 
@@ -656,152 +1005,158 @@ $('#btnTambah').on('click', function () {
 
 $('#formLogbook').on(
     'submit',
-    async function (event)
-{
+    async function (event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
+        const id = $('#id').val();
 
-    const id = $('#id').val();
+        const url = id
+            ? `/peserta/logbook/${encodeURIComponent(id)}`
+            : '/peserta/logbook';
 
+        const formData =
+            new FormData(this);
 
-    const url = id
-        ? `/peserta/logbook/${id}`
-        : '/peserta/logbook';
+        if (id) {
 
-
-    const formData = new FormData();
-
-
-    formData.append(
-        '_token',
-        $('meta[name="csrf-token"]').attr('content')
-    );
-
-
-    if (id) {
-
-        formData.append(
-            '_method',
-            'PUT'
-        );
-
-    }
-
-
-    formData.append(
-        'tanggal',
-        $('#tanggal').val()
-    );
-
-
-    formData.append(
-        'aktivitas',
-        $('#aktivitas').val()
-    );
-
-
-    formData.append(
-        'hasil',
-        $('#hasil').val()
-    );
-
-
-    formData.append(
-        'catatan',
-        $('#catatan').val()
-    );
-
-
-    const file =
-        $('#bukti')[0].files[0];
-
-
-    if (file) {
-
-        formData.append(
-            'bukti',
-            file
-        );
-
-    }
-
-
-    $('#btnSimpan')
-        .prop('disabled', true)
-        .text('Menyimpan...');
-
-
-    try {
-
-        const response = await fetch(
-            url,
-            {
-                method: 'POST',
-                body: formData
-            }
-        );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.message ||
-                'Terjadi kesalahan.'
+            formData.append(
+                '_method',
+                'PUT'
             );
 
         }
 
+        const file =
+            $('#bukti')[0]?.files?.[0];
 
-        modalLogbook.hide();
+        if (file) {
+
+            const allowedTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            const maxSize =
+                5 * 1024 * 1024;
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Format File Tidak Valid',
+                    text: 'Bukti harus berupa JPG, PNG, atau WEBP.'
+                });
+
+                return;
+
+            }
+
+            if (file.size > maxSize) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File Terlalu Besar',
+                    text: 'Ukuran bukti maksimal 5 MB.'
+                });
+
+                return;
+
+            }
+
+        }
+
+        const button =
+            $('#btnSimpan');
+
+        button
+            .prop('disabled', true)
+            .html(`
+                <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                ></span>
+                Menyimpan...
+            `);
 
 
-        tableLogbook
-            .ajax
-            .reload(null, false);
+        try {
+
+            const result =
+                await fetchJson(
+                    url,
+                    {
+                        method: 'POST',
+
+                        headers: {
+                            'X-CSRF-TOKEN':
+                                getCsrfToken()
+                        },
+
+                        body: formData
+                    }
+                );
 
 
-        Swal.fire({
-
-            icon: 'success',
-
-            title: 'Berhasil',
-
-            text: result.message,
-
-            timer: 1500,
-
-            showConfirmButton: false
-
-        });
+            if (modalLogbook) {
+                modalLogbook.hide();
+            }
 
 
-    } catch (error) {
-
-        Swal.fire({
-
-            icon: 'error',
-
-            title: 'Gagal',
-
-            text: error.message
-
-        });
+            tableLogbook
+                .ajax
+                .reload(null, false);
 
 
-    } finally {
+            await Swal.fire({
 
-        $('#btnSimpan')
-            .prop('disabled', false)
-            .text('Simpan');
+                icon: 'success',
+
+                title: 'Berhasil',
+
+                text:
+                    result.message ||
+                    'Logbook berhasil disimpan.',
+
+                timer: 1500,
+
+                showConfirmButton: false
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            Swal.fire({
+
+                icon: 'error',
+
+                title: 'Gagal',
+
+                text: error.message
+
+            });
+
+        } finally {
+
+            button
+                .prop('disabled', false)
+                .html(`
+                    <i class="bi bi-save me-1"></i>
+                    Simpan
+                `);
+
+        }
 
     }
-
-});
+);
 
 
 /*
@@ -813,175 +1168,194 @@ $('#formLogbook').on(
 $(document).on(
     'click',
     '.btn-edit',
-    async function ()
-{
+    async function () {
 
-    const id =
-        $(this).data('id');
+        const id =
+            $(this).data('id');
 
-
-    try {
-
-        const response =
-            await fetch(
-                `/peserta/logbook/${id}`
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.message ||
-                'Gagal mengambil data logbook.'
-            );
-
+        if (!id) {
+            return;
         }
 
+        try {
 
-        const data =
-            result.data;
+            const result =
+                await fetchJson(
+                    `/peserta/logbook/${encodeURIComponent(id)}`
+                );
+
+            const data =
+                result.data || result;
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | PENGAMAN FRONTEND
-        |--------------------------------------------------------------------------
-        |
-        | Tombol sudah disabled untuk Disetujui,
-        | tapi kita tetap cek status lagi di sini.
-        |
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | CEK STATUS
+            |--------------------------------------------------------------------------
+            */
 
-        if (
-            String(data.status || '')
-                .toLowerCase() === 'disetujui'
-        ) {
+            if (isApproved(data.status)) {
+
+                Swal.fire({
+
+                    icon: 'info',
+
+                    title:
+                        'Logbook Sudah Disetujui',
+
+                    text:
+                        'Logbook yang sudah disetujui mentor tidak dapat diedit lagi.',
+
+                    confirmButtonText:
+                        'Mengerti'
+
+                });
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | ISI FORM
+            |--------------------------------------------------------------------------
+            */
+
+            $('#id').val(data.id || '');
+
+            $('#tanggal')
+                .val(data.tanggal || '');
+
+            $('#aktivitas')
+                .val(data.aktivitas || '');
+
+            $('#hasil')
+                .val(data.hasil || '');
+
+            $('#catatan')
+                .val(data.catatan || '');
+
+            $('#bukti')
+                .val('');
+
+
+            $('#modalLogbookLabel')
+                .text('Edit Logbook');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PREVIEW BUKTI
+            |--------------------------------------------------------------------------
+            */
+
+            if (data.bukti_url) {
+
+                $('#previewBukti').html(`
+
+                    <div class="border rounded-3 p-3">
+
+                        <div class="fw-semibold mb-2">
+                            <i class="bi bi-image me-1"></i>
+                            Bukti saat ini
+                        </div>
+
+                        <div class="text-center">
+
+                            <img
+                                src="${escapeAttribute(data.bukti_url)}"
+                                alt="Bukti kegiatan"
+                                class="img-fluid rounded border"
+                                style="
+                                    max-height:250px;
+                                    object-fit:contain;
+                                "
+                                onerror="
+                                    this.style.display='none';
+                                    this.nextElementSibling.classList.remove('d-none');
+                                "
+                            >
+
+                            <div
+                                class="text-danger d-none mt-2"
+                            >
+                                Bukti tidak dapat ditampilkan.
+                            </div>
+
+                        </div>
+
+                        <div class="small text-muted mt-2">
+                            Upload file baru jika ingin mengganti bukti.
+                        </div>
+
+                    </div>
+
+                `);
+
+            } else {
+
+                $('#previewBukti').html(`
+
+                    <div class="alert alert-light border mb-0">
+
+                        <i class="bi bi-info-circle me-1"></i>
+
+                        Belum ada bukti kegiatan.
+
+                    </div>
+
+                `);
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | FEEDBACK MENTOR
+            |--------------------------------------------------------------------------
+            */
+
+            if (data.catatan_mentor) {
+
+                $('#feedbackMentor')
+                    .removeClass('d-none');
+
+                $('#isiFeedbackMentor')
+                    .text(data.catatan_mentor);
+
+            } else {
+
+                $('#feedbackMentor')
+                    .addClass('d-none');
+
+                $('#isiFeedbackMentor')
+                    .empty();
+
+            }
+
+
+            modalLogbook.show();
+
+
+        } catch (error) {
+
+            console.error(error);
 
             Swal.fire({
 
-                icon: 'info',
+                icon: 'error',
 
-                title: 'Logbook Sudah Disetujui',
+                title: 'Gagal',
 
-                text: 'Logbook yang sudah disetujui mentor tidak dapat diedit lagi.',
-
-                confirmButtonText: 'Mengerti'
+                text: error.message
 
             });
 
-            return;
-
         }
-
-
-        $('#id').val(data.id);
-
-        $('#tanggal').val(data.tanggal);
-
-        $('#aktivitas').val(data.aktivitas);
-
-        $('#hasil').val(data.hasil);
-
-        $('#catatan').val(
-            data.catatan || ''
-        );
-
-        $('#bukti').val('');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PREVIEW BUKTI
-        |--------------------------------------------------------------------------
-        */
-
-        if (data.bukti_url) {
-
-            $('#previewBukti').html(`
-
-                <div>
-
-                    <p class="mb-2 fw-bold">
-                        Bukti saat ini:
-                    </p>
-
-                    <img
-                        src="${data.bukti_url}"
-                        alt="Bukti kegiatan"
-                        class="img-fluid rounded border"
-                        style="max-height:250px;"
-                    >
-
-                    <div class="small text-muted mt-2">
-                        Upload file baru jika ingin mengganti bukti.
-                    </div>
-
-                </div>
-
-            `);
-
-        } else {
-
-            $('#previewBukti').html(`
-
-                <div class="text-muted">
-                    Belum ada bukti kegiatan.
-                </div>
-
-            `);
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | FEEDBACK MENTOR
-        |--------------------------------------------------------------------------
-        */
-
-        if (data.catatan_mentor) {
-
-            $('#feedbackMentor')
-                .removeClass('d-none');
-
-
-            $('#isiFeedbackMentor')
-                .text(data.catatan_mentor);
-
-        } else {
-
-            $('#feedbackMentor')
-                .addClass('d-none');
-
-
-            $('#isiFeedbackMentor')
-                .html('');
-
-        }
-
-
-        modalLogbook.show();
-
-
-    } catch (error) {
-
-        Swal.fire({
-
-            icon: 'error',
-
-            title: 'Gagal',
-
-            text: error.message
-
-        });
 
     }
-
-});
+);
 
 
 /*
@@ -993,177 +1367,164 @@ $(document).on(
 $(document).on(
     'click',
     '.btn-delete',
-    async function ()
-{
+    async function () {
 
-    const id =
-        $(this).data('id');
+        const id =
+            $(this).data('id');
 
-
-    try {
-
-        /*
-        |--------------------------------------------------------------------------
-        | CEK STATUS TERLEBIH DAHULU
-        |--------------------------------------------------------------------------
-        */
-
-        const detailResponse =
-            await fetch(
-                `/peserta/logbook/${id}`
-            );
-
-
-        const detailResult =
-            await detailResponse.json();
-
-
-        if (!detailResponse.ok) {
-
-            throw new Error(
-                detailResult.message ||
-                'Gagal mengambil data logbook.'
-            );
-
+        if (!id) {
+            return;
         }
 
 
-        const data =
-            detailResult.data;
+        try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL DETAIL TERLEBIH DAHULU
+            |--------------------------------------------------------------------------
+            */
+
+            const detailResult =
+                await fetchJson(
+                    `/peserta/logbook/${encodeURIComponent(id)}`
+                );
+
+            const data =
+                detailResult.data ||
+                detailResult;
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | JIKA SUDAH DISETUJUI
-        |--------------------------------------------------------------------------
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | CEK STATUS
+            |--------------------------------------------------------------------------
+            */
 
-        if (
-            String(data.status || '')
-                .toLowerCase() === 'disetujui'
-        ) {
+            if (isApproved(data.status)) {
+
+                Swal.fire({
+
+                    icon: 'info',
+
+                    title:
+                        'Logbook Sudah Disetujui',
+
+                    text:
+                        'Logbook yang sudah disetujui mentor tidak dapat dihapus lagi.',
+
+                    confirmButtonText:
+                        'Mengerti'
+
+                });
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | KONFIRMASI
+            |--------------------------------------------------------------------------
+            */
+
+            const confirmation =
+                await Swal.fire({
+
+                    icon: 'warning',
+
+                    title:
+                        'Hapus logbook?',
+
+                    text:
+                        'Data logbook akan dihapus dan tidak dapat dikembalikan.',
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        'Ya, hapus',
+
+                    cancelButtonText:
+                        'Batal',
+
+                    reverseButtons: true
+
+                });
+
+
+            if (!confirmation.isConfirmed) {
+                return;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | DELETE
+            |--------------------------------------------------------------------------
+            */
+
+            const result =
+                await fetchJson(
+                    `/peserta/logbook/${encodeURIComponent(id)}`,
+                    {
+
+                        method: 'DELETE',
+
+                        headers: {
+
+                            'X-CSRF-TOKEN':
+                                getCsrfToken(),
+
+                            'Accept':
+                                'application/json'
+
+                        }
+
+                    }
+                );
+
+
+            tableLogbook
+                .ajax
+                .reload(null, false);
+
 
             Swal.fire({
 
-                icon: 'info',
+                icon: 'success',
 
-                title: 'Logbook Sudah Disetujui',
+                title: 'Berhasil',
 
-                text: 'Logbook yang sudah disetujui mentor tidak dapat dihapus lagi.',
+                text:
+                    result.message ||
+                    'Logbook berhasil dihapus.',
 
-                confirmButtonText: 'Mengerti'
+                timer: 1200,
 
-            });
-
-            return;
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | KONFIRMASI HAPUS
-        |--------------------------------------------------------------------------
-        */
-
-        const confirm =
-            await Swal.fire({
-
-                icon: 'warning',
-
-                title: 'Hapus logbook?',
-
-                text: 'Data logbook akan dihapus dan tidak dapat dikembalikan.',
-
-                showCancelButton: true,
-
-                confirmButtonText: 'Ya, hapus',
-
-                cancelButtonText: 'Batal'
+                showConfirmButton: false
 
             });
 
 
-        if (!confirm.isConfirmed) {
+        } catch (error) {
 
-            return;
+            console.error(error);
 
-        }
+            Swal.fire({
 
+                icon: 'error',
 
-        /*
-        |--------------------------------------------------------------------------
-        | DELETE
-        |--------------------------------------------------------------------------
-        */
+                title: 'Gagal',
 
-        const response =
-            await fetch(
-                `/peserta/logbook/${id}`,
-                {
-                    method: 'DELETE',
+                text: error.message
 
-                    headers: {
-
-                        'X-CSRF-TOKEN':
-                            $('meta[name="csrf-token"]')
-                                .attr('content')
-
-                    }
-
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.message ||
-                'Gagal menghapus logbook.'
-            );
+            });
 
         }
-
-
-        tableLogbook
-            .ajax
-            .reload(null, false);
-
-
-        Swal.fire({
-
-            icon: 'success',
-
-            title: 'Berhasil',
-
-            text: result.message,
-
-            timer: 1200,
-
-            showConfirmButton: false
-
-        });
-
-
-    } catch (error) {
-
-        Swal.fire({
-
-            icon: 'error',
-
-            title: 'Gagal',
-
-            text: error.message
-
-        });
 
     }
-
-});
+);
 
 
 /*
@@ -1175,51 +1536,57 @@ $(document).on(
 $(document).on(
     'click',
     '.btn-bukti',
-    function ()
-{
+    function () {
 
-    const url =
-        $(this).data('url');
+        const url =
+            $(this).attr('data-url');
 
+        if (!url) {
 
-    Swal.fire({
+            Swal.fire({
 
-        title: 'Bukti Kegiatan',
+                icon: 'warning',
 
-        imageUrl: url,
+                title:
+                    'Bukti Tidak Tersedia',
 
-        imageAlt: 'Bukti kegiatan',
+                text:
+                    'File bukti kegiatan tidak ditemukan.'
 
-        width: '800px',
+            });
 
-        showCloseButton: true,
+            return;
 
-        showConfirmButton: false
-
-    });
-
-});
+        }
 
 
-/*
-|--------------------------------------------------------------------------
-| ESCAPE HTML
-|--------------------------------------------------------------------------
-|
-| Supaya catatan mentor yang ditampilkan
-| sebagai HTML tidak berbahaya.
-|
-*/
+        Swal.fire({
 
-function escapeHtml(text)
-{
-    return String(text || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
+            title:
+                'Bukti Kegiatan',
+
+            imageUrl:
+                url,
+
+            imageAlt:
+                'Bukti kegiatan',
+
+            width:
+                '800px',
+
+            showCloseButton:
+                true,
+
+            showConfirmButton:
+                false,
+
+            imageClass:
+                'img-fluid rounded'
+
+        });
+
+    }
+);
 
 </script>
 

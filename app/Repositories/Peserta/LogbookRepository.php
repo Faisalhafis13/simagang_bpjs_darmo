@@ -6,6 +6,7 @@ use App\Models\Logbook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ActivityLogger;
 
 class LogbookRepository
 {
@@ -62,7 +63,7 @@ class LogbookRepository
                 ->store('logbook/bukti', 'public');
         }
 
-        Logbook::create([
+        $logbook = Logbook::create([
             'user_id' => Auth::id(),
             'tanggal' => $data['tanggal'],
             'aktivitas' => $data['aktivitas'],
@@ -75,6 +76,20 @@ class LogbookRepository
 
             'catatan_mentor' => null,
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Logbook',
+            'CREATE',
+            'Menambah Logbook',
+            null,
+            $logbook->fresh()->toArray()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -117,11 +132,6 @@ class LogbookRepository
         /*
          * Logbook yang sudah disetujui mentor
          * tidak boleh diubah.
-         *
-         * Ini adalah pengamanan backend.
-         * Jadi meskipun tombol Edit di frontend
-         * di-disable, user tetap tidak bisa
-         * mengubah data melalui request manual.
          */
         if (strtolower($logbook->status ?? '') === 'disetujui') {
             return response()->json([
@@ -129,6 +139,14 @@ class LogbookRepository
                 'message' => 'Logbook sudah disetujui mentor dan tidak dapat diubah lagi.',
             ], 403);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama untuk Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $logbook->toArray();
 
         $data = $request->validate([
             'tanggal' => 'required|date',
@@ -160,13 +178,25 @@ class LogbookRepository
         }
 
         /*
-         * Karena logbook yang masuk ke method ini
-         * pasti belum disetujui, setelah diedit
-         * statusnya tetap Menunggu.
+         * Setelah diedit status kembali Menunggu.
          */
         $updateData['status'] = 'Menunggu';
 
         $logbook->update($updateData);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Logbook',
+            'UPDATE',
+            'Mengubah Logbook',
+            $oldData,
+            $logbook->fresh()->toArray()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -191,6 +221,14 @@ class LogbookRepository
         }
 
         /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama sebelum dihapus
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $logbook->toArray();
+
+        /*
          * Hapus file bukti dari storage
          * sebelum menghapus data logbook.
          */
@@ -199,6 +237,20 @@ class LogbookRepository
         }
 
         $logbook->delete();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Logbook',
+            'DELETE',
+            'Menghapus Logbook',
+            $oldData,
+            null
+        );
 
         return response()->json([
             'status' => 'success',

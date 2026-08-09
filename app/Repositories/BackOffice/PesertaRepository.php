@@ -2,7 +2,9 @@
 
 namespace App\Repositories\BackOffice;
 
+use App\Helpers\ActivityLogger;
 use App\Models\PengajuanMagang;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,13 +23,18 @@ class PesertaRepository
      *
      * 1 PengajuanMagang = 1 kelompok
      * 1 Kelompok = 1 Surat Penerimaan
+     *
+     * Mentor masing-masing peserta diambil dari:
+     * users.mentor_id -> mentors
      */
     public function getData()
     {
-        $pengajuan = PengajuanMagang::with('anggota')
-            ->where('status', 'Diterima')
-            ->latest()
-            ->get();
+        $pengajuan = PengajuanMagang::with([
+            'anggota'
+        ])
+        ->where('status', 'Diterima')
+        ->latest()
+        ->get();
 
         $data = $pengajuan->map(function ($item) {
 
@@ -39,22 +46,50 @@ class PesertaRepository
 
             $peserta = [];
 
-            // Ketua
+            /*
+            |--------------------------------------------------------------------------
+            | Ketua
+            |--------------------------------------------------------------------------
+            |
+            | Cari user berdasarkan email ketua.
+            | Mentor diambil dari users.mentor_id.
+            |
+            */
+
+            $ketuaUser = User::with('mentor')
+                ->where('email', $item->email_ketua)
+                ->first();
+
             $peserta[] = [
-                'nama'  => $item->nama_ketua,
-                'email' => $item->email_ketua,
-                'no_hp' => $item->no_hp,
-                'peran' => 'Ketua',
+                'nama'   => $item->nama_ketua,
+                'email'  => $item->email_ketua,
+                'no_hp'  => $item->no_hp,
+                'peran'  => 'Ketua',
+                'mentor' => $ketuaUser?->mentor?->nama_mentor ?? '-',
             ];
 
-            // Anggota
+            /*
+            |--------------------------------------------------------------------------
+            | Anggota
+            |--------------------------------------------------------------------------
+            |
+            | Setiap anggota dicari berdasarkan emailnya sendiri.
+            | Jadi masing-masing peserta mendapatkan mentor masing-masing.
+            |
+            */
+
             foreach ($item->anggota as $anggota) {
 
+                $anggotaUser = User::with('mentor')
+                    ->where('email', $anggota->email)
+                    ->first();
+
                 $peserta[] = [
-                    'nama'  => $anggota->nama_anggota,
-                    'email' => $anggota->email,
-                    'no_hp' => $anggota->no_hp,
-                    'peran' => 'Anggota',
+                    'nama'   => $anggota->nama_anggota,
+                    'email'  => $anggota->email,
+                    'no_hp'  => $anggota->no_hp,
+                    'peran'  => 'Anggota',
+                    'mentor' => $anggotaUser?->mentor?->nama_mentor ?? '-',
                 ];
             }
 
@@ -78,7 +113,7 @@ class PesertaRepository
                 // Semua peserta dalam kelompok
                 'peserta' => $peserta,
 
-                // Jumlah anggota kelompok
+                // Jumlah peserta
                 'jumlah_peserta' => count($peserta),
 
                 // Status
@@ -91,7 +126,6 @@ class PesertaRepository
                 'surat_penerimaan_nama' => $item->surat_penerimaan
                     ? basename($item->surat_penerimaan)
                     : null,
-
             ];
         });
 
@@ -122,6 +156,14 @@ class PesertaRepository
         ]);
 
         $pengajuan = PengajuanMagang::findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama untuk Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $pengajuan->toArray();
 
         /*
         |--------------------------------------------------------------------------
@@ -172,6 +214,20 @@ class PesertaRepository
             'surat_penerimaan' => $path,
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Peserta',
+            'UPDATE',
+            'Mengupload surat penerimaan kelompok ' . $pengajuan->kode_pengajuan,
+            $oldData,
+            $pengajuan->fresh()->toArray()
+        );
+
         return response()->json([
             'status' => 'success',
             'message' => 'Surat penerimaan kelompok berhasil diupload.',
@@ -189,6 +245,14 @@ class PesertaRepository
     public function deleteSuratPenerimaan($id)
     {
         $pengajuan = PengajuanMagang::findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama untuk Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $pengajuan->toArray();
 
         /*
         |--------------------------------------------------------------------------
@@ -216,6 +280,20 @@ class PesertaRepository
         $pengajuan->update([
             'surat_penerimaan' => null,
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Peserta',
+            'DELETE',
+            'Menghapus surat penerimaan kelompok ' . $pengajuan->kode_pengajuan,
+            $oldData,
+            $pengajuan->fresh()->toArray()
+        );
 
         return response()->json([
             'status' => 'success',

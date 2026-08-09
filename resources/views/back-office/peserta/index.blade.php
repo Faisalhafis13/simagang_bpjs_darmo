@@ -5,9 +5,7 @@
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-
     <div>
-
         <h3 class="fw-bold mb-1">
             Data Peserta
         </h3>
@@ -15,14 +13,15 @@
         <small class="text-muted">
             Daftar kelompok peserta yang diterima beserta surat penerimaannya.
         </small>
-
     </div>
-
 </div>
 
 
-<div class="card border-0 shadow-sm rounded-4">
+{{-- ========================================================= --}}
+{{-- TABLE DATA PESERTA --}}
+{{-- ========================================================= --}}
 
+<div class="card border-0 shadow-sm rounded-4">
     <div class="card-body">
 
         <div class="table-responsive">
@@ -36,49 +35,31 @@
 
                     <tr>
 
-                        <th
-                            width="5%"
-                            class="text-center"
-                        >
+                        <th width="5%" class="text-center">
                             No
                         </th>
 
-                        <th
-                            width="15%"
-                            class="text-center"
-                        >
+                        <th width="15%" class="text-center">
                             Kode Pengajuan
                         </th>
 
-                        <th
-                            width="18%"
-                            class="text-center"
-                        >
-                            Perguruann Tinggi
+                        <th width="18%" class="text-center">
+                            Perguruan Tinggi
                         </th>
 
                         <th>
                             Nama Peserta
                         </th>
 
-                        <th
-                            width="12%"
-                            class="text-center"
-                        >
+                        <th width="12%" class="text-center">
                             Jumlah
                         </th>
 
-                        <th
-                            width="12%"
-                            class="text-center"
-                        >
+                        <th width="12%" class="text-center">
                             Status
                         </th>
 
-                        <th
-                            width="20%"
-                            class="text-center"
-                        >
+                        <th width="20%" class="text-center">
                             Surat Penerimaan
                         </th>
 
@@ -92,7 +73,7 @@
 
                         <td
                             colspan="7"
-                            class="text-center"
+                            class="text-center text-muted py-5"
                         >
                             Memuat data...
                         </td>
@@ -106,7 +87,6 @@
         </div>
 
     </div>
-
 </div>
 
 
@@ -335,17 +315,13 @@ $(document).ready(function () {
 
     const modalSurat =
         new bootstrap.Modal(
-            document.getElementById(
-                'modalSuratPenerimaan'
-            )
+            document.getElementById('modalSuratPenerimaan')
         );
 
 
     const modalHapus =
         new bootstrap.Modal(
-            document.getElementById(
-                'modalHapusSurat'
-            )
+            document.getElementById('modalHapusSurat')
         );
 
 
@@ -356,6 +332,68 @@ $(document).ready(function () {
     */
 
     let selectedPengajuanId = null;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helper SweetAlert
+    |--------------------------------------------------------------------------
+    */
+
+    function showSuccess(message) {
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: message,
+            timer: 1800,
+            showConfirmButton: false
+        });
+
+    }
+
+
+    function showError(message) {
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: message
+        });
+
+    }
+
+
+    function getErrorMessage(xhr, defaultMessage) {
+
+        let message = defaultMessage;
+
+        if (
+            xhr.responseJSON &&
+            xhr.responseJSON.message
+        ) {
+            message = xhr.responseJSON.message;
+        }
+
+        if (
+            xhr.responseJSON &&
+            xhr.responseJSON.errors
+        ) {
+
+            const errors =
+                xhr.responseJSON.errors;
+
+            const firstError =
+                Object.values(errors)[0];
+
+            if (Array.isArray(firstError) && firstError.length) {
+                message = firstError[0];
+            }
+
+        }
+
+        return message;
+    }
 
 
     /*
@@ -375,7 +413,35 @@ $(document).ready(function () {
 
                 url: '/api/back-office/peserta',
 
-                dataSrc: 'data'
+                dataSrc: function (response) {
+
+                    if (
+                        response &&
+                        Array.isArray(response.data)
+                    ) {
+                        return response.data;
+                    }
+
+                    return [];
+
+                },
+
+                error: function (xhr) {
+
+                    console.error(
+                        'DataTable Peserta Error:',
+                        xhr
+                    );
+
+                    const message =
+                        getErrorMessage(
+                            xhr,
+                            'Gagal memuat data peserta.'
+                        );
+
+                    showError(message);
+
+                }
 
             },
 
@@ -414,6 +480,7 @@ $(document).ready(function () {
                 */
 
                 {
+
                     data: 'kode_pengajuan',
 
                     className: 'text-center',
@@ -438,6 +505,7 @@ $(document).ready(function () {
                 */
 
                 {
+
                     data: 'universitas',
 
                     render: function (data) {
@@ -451,11 +519,12 @@ $(document).ready(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Semua Peserta Dalam Satu Kelompok
+                | Peserta
                 |--------------------------------------------------------------------------
                 */
 
                 {
+
                     data: 'peserta',
 
                     render: function (peserta) {
@@ -465,68 +534,86 @@ $(document).ready(function () {
                             peserta.length === 0
                         ) {
 
-                            return '-';
+                            return `
+                                <span class="text-muted">
+                                    Belum ada peserta
+                                </span>
+                            `;
 
                         }
 
 
-                        let html = `
-                            <div class="d-flex flex-column gap-2">
-                        `;
+                        let html = '';
 
 
-                        peserta.forEach(function (
-                            orang,
-                            index
-                        ) {
+                        peserta.forEach(function (item) {
 
-                            const badge =
-                                orang.peran === 'Ketua'
+                            const peran =
+                                item.peran === 'Ketua'
                                     ? `
                                         <span class="badge bg-primary ms-1">
                                             Ketua
                                         </span>
-                                      `
+                                    `
                                     : `
-                                        <span class="badge bg-light text-dark border ms-1">
+                                        <span class="badge bg-secondary ms-1">
                                             Anggota
                                         </span>
-                                      `;
+                                    `;
 
 
                             html += `
 
-                                <div>
+                                <div
+                                    class="border rounded-3 p-2 mb-2"
+                                >
 
                                     <div class="fw-semibold">
 
-                                        ${index + 1}.
-                                        ${orang.nama ?? '-'}
+                                        ${item.nama ?? '-'}
 
-                                        ${badge}
+                                        ${peran}
 
                                     </div>
 
-                                    <small class="text-muted">
 
-                                        ${orang.email ?? '-'}
-                                        ${orang.no_hp
-                                            ? ' · ' + orang.no_hp
-                                            : ''
-                                        }
+                                    <div class="small text-muted mt-1">
 
-                                    </small>
+                                        <div>
+
+                                            <i class="bi bi-envelope me-1"></i>
+
+                                            ${item.email ?? '-'}
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <i class="bi bi-telephone me-1"></i>
+
+                                            ${item.no_hp ?? '-'}
+
+                                        </div>
+
+
+                                        <div class="mt-1">
+
+                                            <i class="bi bi-person-badge me-1"></i>
+
+                                            <strong>Mentor:</strong>
+
+                                            ${item.mentor ?? '-'}
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
                             `;
 
                         });
-
-
-                        html += `
-                            </div>
-                        `;
 
 
                         return html;
@@ -543,6 +630,7 @@ $(document).ready(function () {
                 */
 
                 {
+
                     data: 'jumlah_peserta',
 
                     className: 'text-center',
@@ -550,9 +638,13 @@ $(document).ready(function () {
                     render: function (data) {
 
                         return `
+
                             <span class="badge bg-secondary">
+
                                 ${data ?? 0} Orang
+
                             </span>
+
                         `;
 
                     }
@@ -567,13 +659,21 @@ $(document).ready(function () {
                 */
 
                 {
+
                     data: 'status',
 
                     className: 'text-center',
 
                     render: function (data) {
 
-                        if (data === 'Diterima') {
+                        const status =
+                            String(data ?? '').toLowerCase();
+
+
+                        if (
+                            status === 'diterima' ||
+                            status === 'accepted'
+                        ) {
 
                             return `
                                 <span class="badge bg-success">
@@ -584,10 +684,28 @@ $(document).ready(function () {
                         }
 
 
+                        if (
+                            status === 'ditolak' ||
+                            status === 'rejected'
+                        ) {
+
+                            return `
+                                <span class="badge bg-danger">
+                                    Ditolak
+                                </span>
+                            `;
+
+                        }
+
+
                         return `
+
                             <span class="badge bg-secondary">
+
                                 ${data ?? '-'}
+
                             </span>
+
                         `;
 
                     }
@@ -597,11 +715,12 @@ $(document).ready(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | SATU SURAT UNTUK SATU KELOMPOK
+                | Surat Penerimaan
                 |--------------------------------------------------------------------------
                 */
 
                 {
+
                     data: null,
 
                     className: 'text-center',
@@ -690,6 +809,7 @@ $(document).ready(function () {
                                     type="button"
                                     class="btn btn-danger btn-sm btn-hapus-surat"
                                     data-id="${id}"
+                                    data-kode="${data.kode_pengajuan}"
                                     title="Hapus Surat"
                                 >
 
@@ -698,6 +818,7 @@ $(document).ready(function () {
                                 </button>
 
                             </div>
+
 
                             <div class="small text-muted mt-1">
 
@@ -817,8 +938,65 @@ $(document).ready(function () {
 
             if (!selectedPengajuanId) {
 
-                alert(
-                    'Kelompok tidak ditemukan.'
+                showError(
+                    'Kelompok peserta tidak ditemukan.'
+                );
+
+                return;
+
+            }
+
+
+            const file =
+                $('#surat_penerimaan')[0].files[0];
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validasi file
+            |--------------------------------------------------------------------------
+            */
+
+            if (!file) {
+
+                showError(
+                    'Silakan pilih file surat penerimaan terlebih dahulu.'
+                );
+
+                return;
+
+            }
+
+
+            const maxSize =
+                5 * 1024 * 1024;
+
+
+            if (file.size > maxSize) {
+
+                showError(
+                    'Ukuran file maksimal 5 MB.'
+                );
+
+                return;
+
+            }
+
+
+            const extension =
+                file.name
+                    .split('.')
+                    .pop()
+                    .toLowerCase();
+
+
+            if (
+                extension !== 'pdf' &&
+                file.type !== 'application/pdf'
+            ) {
+
+                showError(
+                    'File surat harus berformat PDF.'
                 );
 
                 return;
@@ -837,11 +1015,13 @@ $(document).ready(function () {
             button
                 .prop('disabled', true)
                 .html(`
+
                     <span
                         class="spinner-border spinner-border-sm me-1"
                     ></span>
 
                     Mengupload...
+
                 `);
 
 
@@ -883,7 +1063,7 @@ $(document).ready(function () {
                     );
 
 
-                    alert(
+                    showSuccess(
                         response.message ??
                         'Surat penerimaan berhasil disimpan.'
                     );
@@ -893,45 +1073,14 @@ $(document).ready(function () {
 
                 error: function (xhr) {
 
-                    let message =
-                        'Gagal mengupload surat.';
+                    const message =
+                        getErrorMessage(
+                            xhr,
+                            'Gagal mengupload surat.'
+                        );
 
 
-                    if (
-                        xhr.responseJSON &&
-                        xhr.responseJSON.message
-                    ) {
-
-                        message =
-                            xhr.responseJSON.message;
-
-                    }
-
-
-                    if (
-                        xhr.responseJSON &&
-                        xhr.responseJSON.errors
-                    ) {
-
-                        const errors =
-                            xhr.responseJSON.errors;
-
-
-                        const firstError =
-                            Object.values(errors)[0];
-
-
-                        if (firstError) {
-
-                            message =
-                                firstError[0];
-
-                        }
-
-                    }
-
-
-                    alert(message);
+                    showError(message);
 
                 },
 
@@ -941,8 +1090,11 @@ $(document).ready(function () {
                     button
                         .prop('disabled', false)
                         .html(`
+
                             <i class="bi bi-upload me-1"></i>
+
                             Upload Surat
+
                         `);
 
                 }
@@ -967,7 +1119,67 @@ $(document).ready(function () {
                 $(this).data('id');
 
 
-            modalHapus.show();
+            const kode =
+                $(this).data('kode');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Konfirmasi SweetAlert
+            |--------------------------------------------------------------------------
+            */
+
+            Swal.fire({
+
+                icon: 'warning',
+
+                title: 'Hapus Surat?',
+
+                html: `
+                    <p class="mb-2">
+                        Yakin ingin menghapus surat penerimaan
+                        kelompok ini?
+                    </p>
+
+                    <div class="alert alert-warning mb-0 text-start">
+
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+
+                        Surat akan dihapus untuk seluruh anggota kelompok.
+
+                        <br>
+
+                        <strong>
+                            Kode: ${kode ?? '-'}
+                        </strong>
+
+                    </div>
+                `,
+
+                showCancelButton: true,
+
+                confirmButtonColor: '#dc3545',
+
+                cancelButtonColor: '#6c757d',
+
+                confirmButtonText:
+                    '<i class="bi bi-trash me-1"></i> Ya, Hapus',
+
+                cancelButtonText:
+                    'Batal',
+
+                reverseButtons: true
+
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+
+                hapusSurat(selectedPengajuanId);
+
+            });
 
         }
     );
@@ -975,105 +1187,123 @@ $(document).ready(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Konfirmasi Hapus
+    | Fungsi Hapus Surat
     |--------------------------------------------------------------------------
     */
 
-    $('#btnHapusSurat')
-        .on('click', function () {
+    function hapusSurat(id) {
 
-            if (!selectedPengajuanId) {
+        Swal.fire({
 
-                return;
+            title: 'Menghapus surat...',
+
+            text: 'Mohon tunggu sebentar.',
+
+            allowOutsideClick: false,
+
+            allowEscapeKey: false,
+
+            didOpen: function () {
+
+                Swal.showLoading();
 
             }
 
-
-            const button =
-                $(this);
+        });
 
 
-            button
-                .prop('disabled', true)
-                .html(`
-                    <span
-                        class="spinner-border spinner-border-sm me-1"
-                    ></span>
+        $.ajax({
 
-                    Menghapus...
-                `);
+            url:
+                '/back-office/peserta/' +
+                id +
+                '/surat-penerimaan',
 
+            method: 'DELETE',
 
-            $.ajax({
+            headers: {
 
-                url:
-                    '/back-office/peserta/' +
-                    selectedPengajuanId +
-                    '/surat-penerimaan',
+                'X-CSRF-TOKEN':
+                    csrfToken
 
-                method: 'DELETE',
-
-                headers: {
-
-                    'X-CSRF-TOKEN':
-                        csrfToken
-
-                },
+            },
 
 
-                success: function (response) {
+            success: function (response) {
 
-                    modalHapus.hide();
-
-
-                    table.ajax.reload(
-                        null,
-                        false
-                    );
+                table.ajax.reload(
+                    null,
+                    false
+                );
 
 
-                    alert(
+                Swal.fire({
+
+                    icon: 'success',
+
+                    title: 'Berhasil',
+
+                    text:
                         response.message ??
-                        'Surat penerimaan berhasil dihapus.'
+                        'Surat penerimaan berhasil dihapus.',
+
+                    timer: 1800,
+
+                    showConfirmButton: false
+
+                });
+
+            },
+
+
+            error: function (xhr) {
+
+                const message =
+                    getErrorMessage(
+                        xhr,
+                        'Gagal menghapus surat.'
                     );
 
-                },
+
+                showError(message);
+
+            }
+
+        });
+
+    }
 
 
-                error: function (xhr) {
+    /*
+    |--------------------------------------------------------------------------
+    | Reset selected ID ketika modal ditutup
+    |--------------------------------------------------------------------------
+    */
 
-                    let message =
-                        'Gagal menghapus surat.';
+    $('#modalSuratPenerimaan')
+        .on('hidden.bs.modal', function () {
 
+            selectedPengajuanId = null;
 
-                    if (
-                        xhr.responseJSON &&
-                        xhr.responseJSON.message
-                    ) {
+            $('#formSuratPenerimaan')[0]
+                .reset();
 
-                        message =
-                            xhr.responseJSON.message;
+            $('#kode_pengajuan_modal')
+                .val('');
 
-                    }
-
-
-                    alert(message);
-
-                },
+        });
 
 
-                complete: function () {
+    /*
+    |--------------------------------------------------------------------------
+    | Reset ID ketika modal hapus ditutup
+    |--------------------------------------------------------------------------
+    */
 
-                    button
-                        .prop('disabled', false)
-                        .html(`
-                            <i class="bi bi-trash me-1"></i>
-                            Hapus Surat
-                        `);
+    $('#modalHapusSurat')
+        .on('hidden.bs.modal', function () {
 
-                }
-
-            });
+            selectedPengajuanId = null;
 
         });
 

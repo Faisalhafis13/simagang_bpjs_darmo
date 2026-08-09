@@ -17,65 +17,140 @@ class LoginController extends Controller
         return view('public.login.index');
     }
 
+
     /**
      * Proses Login
      */
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
+public function login(Request $request)
+{
+    $credentials = $request->validate([
 
-            'email'    => ['required', 'email'],
+        'email' => ['required', 'email'],
 
-            'password' => ['required'],
+        'password' => ['required'],
 
-        ]);
+    ]);
 
-        if (! Auth::attempt($credentials)) {
 
-            return back()
-                ->withInput($request->only('email'))
-                ->with('error', 'Email atau password salah.');
+    /*
+    |--------------------------------------------------------------------------
+    | CEK LOGIN
+    |--------------------------------------------------------------------------
+    */
 
-        }
+    if (!Auth::attempt($credentials)) {
 
-        $request->session()->regenerate();
-        ActivityLogger::log(
+        return back()
 
-    'Authentication',
+            ->withInput(
+                $request->only('email')
+            )
 
-    'LOGIN',
-
-    'User Login'
-
-);
-
-        if (Auth::user()->must_change_password) {
-            return redirect()->route('password.change');
-        }
-
-        return redirect()->route('back-office.dashboard');
+            ->with(
+                'error',
+                'Email atau password salah.'
+            );
     }
 
-    /**
-     * Logout
-     */
-    public function logout(Request $request)
-    {
+
+    /*
+    |--------------------------------------------------------------------------
+    | REGENERATE SESSION
+    |--------------------------------------------------------------------------
+    */
+
+    $request->session()->regenerate();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOG ACTIVITY
+    |--------------------------------------------------------------------------
+    */
+
     ActivityLogger::log(
+        'Authentication',
+        'LOGIN',
+        'User Login'
+    );
 
-    'Authentication',
 
-    'LOGOUT',
+    /*
+    |--------------------------------------------------------------------------
+    | USER WAJIB GANTI PASSWORD
+    |--------------------------------------------------------------------------
+    */
 
-    'User Logout'
+    if (Auth::user()->must_change_password) {
 
-);    
+        return redirect()
+            ->route('password.change')
+            ->with(
+                'login_success',
+                'Login berhasil. Silakan ubah password Anda.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOGIN BERHASIL
+    |--------------------------------------------------------------------------
+    */
+
+    return redirect()
+        ->route('back-office.dashboard')
+        ->with(
+            'login_success',
+            'Selamat datang, ' . Auth::user()->name . '!'
+        );
+}
+public function logout(Request $request)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | LOG ACTIVITY SEBELUM LOGOUT
+    |--------------------------------------------------------------------------
+    */
+
+    ActivityLogger::log(
+        'Authentication',
+        'LOGOUT',
+        'User Logout'
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOGOUT
+    |--------------------------------------------------------------------------
+    */
+
     Auth::logout();
 
-        $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+    /*
+    |--------------------------------------------------------------------------
+    | INVALIDATE SESSION
+    |--------------------------------------------------------------------------
+    */
 
-        return redirect()->route('login');
-    }
+    $request->session()->invalidate();
+
+    $request->session()->regenerateToken();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KEMBALI KE LOGIN
+    |--------------------------------------------------------------------------
+    */
+
+    return redirect()
+        ->route('login')
+        ->with(
+            'logout_success',
+            'Anda telah berhasil keluar dari sistem.'
+        );
+}
 }

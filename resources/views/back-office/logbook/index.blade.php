@@ -4,90 +4,87 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1">
+            Monitoring Logbook
+        </h3>
 
-        <div>
-            <h3 class="fw-bold mb-1">
-                Monitoring Logbook
-            </h3>
-
-            <small class="text-muted">
-                Monitoring seluruh logbook peserta magang.
-            </small>
-        </div>
-
+        <small class="text-muted">
+            Monitoring seluruh logbook peserta magang.
+        </small>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4">
+</div>
 
-        <div class="card-body">
 
-            <div class="table-responsive">
+<div class="card border-0 shadow-sm rounded-4">
 
-                <table
-                    class="table table-bordered table-hover align-middle w-100"
-                    id="logbookTable"
-                >
+    <div class="card-body">
 
-                    <thead class="table-light">
+        <div class="table-responsive">
 
-                        <tr>
+            <table
+                class="table table-bordered table-hover align-middle w-100"
+                id="logbookTable"
+            >
 
-                            <th width="5%" class="text-center">
-                                No
-                            </th>
+                <thead class="table-light">
 
-                            <th>
-                                Tanggal
-                            </th>
+                    <tr>
 
-                            <th>
-                                Nama Peserta
-                            </th>
+                        <th width="5%" class="text-center">
+                            No
+                        </th>
 
-                            <th>
-                                Mentor
-                            </th>
+                        <th>
+                            Tanggal
+                        </th>
 
-                            <th>
-                                Aktivitas
-                            </th>
+                        <th>
+                            Nama Peserta
+                        </th>
 
-                            <th>
-                                Hasil
-                            </th>
+                        <th>
+                            Mentor
+                        </th>
 
-                            <th>
-                                Catatan Peserta
-                            </th>
+                        <th>
+                            Aktivitas
+                        </th>
 
-                            <th>
-                                Bukti Kegiatan
-                            </th>
+                        <th>
+                            Hasil
+                        </th>
 
-                            <th>
-                                Status
-                            </th>
+                        <th>
+                            Catatan Peserta
+                        </th>
 
-                            <th>
-                                Catatan Mentor
-                            </th>
+                        <th>
+                            Bukti Kegiatan
+                        </th>
 
-                            <th width="12%" class="text-center">
-                                Aksi
-                            </th>
+                        <th>
+                            Status
+                        </th>
 
-                        </tr>
+                        <th>
+                            Catatan Mentor
+                        </th>
 
-                    </thead>
+                        <th width="12%" class="text-center">
+                            Aksi
+                        </th>
 
-                    <tbody></tbody>
+                    </tr>
 
-                </table>
+                </thead>
 
-            </div>
+                <tbody></tbody>
+
+            </table>
 
         </div>
 
@@ -96,26 +93,38 @@
 </div>
 
 
-{{-- =========================================================
-MODAL BUKTI KEGIATAN
-========================================================= --}}
+{{-- ========================================================= --}}
+{{-- MODAL BUKTI KEGIATAN --}}
+{{-- ========================================================= --}}
 
 <div
     class="modal fade"
     id="modalBukti"
     tabindex="-1"
+    aria-labelledby="modalBuktiLabel"
     aria-hidden="true"
 >
 
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
 
         <div class="modal-content border-0 rounded-4 shadow">
 
             <div class="modal-header">
 
-                <h5 class="modal-title fw-bold">
-                    Bukti Kegiatan
-                </h5>
+                <div>
+
+                    <h5
+                        class="modal-title fw-bold"
+                        id="modalBuktiLabel"
+                    >
+                        Bukti Kegiatan
+                    </h5>
+
+                    <small class="text-muted">
+                        Bukti kegiatan logbook peserta.
+                    </small>
+
+                </div>
 
                 <button
                     type="button"
@@ -126,9 +135,15 @@ MODAL BUKTI KEGIATAN
 
             </div>
 
+
             <div class="modal-body text-center p-4">
 
-                <div id="loadingBukti" class="py-5">
+                {{-- Loading --}}
+
+                <div
+                    id="loadingBukti"
+                    class="py-5"
+                >
 
                     <div
                         class="spinner-border text-primary"
@@ -141,23 +156,62 @@ MODAL BUKTI KEGIATAN
 
                 </div>
 
-                <img
-                    id="gambarBukti"
-                    src=""
-                    alt="Bukti kegiatan"
-                    class="img-fluid rounded border d-none"
-                    style="
-                        max-height: 650px;
-                        max-width: 100%;
-                        object-fit: contain;
-                    "
+
+                {{-- Preview Gambar --}}
+
+                <div
+                    id="containerGambarBukti"
+                    class="d-none"
                 >
+
+                    <img
+                        id="gambarBukti"
+                        src=""
+                        alt="Bukti kegiatan"
+                        class="img-fluid rounded border"
+                        style="
+                            max-height: 700px;
+                            max-width: 100%;
+                            object-fit: contain;
+                        "
+                    >
+
+                </div>
+
+
+                {{-- Preview PDF --}}
+
+                <div
+                    id="containerPdfBukti"
+                    class="d-none"
+                >
+
+                    <iframe
+                        id="pdfBukti"
+                        src=""
+                        title="Bukti kegiatan PDF"
+                        style="
+                            width:100%;
+                            height:700px;
+                            border:1px solid #dee2e6;
+                            border-radius:12px;
+                        "
+                    ></iframe>
+
+                </div>
+
+
+                {{-- Error --}}
 
                 <div
                     id="errorBukti"
                     class="alert alert-danger d-none mt-3"
                 >
+
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+
                     Bukti kegiatan tidak dapat ditampilkan.
+
                 </div>
 
             </div>
@@ -175,442 +229,937 @@ MODAL BUKTI KEGIATAN
 
 <script>
 
-let tableLogbook;
-
-
-/*
-|--------------------------------------------------------------------------
-| STATUS
-|--------------------------------------------------------------------------
-*/
-
-function statusBadge(status)
-{
-    const normalized = String(
-        status || 'Menunggu'
-    ).trim().toLowerCase();
-
-    if (
-        normalized === 'disetujui' ||
-        normalized === 'approved'
-    ) {
-
-        return `
-            <span class="badge bg-success">
-                Disetujui
-            </span>
-        `;
-
-    }
-
-    return `
-        <span class="badge bg-warning text-dark">
-            Menunggu
-        </span>
-    `;
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| KETERANGAN AKSI
-|--------------------------------------------------------------------------
-|
-| Admin hanya melihat keterangan approval.
-| Tidak ada tombol edit, hapus, atau approve.
-|--------------------------------------------------------------------------
-*/
-
-function approvalInfo(status)
-{
-    const normalized = String(
-        status || 'Menunggu'
-    ).trim().toLowerCase();
-
-    if (
-        normalized === 'disetujui' ||
-        normalized === 'approved'
-    ) {
-
-        return `
-            <span class="text-success">
-                Sudah di-approve
-            </span>
-        `;
-
-    }
-
-    return `
-        <span class="text-muted">
-            Belum di-approve
-        </span>
-    `;
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| DOCUMENT READY
-|--------------------------------------------------------------------------
-*/
-
 $(document).ready(function () {
 
-tableLogbook = $('#logbookTable').DataTable({
+    /* =========================================================
+       HELPER ESCAPE HTML
+    ========================================================= */
 
-    processing: true,
+    function escapeHtml(value) {
 
-    responsive: false,
+        if (value === null || value === undefined) {
+            return '';
+        }
 
-    autoWidth: false,
+        return $('<div>')
+            .text(String(value))
+            .html();
 
-    ajax: {
-        url: '/back-office/logbook/data',
+    }
 
-        type: 'GET',
 
-        dataSrc: function (response) {
-            if (
-                !response ||
-                response.status !== 'success'
-            ) {
+    /* =========================================================
+       HELPER ESCAPE ATTRIBUTE
+    ========================================================= */
+
+    function escapeAttribute(value) {
+
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+    }
+
+
+    /* =========================================================
+       STATUS BADGE
+    ========================================================= */
+
+    function statusBadge(status) {
+
+        const normalized = String(
+            status || 'Menunggu'
+        )
+        .trim()
+        .toLowerCase();
+
+
+        if (
+            normalized === 'disetujui' ||
+            normalized === 'approved'
+        ) {
+
+            return `
+                <span class="badge bg-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Disetujui
+                </span>
+            `;
+
+        }
+
+
+        if (
+            normalized === 'ditolak' ||
+            normalized === 'rejected'
+        ) {
+
+            return `
+                <span class="badge bg-danger">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Ditolak
+                </span>
+            `;
+
+        }
+
+
+        return `
+            <span class="badge bg-warning text-dark">
+                <i class="bi bi-clock me-1"></i>
+                Menunggu
+            </span>
+        `;
+
+    }
+
+
+    /* =========================================================
+       INFORMASI APPROVAL
+    ========================================================= */
+
+    function approvalInfo(status) {
+
+        const normalized = String(
+            status || 'Menunggu'
+        )
+        .trim()
+        .toLowerCase();
+
+
+        if (
+            normalized === 'disetujui' ||
+            normalized === 'approved'
+        ) {
+
+            return `
+                <span class="text-success small fw-semibold">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Sudah di-approve
+                </span>
+            `;
+
+        }
+
+
+        if (
+            normalized === 'ditolak' ||
+            normalized === 'rejected'
+        ) {
+
+            return `
+                <span class="text-danger small fw-semibold">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Ditolak
+                </span>
+            `;
+
+        }
+
+
+        return `
+            <span class="text-muted small">
+                <i class="bi bi-clock me-1"></i>
+                Belum di-approve
+            </span>
+        `;
+
+    }
+
+
+    /* =========================================================
+       FORMAT TANGGAL
+    ========================================================= */
+
+    function formatTanggal(value) {
+
+        if (!value) {
+            return '-';
+        }
+
+        const date = new Date(value);
+
+        if (isNaN(date.getTime())) {
+            return escapeHtml(value);
+        }
+
+        const day = String(
+            date.getDate()
+        ).padStart(2, '0');
+
+        const month = String(
+            date.getMonth() + 1
+        ).padStart(2, '0');
+
+        const year = date.getFullYear();
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /* =========================================================
+       DATA TABLE
+    ========================================================= */
+
+    const tableLogbook = $('#logbookTable').DataTable({
+
+        destroy: true,
+
+        processing: true,
+
+        serverSide: false,
+
+        responsive: false,
+
+        autoWidth: false,
+
+        pageLength: 10,
+
+        ajax: {
+
+            url: '/back-office/logbook/data',
+
+            type: 'GET',
+
+            dataSrc: function (response) {
+
+                if (!response) {
+                    return [];
+                }
+
+
+                if (
+                    response.status &&
+                    response.status !== 'success'
+                ) {
+
+                    return [];
+
+                }
+
+
+                if (Array.isArray(response.data)) {
+                    return response.data;
+                }
+
+
                 return [];
+
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    'Gagal mengambil data logbook:',
+                    xhr
+                );
+
+
+                let message =
+                    'Gagal memuat data logbook.';
+
+
+                if (
+                    xhr.responseJSON &&
+                    xhr.responseJSON.message
+                ) {
+
+                    message =
+                        xhr.responseJSON.message;
+
+                }
+
+
+                if (window.Swal) {
+
+                    Swal.fire({
+
+                        icon: 'error',
+
+                        title: 'Gagal Memuat Data',
+
+                        text: message
+
+                    });
+
+                }
+
             }
 
-            return response.data || [];
+        },
+
+
+        columns: [
+
+            /* =================================================
+               NO
+            ================================================= */
+
+            {
+
+                data: null,
+
+                className: 'text-center',
+
+                orderable: false,
+
+                searchable: false,
+
+                width: '5%',
+
+                render: function (
+                    data,
+                    type,
+                    row,
+                    meta
+                ) {
+
+                    return meta.row + 1;
+
+                }
+
+            },
+
+
+            /* =================================================
+               TANGGAL
+            ================================================= */
+
+            {
+
+                data: 'tanggal',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    return formatTanggal(data);
+
+                }
+
+            },
+
+
+            /* =================================================
+               NAMA PESERTA
+            ================================================= */
+
+            {
+
+                data: 'nama_peserta',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <span class="fw-semibold">
+                            ${escapeHtml(data)}
+                        </span>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               MENTOR
+            ================================================= */
+
+            {
+
+                data: 'mentor',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    return data
+                        ? escapeHtml(data)
+                        : '-';
+
+                }
+
+            },
+
+
+            /* =================================================
+               AKTIVITAS
+            ================================================= */
+
+            {
+
+                data: 'aktivitas',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               HASIL
+            ================================================= */
+
+            {
+
+                data: 'hasil',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    if (!data) {
+                        return '-';
+                    }
+
+                    return `
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               CATATAN PESERTA
+            ================================================= */
+
+            {
+
+                data: 'catatan',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    if (!data) {
+
+                        return `
+                            <span class="text-muted">
+                                Tidak ada catatan
+                            </span>
+                        `;
+
+                    }
+
+
+                    return `
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               BUKTI KEGIATAN
+            ================================================= */
+
+            {
+
+                data: null,
+
+                orderable: false,
+
+                searchable: false,
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    if (
+                        !data ||
+                        !data.bukti_url
+                    ) {
+
+                        return `
+                            <span class="text-muted small">
+                                <i class="bi bi-file-earmark-x me-1"></i>
+                                Tidak ada
+                            </span>
+                        `;
+
+                    }
+
+
+                    return `
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-primary btn-bukti"
+                            data-url="${escapeAttribute(data.bukti_url)}"
+                        >
+                            <i class="bi bi-eye me-1"></i>
+                            Lihat
+                        </button>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               STATUS
+            ================================================= */
+
+            {
+
+                data: 'status',
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    return statusBadge(data);
+
+                }
+
+            },
+
+
+            /* =================================================
+               CATATAN MENTOR
+            ================================================= */
+
+            {
+
+                data: 'catatan_mentor',
+
+                defaultContent: '-',
+
+                render: function (data) {
+
+                    if (!data) {
+
+                        return `
+                            <span class="text-muted small">
+                                Belum ada catatan
+                            </span>
+                        `;
+
+                    }
+
+
+                    return `
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(data)}
+                        </div>
+                    `;
+
+                }
+
+            },
+
+
+            /* =================================================
+               AKSI
+            ================================================= */
+
+            {
+
+                data: 'status',
+
+                orderable: false,
+
+                searchable: false,
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    return approvalInfo(data);
+
+                }
+
+            }
+
+        ],
+
+
+        /* =====================================================
+           DEFAULT ORDER
+        ===================================================== */
+
+        order: [
+
+            [1, 'desc']
+
+        ],
+
+
+        /* =====================================================
+           BAHASA DATATABLE
+        ===================================================== */
+
+        language: {
+
+            processing:
+                'Memuat data...',
+
+            search:
+                'Cari:',
+
+            lengthMenu:
+                'Tampilkan _MENU_ data',
+
+            info:
+                'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+
+            infoEmpty:
+                'Tidak ada data',
+
+            infoFiltered:
+                '(difilter dari _MAX_ total data)',
+
+            zeroRecords:
+                'Data logbook tidak ditemukan',
+
+            emptyTable:
+                'Belum ada data logbook',
+
+            paginate: {
+
+                first:
+                    'Pertama',
+
+                last:
+                    'Terakhir',
+
+                next:
+                    '›',
+
+                previous:
+                    '‹'
+
+            }
+
         }
-    },
 
-    columns: [
+    });
 
-        {
-            data: null,
-            className: 'text-center',
-            orderable: false,
-            searchable: false,
-            render: function () {
-                return '';
+
+    /* =========================================================
+       LIHAT BUKTI KEGIATAN
+    ========================================================= */
+
+    $(document).on(
+        'click',
+        '.btn-bukti',
+        function () {
+
+            const url =
+                $(this).attr('data-url');
+
+
+            if (!url) {
+
+                Swal.fire({
+
+                    icon: 'warning',
+
+                    title: 'Bukti Tidak Tersedia',
+
+                    text:
+                        'File bukti kegiatan tidak ditemukan.'
+
+                });
+
+                return;
+
             }
-        },
 
-        {
-            data: 'tanggal',
-            defaultContent: '-'
-        },
 
-        {
-            data: 'nama_peserta',
-            defaultContent: '-'
-        },
+            /* =================================================
+               RESET MODAL
+            ================================================= */
 
-        {
-            data: 'mentor',
-            defaultContent: '-'
-        },
+            $('#loadingBukti')
+                .removeClass('d-none');
 
-        {
-            data: 'aktivitas',
-            defaultContent: '-'
-        },
 
-        {
-            data: 'hasil',
-            defaultContent: '-'
-        },
+            $('#containerGambarBukti')
+                .addClass('d-none');
 
-        {
-            data: 'catatan',
-            defaultContent: '-',
-            render: function (data) {
-                return data
-                    ? escapeHtml(data)
-                    : '-';
+
+            $('#containerPdfBukti')
+                .addClass('d-none');
+
+
+            $('#errorBukti')
+                .addClass('d-none');
+
+
+            $('#gambarBukti')
+                .attr('src', '');
+
+
+            $('#pdfBukti')
+                .attr('src', 'about:blank');
+
+
+            /* =================================================
+               BUKA MODAL
+            ================================================= */
+
+            const modalElement =
+                document.getElementById(
+                    'modalBukti'
+                );
+
+
+            const modal =
+                bootstrap.Modal.getOrCreateInstance(
+                    modalElement
+                );
+
+
+            modal.show();
+
+
+            /* =================================================
+               TENTUKAN TIPE FILE
+            ================================================= */
+
+            const cleanUrl =
+                url.split('?')[0]
+                   .split('#')[0];
+
+
+            const extension =
+                cleanUrl
+                    .split('.')
+                    .pop()
+                    .toLowerCase();
+
+
+            const imageExtensions = [
+
+                'jpg',
+                'jpeg',
+                'png',
+                'gif',
+                'webp',
+                'bmp'
+
+            ];
+
+
+            const isImage =
+                imageExtensions.includes(
+                    extension
+                );
+
+
+            const isPdf =
+                extension === 'pdf';
+
+
+            /* =================================================
+               PREVIEW GAMBAR
+            ================================================= */
+
+            if (isImage) {
+
+                const image =
+                    new Image();
+
+
+                image.onload = function () {
+
+                    $('#loadingBukti')
+                        .addClass('d-none');
+
+
+                    $('#errorBukti')
+                        .addClass('d-none');
+
+
+                    $('#containerGambarBukti')
+                        .removeClass('d-none');
+
+
+                    $('#gambarBukti')
+                        .attr('src', url);
+
+                };
+
+
+                image.onerror = function () {
+
+                    $('#loadingBukti')
+                        .addClass('d-none');
+
+
+                    $('#containerGambarBukti')
+                        .addClass('d-none');
+
+
+                    $('#errorBukti')
+                        .removeClass('d-none');
+
+
+                    console.error(
+                        'Bukti gambar gagal dimuat:',
+                        url
+                    );
+
+                };
+
+
+                image.src = url;
+
+
+                return;
+
             }
-        },
 
-        {
-            data: null,
-            orderable: false,
-            searchable: false,
-            className: 'text-center',
 
-            render: function (data) {
+            /* =================================================
+               PREVIEW PDF
+            ================================================= */
 
-                if (!data || !data.bukti_url) {
-                    return `
-                        <span class="text-muted">
-                            Tidak ada
-                        </span>
-                    `;
-                }
+            if (isPdf) {
 
-                return `
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-primary btn-bukti"
-                        data-url="${escapeAttribute(data.bukti_url)}"
-                    >
-                        Lihat
-                    </button>
-                `;
+                $('#loadingBukti')
+                    .addClass('d-none');
+
+
+                $('#containerPdfBukti')
+                    .removeClass('d-none');
+
+
+                $('#pdfBukti')
+                    .attr('src', url);
+
+
+                return;
+
             }
-        },
 
-        {
-            data: 'status',
-            className: 'text-center',
 
-            render: function (data) {
-                return statusBadge(data);
-            }
-        },
+            /* =================================================
+               FORMAT TIDAK DIDUKUNG
+            ================================================= */
 
-        {
-            data: 'catatan_mentor',
-            defaultContent: '-',
+            $('#loadingBukti')
+                .addClass('d-none');
 
-            render: function (data) {
 
-                if (!data) {
-                    return `
-                        <span class="text-muted">
-                            Belum ada catatan
-                        </span>
-                    `;
-                }
-
-                return `
-                    <div
-                        style="
-                            min-width:180px;
-                            max-width:300px;
-                            white-space:normal;
-                            word-break:break-word;
-                        "
-                    >
-                        ${escapeHtml(data)}
+            $('#errorBukti')
+                .removeClass('d-none')
+                .html(`
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Format file bukti kegiatan
+                    tidak dapat dipratinjau.
+                    <div class="mt-2">
+                        <a
+                            href="${escapeAttribute(url)}"
+                            target="_blank"
+                            class="btn btn-sm btn-danger"
+                        >
+                            <i class="bi bi-box-arrow-up-right me-1"></i>
+                            Buka File
+                        </a>
                     </div>
-                `;
-            }
-        },
+                `);
 
-        {
-            data: 'status',
-            orderable: false,
-            searchable: false,
-            className: 'text-center',
-
-            render: function (data) {
-                return approvalInfo(data);
-            }
         }
+    );
 
-    ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | NOMOR URUT
-    |--------------------------------------------------------------------------
-    */
+    /* =========================================================
+       RESET KETIKA MODAL DITUTUP
+    ========================================================= */
 
-    rowCallback: function (row, data, displayIndex) {
+    $('#modalBukti').on(
+        'hidden.bs.modal',
+        function () {
 
-        const pageInfo = this.api().page.info();
+            $('#gambarBukti')
+                .attr('src', '');
 
-        const nomor =
-            pageInfo.start +
-            displayIndex +
-            1;
 
-        $('td:eq(0)', row).html(nomor);
-    },
+            $('#pdfBukti')
+                .attr('src', 'about:blank');
 
-    /*
-    |--------------------------------------------------------------------------
-    | URUTKAN BERDASARKAN TANGGAL
-    |--------------------------------------------------------------------------
-    */
 
-    order: [
-        [1, 'desc']
-    ],
+            $('#containerGambarBukti')
+                .addClass('d-none');
 
-    language: {
 
-        processing: 'Memuat data...',
+            $('#containerPdfBukti')
+                .addClass('d-none');
 
-        search: 'Cari:',
 
-        lengthMenu:
-            'Tampilkan _MENU_ data',
+            $('#errorBukti')
+                .addClass('d-none');
 
-        info:
-            'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
 
-        infoEmpty:
-            'Tidak ada data',
+            $('#loadingBukti')
+                .removeClass('d-none');
 
-        zeroRecords:
-            'Data logbook tidak ditemukan',
-
-        emptyTable:
-            'Belum ada data logbook',
-
-        paginate: {
-            first: 'Pertama',
-            last: 'Terakhir',
-            next: '›',
-            previous: '‹'
         }
+    );
 
-    }
 
 });
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| LIHAT BUKTI KEGIATAN
-|--------------------------------------------------------------------------
-*/
-
-$(document).on(
-    'click',
-    '.btn-bukti',
-    function ()
-{
-
-    const url = $(this).attr('data-url');
-
-    if (!url) {
-
-        Swal.fire({
-
-            icon: 'warning',
-
-            title: 'Bukti Tidak Tersedia',
-
-            text:
-                'File bukti kegiatan tidak ditemukan.'
-
-        });
-
-        return;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Reset modal
-    |--------------------------------------------------------------------------
-    */
-
-    $('#gambarBukti')
-        .addClass('d-none')
-        .attr('src', '');
-
-    $('#loadingBukti')
-        .removeClass('d-none');
-
-    $('#errorBukti')
-        .addClass('d-none');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Buka modal
-    |--------------------------------------------------------------------------
-    */
-
-    const modalElement =
-        document.getElementById('modalBukti');
-
-    const modal =
-        bootstrap.Modal.getOrCreateInstance(
-            modalElement
-        );
-
-    modal.show();
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cek gambar terlebih dahulu
-    |--------------------------------------------------------------------------
-    */
-
-    const image = new Image();
-
-    image.onload = function () {
-
-        $('#loadingBukti')
-            .addClass('d-none');
-
-        $('#errorBukti')
-            .addClass('d-none');
-
-        $('#gambarBukti')
-            .attr('src', url)
-            .removeClass('d-none');
-
-    };
-
-
-    image.onerror = function () {
-
-        $('#loadingBukti')
-            .addClass('d-none');
-
-        $('#gambarBukti')
-            .addClass('d-none');
-
-        $('#errorBukti')
-            .removeClass('d-none');
-
-        console.error(
-            'Bukti kegiatan gagal dimuat:',
-            url
-        );
-
-    };
-
-
-    image.src = url;
-
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| ESCAPE HTML
-|--------------------------------------------------------------------------
-*/
-
-function escapeHtml(value)
-{
-    return $('<div>')
-        .text(value || '')
-        .html();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| ESCAPE ATTRIBUTE
-|--------------------------------------------------------------------------
-*/
-
-function escapeAttribute(value)
-{
-    return String(value || '')
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
 
 </script>
 

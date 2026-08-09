@@ -6,6 +6,7 @@ use App\Models\Logbook;
 use App\Models\Mentor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ActivityLogger;
 
 class LogbookRepository
 {
@@ -95,21 +96,51 @@ class LogbookRepository
             ], 404);
         }
 
-        $logbook = Logbook::whereHas(
-            'user',
-            function ($query) use ($mentor) {
+        $logbook = Logbook::with('user')
+            ->whereHas(
+                'user',
+                function ($query) use ($mentor) {
 
-                $query->where(
-                    'mentor_id',
-                    $mentor->id
-                );
+                    $query->where(
+                        'mentor_id',
+                        $mentor->id
+                    );
 
-            }
-        )->findOrFail($id);
+                }
+            )
+            ->findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama untuk Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $logbook->toArray();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update status logbook
+        |--------------------------------------------------------------------------
+        */
 
         $logbook->update([
             'status' => 'Disetujui',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Logbook',
+            'UPDATE',
+            'Menyetujui Logbook Peserta',
+            $oldData,
+            $logbook->fresh()->load('user')->toArray()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -132,21 +163,51 @@ class LogbookRepository
             'catatan_mentor' => 'nullable|string|max:5000',
         ]);
 
-        $logbook = Logbook::whereHas(
-            'user',
-            function ($query) use ($mentor) {
+        $logbook = Logbook::with('user')
+            ->whereHas(
+                'user',
+                function ($query) use ($mentor) {
 
-                $query->where(
-                    'mentor_id',
-                    $mentor->id
-                );
+                    $query->where(
+                        'mentor_id',
+                        $mentor->id
+                    );
 
-            }
-        )->findOrFail($id);
+                }
+            )
+            ->findOrFail($id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama untuk Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldData = $logbook->toArray();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan catatan mentor
+        |--------------------------------------------------------------------------
+        */
 
         $logbook->update([
             'catatan_mentor' => $data['catatan_mentor'] ?? null,
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
+        ActivityLogger::log(
+            'Logbook',
+            'UPDATE',
+            'Memberikan Catatan Mentor pada Logbook',
+            $oldData,
+            $logbook->fresh()->load('user')->toArray()
+        );
 
         return response()->json([
             'status' => 'success',

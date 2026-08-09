@@ -12,7 +12,18 @@ class RoleUserRepository
     {
         $roles = Role::orderBy('name')->get();
 
-        return view('back-office.role-user.index', compact('roles'));
+        ActivityLogger::log(
+            'Role User',
+            'VIEW',
+            'Membuka halaman manajemen user',
+            null,
+            null
+        );
+
+        return view(
+            'back-office.role-user.index',
+            compact('roles')
+        );
     }
 
     public function getData()
@@ -29,7 +40,8 @@ class RoleUserRepository
 
     public function show($id)
     {
-        $user = User::with('role')->findOrFail($id);
+        $user = User::with('role')
+            ->findOrFail($id);
 
         return response()->json([
             'status' => 'success',
@@ -63,7 +75,12 @@ class RoleUserRepository
     {
         $user = User::findOrFail($id);
 
-        // Simpan data lama
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data lama
+        |--------------------------------------------------------------------------
+        */
+
         $oldData = $user->toArray();
 
         $user->update([
@@ -77,7 +94,12 @@ class RoleUserRepository
             $user->save();
         }
 
-        // Simpan log
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
+
         ActivityLogger::log(
             'Role User',
             'UPDATE',
@@ -95,10 +117,21 @@ class RoleUserRepository
     {
         $user = User::findOrFail($id);
 
-        // Simpan data sebelum dihapus
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan data sebelum dihapus
+        |--------------------------------------------------------------------------
+        */
+
         $oldData = $user->toArray();
 
         $user->delete();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
 
         ActivityLogger::log(
             'Role User',

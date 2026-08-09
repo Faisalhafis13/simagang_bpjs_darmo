@@ -4,34 +4,78 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title','SIMAGANG')</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>
+        @yield('title', 'SIMAGANG')
+    </title>
 
-    <link rel="stylesheet"
-          href="{{ asset('assets/css/style.css') }}">
 
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css">
+    {{-- Bootstrap --}}
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    {{-- Bootstrap Icons --}}
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    >
+
+
+    {{-- Custom CSS --}}
+    <link
+        rel="stylesheet"
+        href="{{ asset('assets/css/style.css') }}"
+    >
+
+
+    {{-- DataTables --}}
+    <link
+        rel="stylesheet"
+        href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.css"
+    >
+
 
     @stack('css')
 
 </head>
 
+
 <body class="back-office">
-<div class="wrapper">
+
+
+    {{-- ===================================================== --}}
+    {{-- SIDEBAR --}}
+    {{-- ===================================================== --}}
 
     @include('components.back-office.sidebar')
 
+
+    {{-- ===================================================== --}}
+    {{-- MAIN --}}
+    {{-- ===================================================== --}}
+
     <div class="main">
 
+
+        {{-- NAVBAR --}}
+
         @include('components.back-office.navbar')
+
+
+        {{-- CONTENT --}}
 
         <main class="content">
 
@@ -39,16 +83,84 @@
 
         </main>
 
+
     </div>
 
-</div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js"></script>
-@stack('js')
+    {{-- ===================================================== --}}
+    {{-- JAVASCRIPT --}}
+    {{-- ===================================================== --}}
+
+
+    {{-- jQuery --}}
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.min.js">
+    </script>
+
+
+    {{-- Bootstrap JS --}}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+    {{-- DataTables --}}
+    <script
+        src="https://cdn.datatables.net/2.3.2/js/dataTables.js">
+    </script>
+
+    <script
+        src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.js">
+    </script>
+
+
+    {{-- ===================================================== --}}
+    {{-- SWEETALERT2 --}}
+    {{-- ===================================================== --}}
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+
+
+    {{-- ===================================================== --}}
+    {{-- GLOBAL LOGIN SUCCESS --}}
+    {{-- ===================================================== --}}
+
+    @if(session('login_success'))
+
+        <script>
+
+            document.addEventListener(
+                'DOMContentLoaded',
+                function () {
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: 'Login Berhasil',
+
+                        text: @json(session('login_success')),
+
+                        timer: 2000,
+
+                        timerProgressBar: true,
+
+                        showConfirmButton: false
+
+                    });
+
+                }
+            );
+
+        </script>
+
+    @endif
+
+
+    @stack('js')
 
 </body>
+
 </html>

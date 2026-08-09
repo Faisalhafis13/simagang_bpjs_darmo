@@ -20,11 +20,6 @@ class Logbook extends Model
         'catatan_mentor',
     ];
 
-
-
-
-
-    
     protected $casts = [
         'tanggal' => 'date',
     ];

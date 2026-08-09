@@ -15,6 +15,14 @@ class RoleMenuRepository
         $roles = Role::orderBy('name')->get();
         $menus = Menu::orderBy('name')->get();
 
+        ActivityLogger::log(
+            'Role Menu',
+            'VIEW',
+            'Membuka halaman pengaturan hak akses role',
+            null,
+            null
+        );
+
         return view(
             'back-office.role-menu.index',
             compact('roles', 'menus')
@@ -115,7 +123,9 @@ class RoleMenuRepository
 
         ]);
 
-        $oldData = $roleMenu->load('role', 'menu')->toArray();
+        $oldData = $roleMenu
+            ->load('role', 'menu')
+            ->toArray();
 
         $roleMenu->update($data);
 
@@ -124,7 +134,10 @@ class RoleMenuRepository
             'UPDATE',
             'Mengubah Hak Akses Role',
             $oldData,
-            $roleMenu->fresh()->load('role', 'menu')->toArray()
+            $roleMenu
+                ->fresh()
+                ->load('role', 'menu')
+                ->toArray()
         );
 
         return response()->json([
@@ -140,7 +153,9 @@ class RoleMenuRepository
 
     public function destroy(RoleMenu $roleMenu)
     {
-        $oldData = $roleMenu->load('role', 'menu')->toArray();
+        $oldData = $roleMenu
+            ->load('role', 'menu')
+            ->toArray();
 
         $roleMenu->delete();
 

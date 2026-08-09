@@ -4,96 +4,103 @@
 
 @section('content')
 
-<div class="container-fluid">
+<div class="card border-0 shadow-sm rounded-4">
 
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white border-0 pt-4 px-4">
+        <h4 class="fw-bold mb-1">
+            Monitoring Logbook Peserta
+        </h4>
 
-        <div class="card-header bg-white border-0 pt-4 px-4">
+        <small class="text-muted">
+            Pantau, review, dan berikan feedback pada logbook peserta.
+        </small>
+    </div>
 
-            <h4 class="mb-1">
-                Monitoring Logbook Peserta
-            </h4>
+    <div class="card-body">
 
-            <small class="text-muted">
-                Pantau, review, dan berikan feedback pada logbook peserta.
-            </small>
+        {{-- PILIH PESERTA --}}
+        <div class="mb-4">
+
+            <label for="peserta" class="form-label fw-bold">
+                Pilih Peserta
+            </label>
+
+            <select id="peserta" class="form-select">
+                <option value="">
+                    -- Pilih Peserta --
+                </option>
+            </select>
 
         </div>
 
+        {{-- TABLE --}}
+        <div class="table-responsive">
 
-        <div class="card-body">
+            <table
+                class="table table-bordered table-hover align-middle w-100"
+                id="tableMonitoring"
+            >
 
-            <div class="mb-4">
+                <thead class="table-light">
 
-                <label class="form-label fw-bold">
-                    Pilih Peserta
-                </label>
+                    <tr>
 
-                <select
-                    id="peserta"
-                    class="form-select"
-                >
+                        <th width="5%" class="text-center">
+                            No
+                        </th>
 
-                    <option value="">
-                        -- Pilih Peserta --
-                    </option>
+                        <th width="10%">
+                            Tanggal
+                        </th>
 
-                </select>
+                        <th>
+                            Aktivitas
+                        </th>
 
-            </div>
+                        <th>
+                            Hasil
+                        </th>
 
+                        <th>
+                            Catatan Peserta
+                        </th>
 
-            <div class="table-responsive">
+                        <th width="10%" class="text-center">
+                            Bukti
+                        </th>
 
-                <table
-                    class="table table-bordered table-hover align-middle"
-                    id="tableMonitoring"
-                >
+                        <th width="10%" class="text-center">
+                            Status
+                        </th>
 
-                    <thead class="table-light">
+                        <th>
+                            Catatan Mentor
+                        </th>
 
-                        <tr>
+                        <th width="15%" class="text-center">
+                            Aksi
+                        </th>
 
-                            <th>No</th>
+                    </tr>
 
-                            <th>Tanggal</th>
+                </thead>
 
-                            <th>Aktivitas</th>
+                <tbody id="logbookData">
 
-                            <th>Hasil</th>
+                    <tr>
 
-                            <th>Catatan Peserta</th>
+                        <td
+                            colspan="9"
+                            class="text-center text-muted py-4"
+                        >
+                            Pilih peserta terlebih dahulu.
+                        </td>
 
-                            <th>Bukti</th>
+                    </tr>
 
-                            <th>Status</th>
+                </tbody>
 
-                            <th>Catatan Mentor</th>
-
-                            <th>Aksi</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="logbookData">
-
-                        <tr>
-
-                            <td
-                                colspan="9"
-                                class="text-center text-muted py-4"
-                            >
-                                Pilih peserta terlebih dahulu
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
@@ -102,16 +109,20 @@
 </div>
 
 
+{{-- ========================================================= --}}
 {{-- MODAL FEEDBACK --}}
+{{-- ========================================================= --}}
+
 <div
     class="modal fade"
     id="modalFeedback"
     tabindex="-1"
+    aria-hidden="true"
 >
 
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-        <div class="modal-content border-0 rounded-4">
+        <div class="modal-content border-0 rounded-4 shadow">
 
             <form id="formFeedback">
 
@@ -124,21 +135,33 @@
 
                 <div class="modal-header">
 
-                    <h5 class="modal-title">
-                        Catatan Mentor
-                    </h5>
+                    <div>
+
+                        <h5 class="modal-title fw-bold mb-1">
+                            Catatan Mentor
+                        </h5>
+
+                        <small class="text-muted">
+                            Berikan feedback atau catatan untuk logbook peserta.
+                        </small>
+
+                    </div>
 
                     <button
                         type="button"
                         class="btn-close"
                         data-bs-dismiss="modal"
+                        aria-label="Close"
                     ></button>
 
                 </div>
 
                 <div class="modal-body">
 
-                    <label class="form-label">
+                    <label
+                        for="catatanMentor"
+                        class="form-label fw-semibold"
+                    >
                         Feedback / Catatan
                     </label>
 
@@ -148,6 +171,10 @@
                         rows="6"
                         placeholder="Berikan feedback untuk peserta..."
                     ></textarea>
+
+                    <div class="form-text">
+                        Catatan ini akan tersimpan pada logbook peserta.
+                    </div>
 
                 </div>
 
@@ -164,7 +191,9 @@
                     <button
                         type="submit"
                         class="btn btn-primary"
+                        id="btnSimpanFeedback"
                     >
+                        <i class="bi bi-save me-1"></i>
                         Simpan Catatan
                     </button>
 
@@ -185,57 +214,188 @@
 
 <script>
 
-let modalFeedback;
+let modalFeedback = null;
+let selectedPesertaId = null;
 
-let tableMonitoring;
+
+/*
+|--------------------------------------------------------------------------
+| CSRF
+|--------------------------------------------------------------------------
+*/
+
+const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 
-$(function () {
+/*
+|--------------------------------------------------------------------------
+| DOCUMENT READY
+|--------------------------------------------------------------------------
+*/
 
-    modalFeedback = new bootstrap.Modal(
-        document.getElementById('modalFeedback')
-    );
+$(document).ready(function () {
 
+    const modalElement = document.getElementById('modalFeedback');
+
+    if (modalElement) {
+
+        modalFeedback = bootstrap.Modal.getOrCreateInstance(
+            modalElement
+        );
+
+    }
 
     loadPeserta();
-
-
-    $('#peserta').on('change', function () {
-
-        const userId = $(this).val();
-
-        if (!userId) {
-
-            $('#logbookData').html(`
-                <tr>
-                    <td
-                        colspan="9"
-                        class="text-center text-muted py-4"
-                    >
-                        Pilih peserta terlebih dahulu
-                    </td>
-                </tr>
-            `);
-
-            return;
-        }
-
-        loadLogbook(userId);
-
-    });
 
 });
 
 
-async function loadPeserta()
-{
+/*
+|--------------------------------------------------------------------------
+| ESCAPE HTML
+|--------------------------------------------------------------------------
+*/
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return '-';
+    }
+
+    return $('<div>')
+        .text(String(value))
+        .html();
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ESCAPE ATTRIBUTE
+|--------------------------------------------------------------------------
+*/
+
+function escapeAttribute(value) {
+
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS NORMALIZATION
+|--------------------------------------------------------------------------
+*/
+
+function normalizeStatus(status) {
+
+    return String(status ?? '')
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS BADGE
+|--------------------------------------------------------------------------
+*/
+
+function statusBadge(status) {
+
+    const normalized = normalizeStatus(status);
+
+    if (
+        normalized === 'disetujui' ||
+        normalized === 'approved' ||
+        normalized === 'approve'
+    ) {
+
+        return `
+            <span class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i>
+                Disetujui
+            </span>
+        `;
+
+    }
+
+    if (
+        normalized === 'ditolak' ||
+        normalized === 'rejected' ||
+        normalized === 'reject'
+    ) {
+
+        return `
+            <span class="badge bg-danger">
+                <i class="bi bi-x-circle me-1"></i>
+                Ditolak
+            </span>
+        `;
+
+    }
+
+    return `
+        <span class="badge bg-warning text-dark">
+            <i class="bi bi-clock me-1"></i>
+            Menunggu
+        </span>
+    `;
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD PESERTA
+|--------------------------------------------------------------------------
+*/
+
+async function loadPeserta() {
+
+    const select = $('#peserta');
+
+    select
+        .prop('disabled', true)
+        .html(`
+            <option value="">
+                Memuat peserta...
+            </option>
+        `);
+
     try {
 
         const response = await fetch(
-            '/mentor/logbook/peserta'
+            '/mentor/logbook/peserta',
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }
         );
 
-        const peserta = await response.json();
+        const result = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                'Gagal memuat data peserta.'
+            );
+
+        }
+
+        const peserta = Array.isArray(result)
+            ? result
+            : (result.data || []);
 
         let html = `
             <option value="">
@@ -243,41 +403,154 @@ async function loadPeserta()
             </option>
         `;
 
-        peserta.forEach(function (item) {
+        if (peserta.length === 0) {
 
-            html += `
-                <option value="${item.id}">
-                    ${item.name}
+            html = `
+                <option value="">
+                    Belum ada peserta
                 </option>
             `;
 
-        });
+        } else {
 
-        $('#peserta').html(html);
+            peserta.forEach(function (item) {
+
+                const id = escapeAttribute(item.id);
+
+                const nama = escapeHtml(
+                    item.name ??
+                    item.nama ??
+                    item.nama_peserta ??
+                    '-'
+                );
+
+                html += `
+                    <option value="${id}">
+                        ${nama}
+                    </option>
+                `;
+
+            });
+
+        }
+
+        select.html(html);
 
     } catch (error) {
 
         console.error(error);
 
+        select.html(`
+            <option value="">
+                Gagal memuat peserta
+            </option>
+        `);
+
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: 'Gagal memuat data peserta.'
+            text: error.message ||
+                'Gagal memuat data peserta.'
         });
 
+    } finally {
+
+        select.prop('disabled', false);
+
     }
+
 }
 
 
-async function loadLogbook(userId)
-{
+/*
+|--------------------------------------------------------------------------
+| CHANGE PESERTA
+|--------------------------------------------------------------------------
+*/
+
+$('#peserta').on('change', function () {
+
+    const userId = $(this).val();
+
+    selectedPesertaId = userId || null;
+
+    if (!userId) {
+
+        $('#logbookData').html(`
+            <tr>
+                <td
+                    colspan="9"
+                    class="text-center text-muted py-4"
+                >
+                    Pilih peserta terlebih dahulu.
+                </td>
+            </tr>
+        `);
+
+        return;
+
+    }
+
+    loadLogbook(userId);
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD LOGBOOK
+|--------------------------------------------------------------------------
+*/
+
+async function loadLogbook(userId) {
+
+    $('#logbookData').html(`
+        <tr>
+            <td
+                colspan="9"
+                class="text-center py-5"
+            >
+                <div
+                    class="spinner-border spinner-border-sm text-primary me-2"
+                    role="status"
+                ></div>
+
+                <span class="text-muted">
+                    Memuat logbook...
+                </span>
+            </td>
+        </tr>
+    `);
+
     try {
 
+        const url =
+            `/mentor/logbook/data?user_id=${encodeURIComponent(userId)}`;
+
         const response = await fetch(
-            `/mentor/logbook/data?user_id=${userId}`
+            url,
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }
         );
 
-        const data = await response.json();
+        const result = await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.message ||
+                'Gagal memuat logbook.'
+            );
+
+        }
+
+        const data = Array.isArray(result)
+            ? result
+            : (result.data || []);
 
         renderLogbook(data);
 
@@ -289,154 +562,218 @@ async function loadLogbook(userId)
             <tr>
                 <td
                     colspan="9"
-                    class="text-center text-danger"
+                    class="text-center text-danger py-4"
                 >
-                    Gagal memuat logbook.
+                    <i class="bi bi-exclamation-circle me-1"></i>
+                    ${escapeHtml(
+                        error.message ||
+                        'Gagal memuat logbook.'
+                    )}
                 </td>
             </tr>
         `);
 
     }
+
 }
 
 
-function statusBadge(status)
-{
-    if (
-        String(status).toLowerCase() === 'disetujui'
-    ) {
+/*
+|--------------------------------------------------------------------------
+| RENDER LOGBOOK
+|--------------------------------------------------------------------------
+*/
 
-        return `
-            <span class="badge bg-success">
-                Disetujui
-            </span>
-        `;
+function renderLogbook(data) {
 
-    }
+    if (!Array.isArray(data) || data.length === 0) {
 
-    return `
-        <span class="badge bg-warning text-dark">
-            Menunggu
-        </span>
-    `;
-}
-
-
-function renderLogbook(data)
-{
-    let html = '';
-
-    if (!data || data.length === 0) {
-
-        html = `
+        $('#logbookData').html(`
             <tr>
                 <td
                     colspan="9"
-                    class="text-center text-muted py-4"
+                    class="text-center text-muted py-5"
                 >
-                    Belum ada logbook.
+                    <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
+                    Belum ada logbook untuk peserta ini.
                 </td>
             </tr>
-        `;
-
-        $('#logbookData').html(html);
+        `);
 
         return;
+
     }
 
+    let html = '';
 
     data.forEach(function (item, index) {
 
+        const status = normalizeStatus(item.status);
+
         const approved =
-            String(item.status).toLowerCase() === 'disetujui';
+            status === 'disetujui' ||
+            status === 'approved' ||
+            status === 'approve';
 
+        /*
+        |--------------------------------------------------------------------------
+        | APPROVE BUTTON
+        |--------------------------------------------------------------------------
+        */
 
-        const approveButton = approved
+        let approveButton = '';
 
-            ? `
+        if (approved) {
+
+            approveButton = `
                 <button
+                    type="button"
                     class="btn btn-sm btn-success"
                     disabled
                 >
-                    <i class="bi bi-check-circle"></i>
-                    Sudah Disetujui
+                    <i class="bi bi-check-circle me-1"></i>
+                    Disetujui
                 </button>
-            `
+            `;
 
-            : `
+        } else {
+
+            approveButton = `
                 <button
+                    type="button"
                     class="btn btn-sm btn-success btn-approve"
-                    data-id="${item.id}"
+                    data-id="${escapeAttribute(item.id)}"
                 >
-                    <i class="bi bi-check-circle"></i>
+                    <i class="bi bi-check-circle me-1"></i>
                     Approve
                 </button>
             `;
 
+        }
 
-        const bukti = item.bukti_url
 
-            ? `
+        /*
+        |--------------------------------------------------------------------------
+        | BUKTI
+        |--------------------------------------------------------------------------
+        */
+
+        let bukti = `
+            <span class="text-muted">
+                Tidak ada
+            </span>
+        `;
+
+        if (item.bukti_url) {
+
+            bukti = `
                 <button
+                    type="button"
                     class="btn btn-sm btn-outline-primary btn-bukti"
-                    data-url="${item.bukti_url}"
+                    data-url="${escapeAttribute(item.bukti_url)}"
                 >
-                    <i class="bi bi-image"></i>
+                    <i class="bi bi-image me-1"></i>
                     Lihat
                 </button>
-            `
+            `;
 
-            : '<span class="text-muted">-</span>';
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CATATAN MENTOR
+        |--------------------------------------------------------------------------
+        */
+
+        let catatanMentor = `
+            <span class="text-muted">
+                Belum ada catatan
+            </span>
+        `;
+
+        if (item.catatan_mentor) {
+
+            catatanMentor = `
+                <div
+                    class="small"
+                    style="
+                        min-width:180px;
+                        max-width:300px;
+                        white-space:normal;
+                        word-break:break-word;
+                    "
+                >
+                    ${escapeHtml(item.catatan_mentor)}
+                </div>
+            `;
+
+        }
 
 
         html += `
 
             <tr>
 
-                <td>
+                <td class="text-center">
                     ${index + 1}
                 </td>
 
                 <td>
-                    ${item.tanggal || '-'}
+                    ${escapeHtml(item.tanggal)}
                 </td>
 
                 <td>
-                    ${item.aktivitas || '-'}
+                    ${escapeHtml(item.aktivitas)}
                 </td>
 
                 <td>
-                    ${item.hasil || '-'}
+                    ${escapeHtml(item.hasil)}
                 </td>
 
                 <td>
-                    ${item.catatan || '-'}
+                    <div
+                        class="small"
+                        style="
+                            min-width:160px;
+                            max-width:280px;
+                            white-space:normal;
+                            word-break:break-word;
+                        "
+                    >
+                        ${escapeHtml(item.catatan)}
+                    </div>
                 </td>
 
-                <td>
+                <td class="text-center">
                     ${bukti}
                 </td>
 
-                <td>
+                <td class="text-center">
                     ${statusBadge(item.status)}
                 </td>
 
                 <td>
-                    ${item.catatan_mentor || '-'}
+                    ${catatanMentor}
                 </td>
 
-                <td>
+                <td class="text-center">
 
-                    <div class="d-flex gap-1">
+                    <div
+                        class="d-flex flex-column gap-1"
+                    >
 
                         ${approveButton}
 
                         <button
+                            type="button"
                             class="btn btn-sm btn-warning btn-feedback"
-                            data-id="${item.id}"
-                            data-catatan="${encodeURIComponent(item.catatan_mentor || '')}"
+                            data-id="${escapeAttribute(item.id)}"
+                            data-catatan="${escapeAttribute(
+                                item.catatan_mentor || ''
+                            )}"
                         >
-                            <i class="bi bi-chat-left-text"></i>
+                            <i class="bi bi-chat-left-text me-1"></i>
                             Catatan
                         </button>
 
@@ -450,239 +787,410 @@ function renderLogbook(data)
 
     });
 
-
     $('#logbookData').html(html);
+
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| APPROVE LOGBOOK
+|--------------------------------------------------------------------------
+*/
 
 $(document).on(
     'click',
     '.btn-approve',
-    async function ()
-{
+    async function () {
 
-    const id = $(this).data('id');
+        const button = $(this);
 
-    const confirm = await Swal.fire({
+        const id = button.data('id');
 
-        icon: 'question',
+        if (!id) {
 
-        title: 'Approve Logbook?',
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'ID logbook tidak ditemukan.'
+            });
 
-        text: 'Logbook ini akan ditandai sebagai Disetujui.',
+            return;
 
-        showCancelButton: true,
-
-        confirmButtonText: 'Ya, Approve',
-
-        cancelButtonText: 'Batal'
-
-    });
-
-
-    if (!confirm.isConfirmed) {
-        return;
-    }
-
-
-    try {
-
-        const response = await fetch(
-            `/mentor/logbook/${id}/approve`,
-            {
-                method: 'PUT',
-
-                headers: {
-                    'Content-Type': 'application/json',
-
-                    'X-CSRF-TOKEN':
-                        $('meta[name="csrf-token"]').attr('content')
-                }
-            }
-        );
-
-
-        const result = await response.json();
-
-
-        if (!response.ok) {
-            throw new Error(
-                result.message || 'Gagal approve.'
-            );
         }
 
+        const confirm = await Swal.fire({
 
-        Swal.fire({
+            icon: 'question',
 
-            icon: 'success',
+            title: 'Approve Logbook?',
 
-            title: 'Berhasil',
+            text:
+                'Logbook ini akan ditandai sebagai Disetujui.',
 
-            text: result.message,
+            showCancelButton: true,
 
-            timer: 1200,
+            confirmButtonText:
+                'Ya, Approve',
 
-            showConfirmButton: false
+            cancelButtonText:
+                'Batal',
 
-        });
-
-
-        const userId = $('#peserta').val();
-
-        loadLogbook(userId);
-
-    } catch (error) {
-
-        Swal.fire({
-
-            icon: 'error',
-
-            title: 'Gagal',
-
-            text: error.message
+            reverseButtons: true
 
         });
+
+        if (!confirm.isConfirmed) {
+            return;
+        }
+
+        button
+            .prop('disabled', true)
+            .html(`
+                <span
+                    class="spinner-border spinner-border-sm me-1"
+                ></span>
+                Memproses...
+            `);
+
+        try {
+
+            const response = await fetch(
+                `/mentor/logbook/${encodeURIComponent(id)}/approve`,
+                {
+                    method: 'PUT',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json',
+
+                        'Accept':
+                            'application/json',
+
+                        'X-CSRF-TOKEN':
+                            csrfToken
+                    }
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.message ||
+                    'Gagal approve logbook.'
+                );
+
+            }
+
+            await Swal.fire({
+
+                icon: 'success',
+
+                title: 'Berhasil',
+
+                text:
+                    result.message ||
+                    'Logbook berhasil disetujui.',
+
+                timer: 1200,
+
+                showConfirmButton: false
+
+            });
+
+            if (selectedPesertaId) {
+
+                loadLogbook(
+                    selectedPesertaId
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            button
+                .prop('disabled', false)
+                .html(`
+                    <i class="bi bi-check-circle me-1"></i>
+                    Approve
+                `);
+
+            Swal.fire({
+
+                icon: 'error',
+
+                title: 'Gagal',
+
+                text:
+                    error.message ||
+                    'Gagal menyetujui logbook.'
+
+            });
+
+        }
 
     }
+);
 
-});
 
+/*
+|--------------------------------------------------------------------------
+| BUKA MODAL FEEDBACK
+|--------------------------------------------------------------------------
+*/
 
 $(document).on(
     'click',
     '.btn-feedback',
-    function ()
-{
+    function () {
 
-    const id = $(this).data('id');
+        const id = $(this).data('id');
 
-    const catatan = decodeURIComponent(
-        $(this).data('catatan') || ''
-    );
+        const catatan =
+            $(this).attr('data-catatan') || '';
+
+        if (!id) {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'ID logbook tidak ditemukan.'
+            });
+
+            return;
+
+        }
+
+        $('#feedbackLogbookId').val(id);
+
+        $('#catatanMentor').val(
+            $('<textarea>')
+                .html(catatan)
+                .text()
+        );
+
+        if (modalFeedback) {
+            modalFeedback.show();
+        }
+
+    }
+);
 
 
-    $('#feedbackLogbookId').val(id);
-
-    $('#catatanMentor').val(catatan);
-
-    modalFeedback.show();
-
-});
-
+/*
+|--------------------------------------------------------------------------
+| SIMPAN FEEDBACK
+|--------------------------------------------------------------------------
+*/
 
 $('#formFeedback').on(
     'submit',
-    async function (event)
-{
+    async function (event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
+        const id =
+            $('#feedbackLogbookId').val();
 
-    const id =
-        $('#feedbackLogbookId').val();
+        const catatan =
+            $('#catatanMentor').val().trim();
 
+        const button =
+            $('#btnSimpanFeedback');
 
-    try {
+        if (!id) {
 
-        const response = await fetch(
-            `/mentor/logbook/${id}/feedback`,
-            {
-                method: 'PUT',
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'ID logbook tidak ditemukan.'
+            });
 
-                headers: {
-                    'Content-Type': 'application/json',
+            return;
 
-                    'X-CSRF-TOKEN':
-                        $('meta[name="csrf-token"]').attr('content')
-                },
-
-                body: JSON.stringify({
-
-                    catatan_mentor:
-                        $('#catatanMentor').val()
-
-                })
-            }
-        );
-
-
-        const result = await response.json();
-
-
-        if (!response.ok) {
-            throw new Error(
-                result.message ||
-                'Gagal menyimpan catatan.'
-            );
         }
 
+        button
+            .prop('disabled', true)
+            .html(`
+                <span
+                    class="spinner-border spinner-border-sm me-1"
+                ></span>
+                Menyimpan...
+            `);
 
-        modalFeedback.hide();
+        try {
 
+            const response = await fetch(
+                `/mentor/logbook/${encodeURIComponent(id)}/feedback`,
+                {
+                    method: 'PUT',
 
-        Swal.fire({
+                    headers: {
+                        'Content-Type':
+                            'application/json',
 
-            icon: 'success',
+                        'Accept':
+                            'application/json',
 
-            title: 'Berhasil',
+                        'X-CSRF-TOKEN':
+                            csrfToken
+                    },
 
-            text: result.message,
+                    body: JSON.stringify({
+                        catatan_mentor: catatan
+                    })
+                }
+            );
 
-            timer: 1200,
+            const result =
+                await response.json();
 
-            showConfirmButton: false
+            if (!response.ok) {
 
-        });
+                throw new Error(
+                    result.message ||
+                    'Gagal menyimpan catatan.'
+                );
 
+            }
 
-        loadLogbook(
-            $('#peserta').val()
-        );
+            if (modalFeedback) {
+                modalFeedback.hide();
+            }
 
+            await Swal.fire({
 
-    } catch (error) {
+                icon: 'success',
 
-        Swal.fire({
+                title: 'Berhasil',
 
-            icon: 'error',
+                text:
+                    result.message ||
+                    'Catatan mentor berhasil disimpan.',
 
-            title: 'Gagal',
+                timer: 1200,
 
-            text: error.message
+                showConfirmButton: false
 
-        });
+            });
+
+            $('#catatanMentor').val('');
+
+            if (selectedPesertaId) {
+
+                loadLogbook(
+                    selectedPesertaId
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            Swal.fire({
+
+                icon: 'error',
+
+                title: 'Gagal',
+
+                text:
+                    error.message ||
+                    'Gagal menyimpan catatan.'
+
+            });
+
+        } finally {
+
+            button
+                .prop('disabled', false)
+                .html(`
+                    <i class="bi bi-save me-1"></i>
+                    Simpan Catatan
+                `);
+
+        }
 
     }
+);
 
-});
 
+/*
+|--------------------------------------------------------------------------
+| LIHAT BUKTI
+|--------------------------------------------------------------------------
+*/
 
 $(document).on(
     'click',
     '.btn-bukti',
-    function ()
-{
+    function () {
 
-    const url = $(this).data('url');
+        const url =
+            $(this).attr('data-url');
 
+        if (!url) {
 
-    Swal.fire({
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bukti Tidak Tersedia',
+                text:
+                    'File bukti kegiatan tidak ditemukan.'
+            });
 
-        title: 'Bukti Kegiatan',
+            return;
 
-        imageUrl: url,
+        }
 
-        imageAlt: 'Bukti kegiatan',
+        Swal.fire({
 
-        width: '800px',
+            title: 'Bukti Kegiatan',
 
-        showConfirmButton: false,
+            imageUrl: url,
 
-        showCloseButton: true
+            imageAlt:
+                'Bukti kegiatan',
 
-    });
+            width: '850px',
 
-});
+            padding: '1rem',
+
+            showConfirmButton: false,
+
+            showCloseButton: true,
+
+            imageClass:
+                'img-fluid rounded border',
+
+            didOpen: () => {
+
+                const image =
+                    Swal.getPopup()
+                        .querySelector('.swal2-image');
+
+                if (image) {
+
+                    image.style.maxHeight =
+                        '650px';
+
+                    image.style.objectFit =
+                        'contain';
+
+                }
+
+            },
+
+            imageHeight: 'auto'
+
+        });
+
+    }
+);
 
 </script>
 

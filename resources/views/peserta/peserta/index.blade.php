@@ -4,38 +4,27 @@
 
 @section('content')
 
-<div class="container-fluid">
-
 {{-- ========================================================= --}}
 {{-- HEADER --}}
 {{-- ========================================================= --}}
 
-<div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
 
     <div>
         <h3 class="fw-bold mb-1">
             Data Saya
         </h3>
 
-        <div class="text-muted small">
+        <small class="text-muted">
             Informasi pribadi, kelompok, mentor, dan masa magang Anda.
-        </div>
+        </small>
     </div>
 
     @if($peserta && $pengajuan)
-
-        <div class="mt-2 mt-md-0">
-
-            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
-
-                <i class="bi bi-shield-check me-1"></i>
-
-                Peserta Terdaftar
-
-            </span>
-
-        </div>
-
+        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 mt-2 mt-md-0">
+            <i class="bi bi-shield-check me-1"></i>
+            Peserta Terdaftar
+        </span>
     @endif
 
 </div>
@@ -64,8 +53,8 @@
             </h5>
 
             <p class="text-muted small mb-0">
-                Akun Anda belum terhubung dengan data
-                peserta yang diterima.
+                Akun Anda belum terhubung dengan data peserta
+                yang diterima.
             </p>
 
         </div>
@@ -73,7 +62,6 @@
     </div>
 
 @else
-
 
     {{-- ===================================================== --}}
     {{-- RINGKASAN MASA MAGANG --}}
@@ -96,7 +84,6 @@
                     </div>
 
                     <div class="ms-3">
-
                         <h5 class="fw-bold mb-1">
                             Masa Magang
                         </h5>
@@ -104,7 +91,6 @@
                         <div class="text-muted small">
                             Periode pelaksanaan magang Anda.
                         </div>
-
                     </div>
 
                 </div>
@@ -113,31 +99,22 @@
                 @if($statusWaktuMagang === 'belum_mulai')
 
                     <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-3 py-2 mt-2 mt-md-0">
-
                         <i class="bi bi-calendar-event me-1"></i>
-
                         Belum Dimulai
-
                     </span>
 
                 @elseif($statusWaktuMagang === 'berlangsung')
 
                     <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 mt-2 mt-md-0">
-
                         <i class="bi bi-broadcast me-1"></i>
-
                         Sedang Berlangsung
-
                     </span>
 
                 @elseif($statusWaktuMagang === 'selesai')
 
                     <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-3 py-2 mt-2 mt-md-0">
-
                         <i class="bi bi-check2-all me-1"></i>
-
                         Selesai
-
                     </span>
 
                 @endif
@@ -146,7 +123,7 @@
 
 
             {{-- ================================================= --}}
-            {{-- TANGGAL --}}
+            {{-- TANGGAL MAGANG --}}
             {{-- ================================================= --}}
 
             <div class="row g-3 mb-4">
@@ -190,7 +167,7 @@
 
 
             {{-- ================================================= --}}
-            {{-- STATUS WAKTU --}}
+            {{-- STATUS WAKTU MAGANG --}}
             {{-- ================================================= --}}
 
             @if($statusWaktuMagang === 'belum_mulai')
@@ -214,13 +191,8 @@
                             </div>
 
                             <div class="small text-info-emphasis">
-
                                 Magang Anda akan dimulai dalam
-
-                                <strong>
-                                    {{ $sisaHariMagang }} hari
-                                </strong>.
-
+                                <strong>{{ $sisaHariMagang }} hari</strong>.
                             </div>
 
                         </div>
@@ -234,14 +206,14 @@
 
                 @php
 
+                    $totalHari = max(0, (int) ($totalHariMagang ?? 0));
+                    $sisaHari = max(0, (int) ($sisaHariMagang ?? 0));
+
                     $progressMagang = 0;
 
-                    if (($totalHariMagang ?? 0) > 0) {
-
+                    if ($totalHari > 0) {
                         $progressMagang =
-                            (($totalHariMagang - $sisaHariMagang)
-                            / $totalHariMagang) * 100;
-
+                            (($totalHari - $sisaHari) / $totalHari) * 100;
                     }
 
                     $progressMagang =
@@ -269,7 +241,7 @@
                         <div class="text-end">
 
                             <div class="fw-bold text-success fs-5">
-                                {{ $sisaHariMagang }}
+                                {{ $sisaHari }}
                             </div>
 
                             <div class="text-muted small">
@@ -281,9 +253,10 @@
                     </div>
 
 
-                    <div class="progress mb-2"
-                         style="height:10px;">
-
+                    <div
+                        class="progress mb-2"
+                        style="height:10px;"
+                    >
                         <div
                             class="progress-bar bg-success"
                             role="progressbar"
@@ -292,7 +265,6 @@
                             aria-valuemin="0"
                             aria-valuemax="100"
                         ></div>
-
                     </div>
 
 
@@ -303,13 +275,13 @@
                         </small>
 
                         <small class="text-muted">
-                            {{ $totalHariMagang }} hari total
+                            {{ $totalHari }} hari total
                         </small>
 
                     </div>
 
 
-                    @if($sisaHariMagang == 0)
+                    @if($sisaHari === 0)
 
                         <div class="alert alert-warning mt-3 mb-0 py-2 px-3">
 
@@ -469,21 +441,15 @@
                         @if(($peserta['peran'] ?? '') === 'Ketua')
 
                             <span class="badge rounded-pill bg-primary px-3 py-2">
-
                                 <i class="bi bi-person-check me-1"></i>
-
                                 Ketua
-
                             </span>
 
                         @else
 
                             <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
-
                                 <i class="bi bi-person me-1"></i>
-
                                 Anggota
-
                             </span>
 
                         @endif
@@ -518,19 +484,14 @@
                                 <div>
 
                                     <div class="fw-semibold">
-
                                         {{ $user->mentor->nama_mentor ?? '-' }}
-
                                     </div>
 
                                     @if($user->mentor->divisi)
 
                                         <div class="text-muted small">
-
                                             <i class="bi bi-building me-1"></i>
-
                                             {{ $user->mentor->divisi }}
-
                                         </div>
 
                                     @endif
@@ -542,11 +503,8 @@
                         @else
 
                             <div class="text-muted small">
-
                                 <i class="bi bi-person-badge me-1"></i>
-
                                 Mentor belum ditentukan.
-
                             </div>
 
                         @endif
@@ -616,8 +574,6 @@
 
             <div class="row g-3 mb-4">
 
-                {{-- Kode --}}
-
                 <div class="col-md-4">
 
                     <div class="border rounded-4 p-3 h-100">
@@ -627,15 +583,13 @@
                         </div>
 
                         <div class="fw-bold">
-                            {{ $pengajuan->kode_pengajuan }}
+                            {{ $pengajuan->kode_pengajuan ?? '-' }}
                         </div>
 
                     </div>
 
                 </div>
 
-
-                {{-- Universitas --}}
 
                 <div class="col-md-4">
 
@@ -646,15 +600,13 @@
                         </div>
 
                         <div class="fw-semibold">
-                            {{ $pengajuan->universitas }}
+                            {{ $pengajuan->universitas ?? '-' }}
                         </div>
 
                     </div>
 
                 </div>
 
-
-                {{-- Status --}}
 
                 <div class="col-md-4">
 
@@ -665,11 +617,8 @@
                         </div>
 
                         <span class="badge rounded-pill bg-success px-3 py-2">
-
                             <i class="bi bi-check-circle me-1"></i>
-
-                            {{ $pengajuan->status }}
-
+                            {{ $pengajuan->status ?? '-' }}
                         </span>
 
                     </div>
@@ -748,19 +697,15 @@
                                 </td>
 
                                 <td>
-
                                     <span class="fw-semibold small">
-                                        {{ $pengajuan->nama_ketua }}
+                                        {{ $pengajuan->nama_ketua ?? '-' }}
                                     </span>
-
                                 </td>
 
                                 <td>
-
                                     <span class="text-muted small">
-                                        {{ $pengajuan->email_ketua }}
+                                        {{ $pengajuan->email_ketua ?? '-' }}
                                     </span>
-
                                 </td>
 
                                 <td class="small">
@@ -775,6 +720,7 @@
                                                text-primary border
                                                border-primary px-3"
                                     >
+                                        <i class="bi bi-person-check me-1"></i>
                                         Ketua
                                     </span>
 
@@ -785,7 +731,7 @@
 
                             {{-- Anggota --}}
 
-                            @foreach($pengajuan->anggota as $index => $anggota)
+                            @forelse($pengajuan->anggota as $index => $anggota)
 
                                 <tr>
 
@@ -794,19 +740,15 @@
                                     </td>
 
                                     <td>
-
                                         <span class="fw-semibold small">
-                                            {{ $anggota->nama_anggota }}
+                                            {{ $anggota->nama_anggota ?? '-' }}
                                         </span>
-
                                     </td>
 
                                     <td>
-
                                         <span class="text-muted small">
-                                            {{ $anggota->email }}
+                                            {{ $anggota->email ?? '-' }}
                                         </span>
-
                                     </td>
 
                                     <td class="small">
@@ -819,6 +761,7 @@
                                             class="badge rounded-pill
                                                    bg-light text-dark border px-3"
                                         >
+                                            <i class="bi bi-person me-1"></i>
                                             Anggota
                                         </span>
 
@@ -826,7 +769,20 @@
 
                                 </tr>
 
-                            @endforeach
+                            @empty
+
+                                <tr>
+
+                                    <td
+                                        colspan="5"
+                                        class="text-center text-muted py-4"
+                                    >
+                                        Tidak ada anggota tambahan.
+                                    </td>
+
+                                </tr>
+
+                            @endforelse
 
                         </tbody>
 
@@ -881,13 +837,11 @@
                     <a
                         href="{{ asset('storage/' . $pengajuan->surat_penerimaan) }}"
                         target="_blank"
+                        rel="noopener noreferrer"
                         class="btn btn-success btn-sm px-3 rounded-3 mt-3 mt-md-0"
                     >
-
                         <i class="bi bi-eye me-1"></i>
-
                         Lihat Surat
-
                     </a>
 
                 @endif
@@ -914,7 +868,7 @@
 
                             <div class="text-muted">
                                 Berlaku untuk kelompok
-                                {{ $pengajuan->kode_pengajuan }}.
+                                {{ $pengajuan->kode_pengajuan ?? '-' }}.
                             </div>
 
                         </div>
@@ -949,7 +903,5 @@
     </div>
 
 @endif
-
-</div>
 
 @endsection

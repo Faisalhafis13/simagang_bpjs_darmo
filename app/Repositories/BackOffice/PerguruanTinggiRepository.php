@@ -2,12 +2,21 @@
 
 namespace App\Repositories\BackOffice;
 
+use App\Helpers\ActivityLogger;
 use App\Models\PengajuanMagang;
 
 class PerguruanTinggiRepository
 {
     public function index()
     {
+        ActivityLogger::log(
+            'Perguruan Tinggi',
+            'VIEW',
+            'Membuka halaman data perguruan tinggi',
+            null,
+            null
+        );
+
         return view('back-office.perguruan-tinggi.index');
     }
 
@@ -22,6 +31,7 @@ class PerguruanTinggiRepository
 
         foreach ($pengajuans as $pengajuan) {
             $key = trim($pengajuan->universitas);
+
             if ($key === '') {
                 continue;
             }
@@ -37,12 +47,14 @@ class PerguruanTinggiRepository
             }
 
             $universitas[$key]['pengajuan_count']++;
-            $universitas[$key]['peserta_count'] += 1 + $pengajuan->anggota->count();
+            $universitas[$key]['peserta_count'] +=
+                1 + $pengajuan->anggota->count();
         }
 
         $data = array_values(array_map(function ($item) {
             unset($item['statuses']);
             unset($item['peserta_list']);
+
             return $item;
         }, $universitas));
 

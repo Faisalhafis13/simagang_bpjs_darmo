@@ -1,33 +1,64 @@
 @extends('layouts.back-office')
 
-@section('title','Dashboard')
+@section('title', 'Dashboard')
 
 @section('content')
 
-<div class="card shadow-sm border-0">
 
-    <div class="card-body">
+<div class="card border-0 shadow-sm rounded-4">
 
-        <h3 class="fw-bold">
+<div class="card-body p-4">
 
+    <div class="mb-4">
+
+        <h5 class="fw-bold mb-1">
             Selamat Datang 👋
+        </h5>
+    </div>
 
-        </h3>
 
-        <p class="mb-1">
+    <div class="row g-3">
 
-            {{ auth()->user()->name }}
+        <div class="col-12 col-md-6">
 
-        </p>
+            <div class="border rounded-3 p-3">
 
-        <small class="text-muted">
+                <small class="text-muted d-block mb-1">
+                    Nama Pengguna
+                </small>
 
-            Role :
-            {{ optional(auth()->user()->role)->name ?? 'Belum ada role' }}
+                <div class="fw-semibold">
+                    {{ auth()->user()->name }}
+                </div>
 
-        </small>
+            </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6">
+
+            <div class="border rounded-3 p-3">
+
+                <small class="text-muted d-block mb-1">
+                    Role
+                </small>
+
+                <span class="badge bg-primary">
+
+                    <i class="bi bi-shield-check me-1"></i>
+
+                    {{ optional(auth()->user()->role)->name ?? 'Belum ada role' }}
+
+                </span>
+
+            </div>
+
+        </div>
 
     </div>
+
+</div>
 
 </div>
 
