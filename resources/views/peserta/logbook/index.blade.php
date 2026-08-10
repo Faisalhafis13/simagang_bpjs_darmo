@@ -6,24 +6,37 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-<div>
-    <h3 class="fw-bold mb-1">
-        Logbook Saya
-    </h3>
+    <div>
+        <h3 class="fw-bold mb-1">
+            Logbook Saya
+        </h3>
 
-    <small class="text-muted">
-        Kelola logbook kegiatan magang Anda.
-    </small>
-</div>
+        <small class="text-muted">
+            Kelola logbook kegiatan magang Anda.
+        </small>
+    </div>
 
-<button
-    type="button"
-    class="btn btn-primary"
-    id="btnTambah"
->
-    <i class="bi bi-plus-circle me-1"></i>
-    Tambah Logbook
-</button>
+    <div class="d-flex gap-2">
+
+        <button
+            type="button"
+            class="btn btn-success"
+            id="btnExportExcel"
+        >
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Export Excel
+        </button>
+
+        <button
+            type="button"
+            class="btn btn-primary"
+            id="btnTambah"
+        >
+            <i class="bi bi-plus-circle me-1"></i>
+            Tambah Logbook
+        </button>
+
+    </div>
 
 </div>
 
@@ -1588,6 +1601,53 @@ $(document).on(
     }
 );
 
+/*
+|--------------------------------------------------------------------------
+| EXPORT EXCEL
+|--------------------------------------------------------------------------
+*/
+
+$('#btnExportExcel').on('click', function () {
+
+    const button = $(this);
+
+    button
+        .prop('disabled', true)
+        .html(`
+            <span
+                class="spinner-border spinner-border-sm me-1"
+                role="status"
+            ></span>
+            Exporting...
+        `);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Download Excel
+    |--------------------------------------------------------------------------
+    */
+
+    window.location.href =
+        '/peserta/logbook/export';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Aktifkan kembali tombol
+    |--------------------------------------------------------------------------
+    */
+
+    setTimeout(function () {
+
+        button
+            .prop('disabled', false)
+            .html(`
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Export Excel
+            `);
+
+    }, 1500);
+
+});
 </script>
 
 @endpush

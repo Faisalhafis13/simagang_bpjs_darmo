@@ -6,32 +6,68 @@
 
 <div class="card border-0 shadow-sm rounded-4">
 
-    <div class="card-header bg-white border-0 pt-4 px-4">
-        <h4 class="fw-bold mb-1">
-            Monitoring Logbook Peserta
-        </h4>
+    {{-- ========================================================= --}}
+    {{-- HEADER --}}
+    {{-- ========================================================= --}}
 
-        <small class="text-muted">
-            Pantau, review, dan berikan feedback pada logbook peserta.
-        </small>
+    <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+
+        <div>
+            <h4 class="fw-bold mb-1">
+                Monitoring Logbook Peserta
+            </h4>
+
+            <small class="text-muted">
+                Pantau, review, dan berikan feedback pada logbook peserta.
+            </small>
+        </div>
+
+        <div>
+            <button
+                type="button"
+                class="btn btn-success"
+                id="btnExportExcel"
+                disabled
+            >
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Export Excel
+            </button>
+        </div>
+
     </div>
+
+
+    {{-- ========================================================= --}}
+    {{-- BODY --}}
+    {{-- ========================================================= --}}
 
     <div class="card-body">
 
         {{-- PILIH PESERTA --}}
         <div class="mb-4">
 
-            <label for="peserta" class="form-label fw-bold">
+            <label
+                for="peserta"
+                class="form-label fw-bold"
+            >
                 Pilih Peserta
             </label>
 
-            <select id="peserta" class="form-select">
+            <select
+                id="peserta"
+                class="form-select"
+            >
                 <option value="">
                     -- Pilih Peserta --
                 </option>
             </select>
 
+            <div class="form-text">
+                Pilih peserta untuk melihat monitoring logbook dan melakukan export.
+            </div>
+
         </div>
+
 
         {{-- TABLE --}}
         <div class="table-responsive">
@@ -45,7 +81,10 @@
 
                     <tr>
 
-                        <th width="5%" class="text-center">
+                        <th
+                            width="5%"
+                            class="text-center"
+                        >
                             No
                         </th>
 
@@ -65,11 +104,17 @@
                             Catatan Peserta
                         </th>
 
-                        <th width="10%" class="text-center">
+                        <th
+                            width="10%"
+                            class="text-center"
+                        >
                             Bukti
                         </th>
 
-                        <th width="10%" class="text-center">
+                        <th
+                            width="10%"
+                            class="text-center"
+                        >
                             Status
                         </th>
 
@@ -77,7 +122,10 @@
                             Catatan Mentor
                         </th>
 
-                        <th width="15%" class="text-center">
+                        <th
+                            width="15%"
+                            class="text-center"
+                        >
                             Aksi
                         </th>
 
@@ -169,6 +217,7 @@
                         id="catatanMentor"
                         class="form-control"
                         rows="6"
+                        maxlength="5000"
                         placeholder="Berikan feedback untuk peserta..."
                     ></textarea>
 
@@ -207,6 +256,7 @@
 
 </div>
 
+
 @endsection
 
 
@@ -235,13 +285,15 @@ const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
 $(document).ready(function () {
 
-    const modalElement = document.getElementById('modalFeedback');
+    const modalElement =
+        document.getElementById('modalFeedback');
 
     if (modalElement) {
 
-        modalFeedback = bootstrap.Modal.getOrCreateInstance(
-            modalElement
-        );
+        modalFeedback =
+            bootstrap.Modal.getOrCreateInstance(
+                modalElement
+            );
 
     }
 
@@ -258,8 +310,13 @@ $(document).ready(function () {
 
 function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
         return '-';
+
     }
 
     return $('<div>')
@@ -289,7 +346,7 @@ function escapeAttribute(value) {
 
 /*
 |--------------------------------------------------------------------------
-| STATUS NORMALIZATION
+| NORMALIZE STATUS
 |--------------------------------------------------------------------------
 */
 
@@ -310,7 +367,9 @@ function normalizeStatus(status) {
 
 function statusBadge(status) {
 
-    const normalized = normalizeStatus(status);
+    const normalized =
+        normalizeStatus(status);
+
 
     if (
         normalized === 'disetujui' ||
@@ -327,6 +386,7 @@ function statusBadge(status) {
 
     }
 
+
     if (
         normalized === 'ditolak' ||
         normalized === 'rejected' ||
@@ -341,6 +401,7 @@ function statusBadge(status) {
         `;
 
     }
+
 
     return `
         <span class="badge bg-warning text-dark">
@@ -370,6 +431,10 @@ async function loadPeserta() {
             </option>
         `);
 
+    $('#btnExportExcel')
+        .prop('disabled', true);
+
+
     try {
 
         const response = await fetch(
@@ -382,7 +447,10 @@ async function loadPeserta() {
             }
         );
 
-        const result = await response.json();
+
+        const result =
+            await response.json();
+
 
         if (!response.ok) {
 
@@ -393,15 +461,19 @@ async function loadPeserta() {
 
         }
 
-        const peserta = Array.isArray(result)
-            ? result
-            : (result.data || []);
+
+        const peserta =
+            Array.isArray(result)
+                ? result
+                : (result.data || []);
+
 
         let html = `
             <option value="">
                 -- Pilih Peserta --
             </option>
         `;
+
 
         if (peserta.length === 0) {
 
@@ -415,14 +487,18 @@ async function loadPeserta() {
 
             peserta.forEach(function (item) {
 
-                const id = escapeAttribute(item.id);
+                const id =
+                    escapeAttribute(item.id);
 
-                const nama = escapeHtml(
-                    item.name ??
-                    item.nama ??
-                    item.nama_peserta ??
-                    '-'
-                );
+
+                const nama =
+                    escapeHtml(
+                        item.name ??
+                        item.nama ??
+                        item.nama_peserta ??
+                        '-'
+                    );
+
 
                 html += `
                     <option value="${id}">
@@ -434,11 +510,14 @@ async function loadPeserta() {
 
         }
 
+
         select.html(html);
+
 
     } catch (error) {
 
         console.error(error);
+
 
         select.html(`
             <option value="">
@@ -446,12 +525,15 @@ async function loadPeserta() {
             </option>
         `);
 
+
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
-            text: error.message ||
+            text:
+                error.message ||
                 'Gagal memuat data peserta.'
         });
+
 
     } finally {
 
@@ -468,32 +550,59 @@ async function loadPeserta() {
 |--------------------------------------------------------------------------
 */
 
-$('#peserta').on('change', function () {
+$('#peserta').on(
+    'change',
+    function () {
 
-    const userId = $(this).val();
+        const userId =
+            $(this).val();
 
-    selectedPesertaId = userId || null;
 
-    if (!userId) {
+        selectedPesertaId =
+            userId || null;
 
-        $('#logbookData').html(`
-            <tr>
-                <td
-                    colspan="9"
-                    class="text-center text-muted py-4"
-                >
-                    Pilih peserta terlebih dahulu.
-                </td>
-            </tr>
-        `);
 
-        return;
+        /*
+        |--------------------------------------------------------------------------
+        | ENABLE / DISABLE EXPORT
+        |--------------------------------------------------------------------------
+        */
+
+        $('#btnExportExcel')
+            .prop(
+                'disabled',
+                !selectedPesertaId
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESET TABLE
+        |--------------------------------------------------------------------------
+        */
+
+        if (!userId) {
+
+            $('#logbookData').html(`
+                <tr>
+                    <td
+                        colspan="9"
+                        class="text-center text-muted py-4"
+                    >
+                        Pilih peserta terlebih dahulu.
+                    </td>
+                </tr>
+            `);
+
+            return;
+
+        }
+
+
+        loadLogbook(userId);
 
     }
-
-    loadLogbook(userId);
-
-});
+);
 
 
 /*
@@ -522,22 +631,29 @@ async function loadLogbook(userId) {
         </tr>
     `);
 
+
     try {
 
         const url =
             `/mentor/logbook/data?user_id=${encodeURIComponent(userId)}`;
 
-        const response = await fetch(
-            url,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            }
-        );
 
-        const result = await response.json();
+        const response =
+            await fetch(
+                url,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Accept':
+                            'application/json'
+                    }
+                }
+            );
+
+
+        const result =
+            await response.json();
+
 
         if (!response.ok) {
 
@@ -548,15 +664,20 @@ async function loadLogbook(userId) {
 
         }
 
-        const data = Array.isArray(result)
-            ? result
-            : (result.data || []);
+
+        const data =
+            Array.isArray(result)
+                ? result
+                : (result.data || []);
+
 
         renderLogbook(data);
+
 
     } catch (error) {
 
         console.error(error);
+
 
         $('#logbookData').html(`
             <tr>
@@ -565,6 +686,7 @@ async function loadLogbook(userId) {
                     class="text-center text-danger py-4"
                 >
                     <i class="bi bi-exclamation-circle me-1"></i>
+
                     ${escapeHtml(
                         error.message ||
                         'Gagal memuat logbook.'
@@ -586,7 +708,10 @@ async function loadLogbook(userId) {
 
 function renderLogbook(data) {
 
-    if (!Array.isArray(data) || data.length === 0) {
+    if (
+        !Array.isArray(data) ||
+        data.length === 0
+    ) {
 
         $('#logbookData').html(`
             <tr>
@@ -595,6 +720,7 @@ function renderLogbook(data) {
                     class="text-center text-muted py-5"
                 >
                     <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
+
                     Belum ada logbook untuk peserta ini.
                 </td>
             </tr>
@@ -604,188 +730,220 @@ function renderLogbook(data) {
 
     }
 
+
     let html = '';
 
-    data.forEach(function (item, index) {
 
-        const status = normalizeStatus(item.status);
+    data.forEach(
+        function (item, index) {
 
-        const approved =
-            status === 'disetujui' ||
-            status === 'approved' ||
-            status === 'approve';
 
-        /*
-        |--------------------------------------------------------------------------
-        | APPROVE BUTTON
-        |--------------------------------------------------------------------------
-        */
+            const status =
+                normalizeStatus(item.status);
 
-        let approveButton = '';
 
-        if (approved) {
+            const approved =
+                status === 'disetujui' ||
+                status === 'approved' ||
+                status === 'approve';
 
-            approveButton = `
-                <button
-                    type="button"
-                    class="btn btn-sm btn-success"
-                    disabled
-                >
-                    <i class="bi bi-check-circle me-1"></i>
-                    Disetujui
-                </button>
+
+            /*
+            |--------------------------------------------------------------------------
+            | APPROVE BUTTON
+            |--------------------------------------------------------------------------
+            */
+
+            let approveButton = '';
+
+
+            if (approved) {
+
+                approveButton = `
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-success"
+                        disabled
+                    >
+                        <i class="bi bi-check-circle me-1"></i>
+                        Disetujui
+                    </button>
+                `;
+
+            } else {
+
+                approveButton = `
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-success btn-approve"
+                        data-id="${escapeAttribute(item.id)}"
+                    >
+                        <i class="bi bi-check-circle me-1"></i>
+                        Approve
+                    </button>
+                `;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | BUKTI
+            |--------------------------------------------------------------------------
+            */
+
+            let bukti = `
+                <span class="text-muted">
+                    Tidak ada
+                </span>
             `;
 
-        } else {
 
-            approveButton = `
-                <button
-                    type="button"
-                    class="btn btn-sm btn-success btn-approve"
-                    data-id="${escapeAttribute(item.id)}"
-                >
-                    <i class="bi bi-check-circle me-1"></i>
-                    Approve
-                </button>
+            if (item.bukti_url) {
+
+                bukti = `
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary btn-bukti"
+                        data-url="${escapeAttribute(item.bukti_url)}"
+                    >
+                        <i class="bi bi-image me-1"></i>
+                        Lihat
+                    </button>
+                `;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CATATAN MENTOR
+            |--------------------------------------------------------------------------
+            */
+
+            let catatanMentor = `
+                <span class="text-muted">
+                    Belum ada catatan
+                </span>
             `;
 
-        }
 
+            if (item.catatan_mentor) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | BUKTI
-        |--------------------------------------------------------------------------
-        */
-
-        let bukti = `
-            <span class="text-muted">
-                Tidak ada
-            </span>
-        `;
-
-        if (item.bukti_url) {
-
-            bukti = `
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-primary btn-bukti"
-                    data-url="${escapeAttribute(item.bukti_url)}"
-                >
-                    <i class="bi bi-image me-1"></i>
-                    Lihat
-                </button>
-            `;
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CATATAN MENTOR
-        |--------------------------------------------------------------------------
-        */
-
-        let catatanMentor = `
-            <span class="text-muted">
-                Belum ada catatan
-            </span>
-        `;
-
-        if (item.catatan_mentor) {
-
-            catatanMentor = `
-                <div
-                    class="small"
-                    style="
-                        min-width:180px;
-                        max-width:300px;
-                        white-space:normal;
-                        word-break:break-word;
-                    "
-                >
-                    ${escapeHtml(item.catatan_mentor)}
-                </div>
-            `;
-
-        }
-
-
-        html += `
-
-            <tr>
-
-                <td class="text-center">
-                    ${index + 1}
-                </td>
-
-                <td>
-                    ${escapeHtml(item.tanggal)}
-                </td>
-
-                <td>
-                    ${escapeHtml(item.aktivitas)}
-                </td>
-
-                <td>
-                    ${escapeHtml(item.hasil)}
-                </td>
-
-                <td>
+                catatanMentor = `
                     <div
                         class="small"
                         style="
-                            min-width:160px;
-                            max-width:280px;
+                            min-width:180px;
+                            max-width:300px;
                             white-space:normal;
                             word-break:break-word;
                         "
                     >
-                        ${escapeHtml(item.catatan)}
+                        ${escapeHtml(
+                            item.catatan_mentor
+                        )}
                     </div>
-                </td>
+                `;
 
-                <td class="text-center">
-                    ${bukti}
-                </td>
+            }
 
-                <td class="text-center">
-                    ${statusBadge(item.status)}
-                </td>
 
-                <td>
-                    ${catatanMentor}
-                </td>
+            /*
+            |--------------------------------------------------------------------------
+            | ROW
+            |--------------------------------------------------------------------------
+            */
 
-                <td class="text-center">
+            html += `
 
-                    <div
-                        class="d-flex flex-column gap-1"
-                    >
+                <tr>
 
-                        ${approveButton}
+                    <td class="text-center">
+                        ${index + 1}
+                    </td>
 
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-warning btn-feedback"
-                            data-id="${escapeAttribute(item.id)}"
-                            data-catatan="${escapeAttribute(
-                                item.catatan_mentor || ''
-                            )}"
+                    <td>
+                        ${escapeHtml(
+                            item.tanggal
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.aktivitas
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            item.hasil
+                        )}
+                    </td>
+
+                    <td>
+
+                        <div
+                            class="small"
+                            style="
+                                min-width:160px;
+                                max-width:280px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
                         >
-                            <i class="bi bi-chat-left-text me-1"></i>
-                            Catatan
-                        </button>
+                            ${escapeHtml(
+                                item.catatan
+                            )}
+                        </div>
 
-                    </div>
+                    </td>
 
-                </td>
+                    <td class="text-center">
+                        ${bukti}
+                    </td>
 
-            </tr>
+                    <td class="text-center">
+                        ${statusBadge(
+                            item.status
+                        )}
+                    </td>
 
-        `;
+                    <td>
+                        ${catatanMentor}
+                    </td>
 
-    });
+                    <td class="text-center">
+
+                        <div
+                            class="d-flex flex-column gap-1"
+                        >
+
+                            ${approveButton}
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-warning btn-feedback"
+                                data-id="${escapeAttribute(item.id)}"
+                                data-catatan="${escapeAttribute(
+                                    item.catatan_mentor || ''
+                                )}"
+                            >
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                Catatan
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
 
     $('#logbookData').html(html);
 
@@ -803,46 +961,58 @@ $(document).on(
     '.btn-approve',
     async function () {
 
-        const button = $(this);
+        const button =
+            $(this);
 
-        const id = button.data('id');
+
+        const id =
+            button.data('id');
+
 
         if (!id) {
 
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal',
-                text: 'ID logbook tidak ditemukan.'
+                text:
+                    'ID logbook tidak ditemukan.'
             });
 
             return;
 
         }
 
-        const confirm = await Swal.fire({
 
-            icon: 'question',
+        const confirm =
+            await Swal.fire({
 
-            title: 'Approve Logbook?',
+                icon: 'question',
 
-            text:
-                'Logbook ini akan ditandai sebagai Disetujui.',
+                title:
+                    'Approve Logbook?',
 
-            showCancelButton: true,
+                text:
+                    'Logbook ini akan ditandai sebagai Disetujui.',
 
-            confirmButtonText:
-                'Ya, Approve',
+                showCancelButton:
+                    true,
 
-            cancelButtonText:
-                'Batal',
+                confirmButtonText:
+                    'Ya, Approve',
 
-            reverseButtons: true
+                cancelButtonText:
+                    'Batal',
 
-        });
+                reverseButtons:
+                    true
+
+            });
+
 
         if (!confirm.isConfirmed) {
             return;
         }
+
 
         button
             .prop('disabled', true)
@@ -853,27 +1023,32 @@ $(document).on(
                 Memproses...
             `);
 
+
         try {
 
-            const response = await fetch(
-                `/mentor/logbook/${encodeURIComponent(id)}/approve`,
-                {
-                    method: 'PUT',
+            const response =
+                await fetch(
+                    `/mentor/logbook/${encodeURIComponent(id)}/approve`,
+                    {
+                        method: 'PUT',
 
-                    headers: {
-                        'Content-Type':
-                            'application/json',
+                        headers: {
+                            'Content-Type':
+                                'application/json',
 
-                        'Accept':
-                            'application/json',
+                            'Accept':
+                                'application/json',
 
-                        'X-CSRF-TOKEN':
-                            csrfToken
+                            'X-CSRF-TOKEN':
+                                csrfToken
+                        }
                     }
-                }
-            );
+                );
 
-            const result = await response.json();
+
+            const result =
+                await response.json();
+
 
             if (!response.ok) {
 
@@ -884,21 +1059,27 @@ $(document).on(
 
             }
 
+
             await Swal.fire({
 
-                icon: 'success',
+                icon:
+                    'success',
 
-                title: 'Berhasil',
+                title:
+                    'Berhasil',
 
                 text:
                     result.message ||
                     'Logbook berhasil disetujui.',
 
-                timer: 1200,
+                timer:
+                    1200,
 
-                showConfirmButton: false
+                showConfirmButton:
+                    false
 
             });
+
 
             if (selectedPesertaId) {
 
@@ -908,9 +1089,11 @@ $(document).on(
 
             }
 
+
         } catch (error) {
 
             console.error(error);
+
 
             button
                 .prop('disabled', false)
@@ -919,11 +1102,14 @@ $(document).on(
                     Approve
                 `);
 
+
             Swal.fire({
 
-                icon: 'error',
+                icon:
+                    'error',
 
-                title: 'Gagal',
+                title:
+                    'Gagal',
 
                 text:
                     error.message ||
@@ -948,33 +1134,50 @@ $(document).on(
     '.btn-feedback',
     function () {
 
-        const id = $(this).data('id');
+        const id =
+            $(this).data('id');
+
 
         const catatan =
-            $(this).attr('data-catatan') || '';
+            $(this).attr(
+                'data-catatan'
+            ) || '';
+
 
         if (!id) {
 
             Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: 'ID logbook tidak ditemukan.'
+                icon:
+                    'error',
+
+                title:
+                    'Gagal',
+
+                text:
+                    'ID logbook tidak ditemukan.'
             });
 
             return;
 
         }
 
-        $('#feedbackLogbookId').val(id);
 
-        $('#catatanMentor').val(
-            $('<textarea>')
-                .html(catatan)
-                .text()
-        );
+        $('#feedbackLogbookId')
+            .val(id);
+
+
+        $('#catatanMentor')
+            .val(
+                $('<textarea>')
+                    .html(catatan)
+                    .text()
+            );
+
 
         if (modalFeedback) {
+
             modalFeedback.show();
+
         }
 
     }
@@ -993,26 +1196,38 @@ $('#formFeedback').on(
 
         event.preventDefault();
 
+
         const id =
             $('#feedbackLogbookId').val();
 
+
         const catatan =
-            $('#catatanMentor').val().trim();
+            $('#catatanMentor')
+                .val()
+                .trim();
+
 
         const button =
             $('#btnSimpanFeedback');
 
+
         if (!id) {
 
             Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: 'ID logbook tidak ditemukan.'
+                icon:
+                    'error',
+
+                title:
+                    'Gagal',
+
+                text:
+                    'ID logbook tidak ditemukan.'
             });
 
             return;
 
         }
+
 
         button
             .prop('disabled', true)
@@ -1023,32 +1238,39 @@ $('#formFeedback').on(
                 Menyimpan...
             `);
 
+
         try {
 
-            const response = await fetch(
-                `/mentor/logbook/${encodeURIComponent(id)}/feedback`,
-                {
-                    method: 'PUT',
+            const response =
+                await fetch(
+                    `/mentor/logbook/${encodeURIComponent(id)}/feedback`,
+                    {
+                        method:
+                            'PUT',
 
-                    headers: {
-                        'Content-Type':
-                            'application/json',
+                        headers: {
+                            'Content-Type':
+                                'application/json',
 
-                        'Accept':
-                            'application/json',
+                            'Accept':
+                                'application/json',
 
-                        'X-CSRF-TOKEN':
-                            csrfToken
-                    },
+                            'X-CSRF-TOKEN':
+                                csrfToken
+                        },
 
-                    body: JSON.stringify({
-                        catatan_mentor: catatan
-                    })
-                }
-            );
+                        body:
+                            JSON.stringify({
+                                catatan_mentor:
+                                    catatan
+                            })
+                    }
+                );
+
 
             const result =
                 await response.json();
+
 
             if (!response.ok) {
 
@@ -1059,27 +1281,38 @@ $('#formFeedback').on(
 
             }
 
+
             if (modalFeedback) {
+
                 modalFeedback.hide();
+
             }
+
 
             await Swal.fire({
 
-                icon: 'success',
+                icon:
+                    'success',
 
-                title: 'Berhasil',
+                title:
+                    'Berhasil',
 
                 text:
                     result.message ||
                     'Catatan mentor berhasil disimpan.',
 
-                timer: 1200,
+                timer:
+                    1200,
 
-                showConfirmButton: false
+                showConfirmButton:
+                    false
 
             });
 
-            $('#catatanMentor').val('');
+
+            $('#catatanMentor')
+                .val('');
+
 
             if (selectedPesertaId) {
 
@@ -1089,21 +1322,26 @@ $('#formFeedback').on(
 
             }
 
+
         } catch (error) {
 
             console.error(error);
 
+
             Swal.fire({
 
-                icon: 'error',
+                icon:
+                    'error',
 
-                title: 'Gagal',
+                title:
+                    'Gagal',
 
                 text:
                     error.message ||
                     'Gagal menyimpan catatan.'
 
             });
+
 
         } finally {
 
@@ -1132,37 +1370,53 @@ $(document).on(
     function () {
 
         const url =
-            $(this).attr('data-url');
+            $(this).attr(
+                'data-url'
+            );
+
 
         if (!url) {
 
             Swal.fire({
-                icon: 'warning',
-                title: 'Bukti Tidak Tersedia',
+
+                icon:
+                    'warning',
+
+                title:
+                    'Bukti Tidak Tersedia',
+
                 text:
                     'File bukti kegiatan tidak ditemukan.'
+
             });
 
             return;
 
         }
 
+
         Swal.fire({
 
-            title: 'Bukti Kegiatan',
+            title:
+                'Bukti Kegiatan',
 
-            imageUrl: url,
+            imageUrl:
+                url,
 
             imageAlt:
                 'Bukti kegiatan',
 
-            width: '850px',
+            width:
+                '850px',
 
-            padding: '1rem',
+            padding:
+                '1rem',
 
-            showConfirmButton: false,
+            showConfirmButton:
+                false,
 
-            showCloseButton: true,
+            showCloseButton:
+                true,
 
             imageClass:
                 'img-fluid rounded border',
@@ -1171,7 +1425,10 @@ $(document).on(
 
                 const image =
                     Swal.getPopup()
-                        .querySelector('.swal2-image');
+                        .querySelector(
+                            '.swal2-image'
+                        );
+
 
                 if (image) {
 
@@ -1185,9 +1442,55 @@ $(document).on(
 
             },
 
-            imageHeight: 'auto'
+            imageHeight:
+                'auto'
 
         });
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT EXCEL
+|--------------------------------------------------------------------------
+*/
+
+$('#btnExportExcel').on(
+    'click',
+    function () {
+
+        if (!selectedPesertaId) {
+
+            Swal.fire({
+
+                icon:
+                    'warning',
+
+                title:
+                    'Pilih Peserta',
+
+                text:
+                    'Silakan pilih peserta terlebih dahulu sebelum melakukan export.'
+
+            });
+
+            return;
+
+        }
+
+
+        const url =
+            '/mentor/logbook/export' +
+            '?user_id=' +
+            encodeURIComponent(
+                selectedPesertaId
+            );
+
+
+        window.location.href =
+            url;
 
     }
 );

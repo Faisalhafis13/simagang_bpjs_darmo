@@ -6,24 +6,36 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div>
-        <h3 class="fw-bold mb-1">
-            Role Menu
-        </h3>
+<div>
+    <h3 class="fw-bold mb-1">
+        Role Menu
+    </h3>
 
-        <small class="text-muted">
-            Pengaturan menu yang dapat diakses oleh setiap role.
-        </small>
-    </div>
+    <small class="text-muted">
+        Pengaturan Hak Akses Menu Berdasarkan Role
+    </small>
+</div>
+
+<div class="d-flex gap-2">
+
+    <a
+        href="{{ route('back-office.role-menu.export') }}"
+        class="btn btn-success"
+    >
+        <i class="bi bi-file-earmark-excel me-1"></i>
+        Export Excel
+    </a>
 
     <button
         type="button"
         class="btn btn-primary"
-        id="btnTambahRoleMenu"
+        id="btnTambah"
     >
-        <i class="bi bi-plus-circle"></i>
-        Atur Role Menu
+        <i class="bi bi-plus-circle me-1"></i>
+        Tambah Hak Akses
     </button>
+
+</div>
 
 </div>
 

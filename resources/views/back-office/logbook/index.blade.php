@@ -16,8 +16,17 @@
         </small>
     </div>
 
-</div>
+    <div>
+        <a
+            href="{{ route('back-office.logbook.export') }}"
+            class="btn btn-success"
+        >
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Export Excel
+        </a>
+    </div>
 
+</div>
 
 <div class="card border-0 shadow-sm rounded-4">
 

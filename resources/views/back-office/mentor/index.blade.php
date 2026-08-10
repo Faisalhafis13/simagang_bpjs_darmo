@@ -23,18 +23,26 @@
 </div>
 
 
-<button
-    type="button"
-    class="btn btn-primary"
-    id="btnTambahMentor"
->
+<div class="d-flex gap-2">
 
-    <i class="bi bi-plus-circle me-1"></i>
+    <a
+        href="{{ route('back-office.mentor.export') }}"
+        class="btn btn-success"
+    >
+        <i class="bi bi-file-earmark-excel me-1"></i>
+        Export Excel
+    </a>
 
-    Tambah Mentor
+    <button
+        type="button"
+        class="btn btn-primary"
+        id="btnTambahMentor"
+    >
+        <i class="bi bi-plus-circle me-1"></i>
+        Tambah Mentor
+    </button>
 
-</button>
-
+</div>
 </div>
 
 {{-- ========================================================= --}}

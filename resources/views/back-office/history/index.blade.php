@@ -6,20 +6,30 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-<div>
+    <div>
+        <h3 class="fw-bold mb-1">
+            Log Histori
+        </h3>
 
-    <h3 class="fw-bold mb-1">
-        Log History
-    </h3>
+        <small class="text-muted">
+            Riwayat aktivitas pengguna pada sistem.
+        </small>
+    </div>
 
-    <small class="text-muted">
-        Riwayat aktivitas pengguna dalam sistem.
-    </small>
+
+    <div>
+
+        <a
+            href="{{ route('back-office.history.export') }}"
+            class="btn btn-success"
+        >
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Export Excel
+        </a>
+
+    </div>
 
 </div>
-
-</div>
-
 {{-- ========================================================= --}}
 {{-- TABLE LOG HISTORY --}}
 {{-- ========================================================= --}}

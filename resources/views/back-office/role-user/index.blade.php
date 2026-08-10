@@ -16,14 +16,26 @@
     </small>
 </div>
 
-<button
-    type="button"
-    class="btn btn-primary"
-    id="btnTambah"
->
-    <i class="bi bi-plus-circle me-1"></i>
-    Tambah User
-</button>
+<div class="d-flex gap-2">
+
+    <a
+        href="{{ route('back-office.role-user.export') }}"
+        class="btn btn-success"
+    >
+        <i class="bi bi-file-earmark-excel me-1"></i>
+        Export Excel
+    </a>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        id="btnTambah"
+    >
+        <i class="bi bi-plus-circle me-1"></i>
+        Tambah User
+    </button>
+
+</div>
 
 </div>
 

@@ -5,7 +5,9 @@
 @section('content')
 
 <div class="d-flex justify-content-between align-items-center mb-4">
+
     <div>
+
         <h3 class="fw-bold mb-1">
             Data Peserta
         </h3>
@@ -13,9 +15,26 @@
         <small class="text-muted">
             Daftar kelompok peserta yang diterima beserta surat penerimaannya.
         </small>
-    </div>
-</div>
 
+    </div>
+
+
+    <div>
+
+        <a
+            href="{{ route('back-office.peserta.export') }}"
+            class="btn btn-success"
+        >
+
+            <i class="bi bi-file-earmark-excel me-1"></i>
+
+            Export Excel
+
+        </a>
+
+    </div>
+
+</div>
 
 {{-- ========================================================= --}}
 {{-- TABLE DATA PESERTA --}}
