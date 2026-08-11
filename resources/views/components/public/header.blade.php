@@ -1,39 +1,45 @@
 <header class="header">
 
-    <div class="container">
+<div class="container">
+    <div class="header-wrapper">
 
-        <div class="header-wrapper">
+        <a
+            href="{{ route('home') }}"
+            class="logo"
+            aria-label="SIMAGANG BPJS Ketenagakerjaan"
+        >
 
-            <a href="{{ route('home') }}" class="logo">
+            <div class="logo-image">
+                <img
+                    src="{{ asset('assets/images/bpjslogo.jpg') }}"
+                    alt="Logo BPJS Ketenagakerjaan"
+                >
+            </div>
 
-                <img 
-                    src="{{ asset('assets/images/bpjslogo.jpg') }}" 
-                    alt="Logo">
+            <div class="logo-text">
+                <span class="logo-title">
+                    SIMAGANG
+                </span>
 
-                <div class="logo-text">
+                <span class="logo-subtitle">
+                    BPJS Ketenagakerjaan
+                </span>
+            </div>
 
-                    <h5>SIMAGANG</h5>
+        </a>
 
-                    <small>
-                        BPJS Ketenagakerjaan
-                    </small>
-
-                </div>
-
-            </a>
-
-
-            <button
-                class="menu-button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#sidebarMenu">
-
-                <i class="bi bi-list"></i>
-
-            </button>
-
-        </div>
+        <button
+            type="button"
+            class="menu-button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-controls="sidebarMenu"
+            aria-label="Buka menu navigasi"
+        >
+            <i class="bi bi-list"></i>
+        </button>
 
     </div>
+</div>
 
 </header>

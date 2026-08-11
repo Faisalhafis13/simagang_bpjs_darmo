@@ -3,22 +3,27 @@
 @push('css')
 
 <link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 @endpush
 
 @section('content')
 
-@include('components.public.header')
+<div class="public-layout">
 
-@include('components.public.sidebar')
+    @include('components.public.header')
 
-<main class="public-content">
+    @include('components.public.sidebar')
 
-    @yield('public-content')
+    <main class="public-content">
 
-</main>
-@include('components.footer')
+        @yield('public-content')
+
+    </main>
+
+    @include('components.footer')
+
+</div>
 
 @endsection
 
@@ -30,61 +35,52 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    new Swiper(".gallerySwiper", {
+    const gallery = document.querySelector(".gallerySwiper");
 
-        loop: true,
+    if (gallery) {
 
-        grabCursor: true,
+        new Swiper(".gallerySwiper", {
 
-        spaceBetween: 30,
+            loop: true,
 
-        autoplay: {
+            grabCursor: true,
 
-            delay: 3000,
+            spaceBetween: 30,
 
-            disableOnInteraction: false,
-
-        },
-
-        pagination: {
-
-            el: ".swiper-pagination",
-
-            clickable: true,
-
-        },
-
-        navigation: {
-
-            nextEl: ".swiper-button-next",
-
-            prevEl: ".swiper-button-prev",
-
-        },
-
-        breakpoints: {
-
-            0: {
-
-                slidesPerView: 1,
-
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
             },
 
-            768: {
-
-                slidesPerView: 2,
-
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
             },
 
-            1200: {
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
 
-                slidesPerView: 3,
+            breakpoints: {
+
+                0: {
+                    slidesPerView: 1,
+                },
+
+                768: {
+                    slidesPerView: 2,
+                },
+
+                1200: {
+                    slidesPerView: 3,
+                }
 
             }
 
-        }
+        });
 
-    });
+    }
 
 });
 

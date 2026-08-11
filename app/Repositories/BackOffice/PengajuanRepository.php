@@ -118,7 +118,6 @@ class PengajuanRepository
                 );
             }
         }
-
         /*
         |--------------------------------------------------------------------------
         | Activity Log Pengajuan
@@ -216,5 +215,4 @@ class PengajuanRepository
             );
         }
     }
-    
 }
