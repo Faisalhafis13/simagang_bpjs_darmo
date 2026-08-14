@@ -16,7 +16,13 @@ class LogbookRepository
 
 public function getData()
 {
-    $entries = Logbook::with(['user.role', 'user.mentor'])
+    $entries = Logbook::with([
+            'user',
+            'pengajuan',
+        ])
+        ->whereHas('pengajuan', function ($query) {
+            $query->whereNull('archived_at');
+        })
         ->orderByDesc('tanggal')
         ->orderByDesc('id')
         ->get();
@@ -25,32 +31,21 @@ public function getData()
 
         return [
             'no' => $index + 1,
-
             'id' => $entry->id,
 
             'tanggal' => optional($entry->tanggal)
                 ->format('Y-m-d'),
 
-            'nama_peserta' => optional($entry->user)
-                ->name,
+            'nama_peserta' => optional($entry->user)->name,
 
-            'email' => optional($entry->user)
-                ->email,
+            'email' => optional($entry->user)->email,
 
             'mentor' => optional($entry->user?->mentor)
                 ->nama_mentor,
 
             'aktivitas' => $entry->aktivitas,
-
             'hasil' => $entry->hasil,
-
             'catatan' => $entry->catatan,
-
-            /*
-            |--------------------------------------------------------------------------
-            | BUKTI KEGIATAN
-            |--------------------------------------------------------------------------
-            */
 
             'bukti' => $entry->bukti,
 
@@ -58,19 +53,7 @@ public function getData()
                 ? asset('storage/' . ltrim($entry->bukti, '/'))
                 : null,
 
-            /*
-            |--------------------------------------------------------------------------
-            | STATUS
-            |--------------------------------------------------------------------------
-            */
-
             'status' => $entry->status ?? 'Menunggu',
-
-            /*
-            |--------------------------------------------------------------------------
-            | CATATAN MENTOR
-            |--------------------------------------------------------------------------
-            */
 
             'catatan_mentor' => $entry->catatan_mentor,
         ];
@@ -81,7 +64,6 @@ public function getData()
         'data' => $data,
     ]);
 }
-
     public function store(Request $request)
     {
         $data = $request->validate([

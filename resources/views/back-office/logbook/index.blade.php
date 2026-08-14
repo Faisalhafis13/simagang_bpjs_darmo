@@ -28,6 +28,7 @@
 
 </div>
 
+
 <div class="card border-0 shadow-sm rounded-4">
 
     <div class="card-body">
@@ -240,14 +241,20 @@
 
 $(document).ready(function () {
 
+
     /* =========================================================
        HELPER ESCAPE HTML
     ========================================================= */
 
     function escapeHtml(value) {
 
-        if (value === null || value === undefined) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
             return '';
+
         }
 
         return $('<div>')
@@ -293,8 +300,11 @@ $(document).ready(function () {
 
             return `
                 <span class="badge bg-success">
+
                     <i class="bi bi-check-circle me-1"></i>
+
                     Disetujui
+
                 </span>
             `;
 
@@ -308,8 +318,11 @@ $(document).ready(function () {
 
             return `
                 <span class="badge bg-danger">
+
                     <i class="bi bi-x-circle me-1"></i>
+
                     Ditolak
+
                 </span>
             `;
 
@@ -318,8 +331,11 @@ $(document).ready(function () {
 
         return `
             <span class="badge bg-warning text-dark">
+
                 <i class="bi bi-clock me-1"></i>
+
                 Menunggu
+
             </span>
         `;
 
@@ -346,8 +362,11 @@ $(document).ready(function () {
 
             return `
                 <span class="text-success small fw-semibold">
+
                     <i class="bi bi-check-circle me-1"></i>
+
                     Sudah di-approve
+
                 </span>
             `;
 
@@ -361,8 +380,11 @@ $(document).ready(function () {
 
             return `
                 <span class="text-danger small fw-semibold">
+
                     <i class="bi bi-x-circle me-1"></i>
+
                     Ditolak
+
                 </span>
             `;
 
@@ -371,8 +393,11 @@ $(document).ready(function () {
 
         return `
             <span class="text-muted small">
+
                 <i class="bi bi-clock me-1"></i>
+
                 Belum di-approve
+
             </span>
         `;
 
@@ -381,31 +406,38 @@ $(document).ready(function () {
 
     /* =========================================================
        FORMAT TANGGAL
+       SAMA DENGAN ARSIP PENGAJUAN
+       CONTOH:
+       14 Agustus 2026
     ========================================================= */
 
     function formatTanggal(value) {
 
         if (!value) {
+
             return '-';
+
         }
+
 
         const date = new Date(value);
 
+
         if (isNaN(date.getTime())) {
+
             return escapeHtml(value);
+
         }
 
-        const day = String(
-            date.getDate()
-        ).padStart(2, '0');
 
-        const month = String(
-            date.getMonth() + 1
-        ).padStart(2, '0');
-
-        const year = date.getFullYear();
-
-        return `${day}-${month}-${year}`;
+        return date.toLocaleDateString(
+            'id-ID',
+            {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            }
+        );
 
     }
 
@@ -428,16 +460,20 @@ $(document).ready(function () {
 
         pageLength: 10,
 
+
         ajax: {
 
             url: '/back-office/logbook/data',
 
             type: 'GET',
 
+
             dataSrc: function (response) {
 
                 if (!response) {
+
                     return [];
+
                 }
 
 
@@ -451,14 +487,19 @@ $(document).ready(function () {
                 }
 
 
-                if (Array.isArray(response.data)) {
+                if (
+                    Array.isArray(response.data)
+                ) {
+
                     return response.data;
+
                 }
 
 
                 return [];
 
             },
+
 
             error: function (xhr) {
 
@@ -504,6 +545,7 @@ $(document).ready(function () {
 
         columns: [
 
+
             /* =================================================
                NO
             ================================================= */
@@ -519,6 +561,7 @@ $(document).ready(function () {
                 searchable: false,
 
                 width: '5%',
+
 
                 render: function (
                     data,
@@ -544,6 +587,7 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     return formatTanggal(data);
@@ -563,15 +607,21 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     if (!data) {
+
                         return '-';
+
                     }
+
 
                     return `
                         <span class="fw-semibold">
+
                             ${escapeHtml(data)}
+
                         </span>
                     `;
 
@@ -589,6 +639,7 @@ $(document).ready(function () {
                 data: 'mentor',
 
                 defaultContent: '-',
+
 
                 render: function (data) {
 
@@ -611,11 +662,15 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     if (!data) {
+
                         return '-';
+
                     }
+
 
                     return `
                         <div
@@ -626,7 +681,9 @@ $(document).ready(function () {
                                 word-break:break-word;
                             "
                         >
+
                             ${escapeHtml(data)}
+
                         </div>
                     `;
 
@@ -645,11 +702,15 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     if (!data) {
+
                         return '-';
+
                     }
+
 
                     return `
                         <div
@@ -660,7 +721,9 @@ $(document).ready(function () {
                                 word-break:break-word;
                             "
                         >
+
                             ${escapeHtml(data)}
+
                         </div>
                     `;
 
@@ -679,13 +742,16 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     if (!data) {
 
                         return `
                             <span class="text-muted">
+
                                 Tidak ada catatan
+
                             </span>
                         `;
 
@@ -701,7 +767,9 @@ $(document).ready(function () {
                                 word-break:break-word;
                             "
                         >
+
                             ${escapeHtml(data)}
+
                         </div>
                     `;
 
@@ -724,6 +792,7 @@ $(document).ready(function () {
 
                 className: 'text-center',
 
+
                 render: function (data) {
 
                     if (
@@ -733,8 +802,11 @@ $(document).ready(function () {
 
                         return `
                             <span class="text-muted small">
+
                                 <i class="bi bi-file-earmark-x me-1"></i>
+
                                 Tidak ada
+
                             </span>
                         `;
 
@@ -747,8 +819,11 @@ $(document).ready(function () {
                             class="btn btn-sm btn-outline-primary btn-bukti"
                             data-url="${escapeAttribute(data.bukti_url)}"
                         >
+
                             <i class="bi bi-eye me-1"></i>
+
                             Lihat
+
                         </button>
                     `;
 
@@ -766,6 +841,7 @@ $(document).ready(function () {
                 data: 'status',
 
                 className: 'text-center',
+
 
                 render: function (data) {
 
@@ -786,13 +862,16 @@ $(document).ready(function () {
 
                 defaultContent: '-',
 
+
                 render: function (data) {
 
                     if (!data) {
 
                         return `
                             <span class="text-muted small">
+
                                 Belum ada catatan
+
                             </span>
                         `;
 
@@ -808,7 +887,9 @@ $(document).ready(function () {
                                 word-break:break-word;
                             "
                         >
+
                             ${escapeHtml(data)}
+
                         </div>
                     `;
 
@@ -830,6 +911,7 @@ $(document).ready(function () {
                 searchable: false,
 
                 className: 'text-center',
+
 
                 render: function (data) {
 
@@ -987,8 +1069,9 @@ $(document).ready(function () {
             ================================================= */
 
             const cleanUrl =
-                url.split('?')[0]
-                   .split('#')[0];
+                url
+                    .split('?')[0]
+                    .split('#')[0];
 
 
             const extension =
@@ -1114,19 +1197,29 @@ $(document).ready(function () {
             $('#errorBukti')
                 .removeClass('d-none')
                 .html(`
+
                     <i class="bi bi-exclamation-triangle me-1"></i>
+
                     Format file bukti kegiatan
                     tidak dapat dipratinjau.
+
                     <div class="mt-2">
+
                         <a
                             href="${escapeAttribute(url)}"
                             target="_blank"
+                            rel="noopener noreferrer"
                             class="btn btn-sm btn-danger"
                         >
+
                             <i class="bi bi-box-arrow-up-right me-1"></i>
+
                             Buka File
+
                         </a>
+
                     </div>
+
                 `);
 
         }

@@ -29,13 +29,13 @@ class PesertaRepository
      */
     public function getData()
     {
-        $pengajuan = PengajuanMagang::with([
-            'anggota'
-        ])
-        ->where('status', 'Diterima')
-        ->latest()
-        ->get();
-
+$pengajuan = PengajuanMagang::with([
+    'anggota'
+])
+->where('status', 'Diterima')
+->whereNull('archived_at')
+->latest()
+->get();
         $data = $pengajuan->map(function ($item) {
 
             /*

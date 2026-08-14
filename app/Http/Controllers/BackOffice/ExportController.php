@@ -517,12 +517,31 @@ class ExportController extends Controller
  */
 public function perguruanTinggi(Request $request)
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil seluruh pengajuan
+    |--------------------------------------------------------------------------
+    |
+    | Aktif / nonaktif ditentukan berdasarkan archived_at:
+    |
+    | archived_at = NULL     -> Aktif
+    | archived_at tidak NULL -> Nonaktif
+    |
+    */
+
     $pengajuans = \App\Models\PengajuanMagang::with('anggota')
-        ->where('status', 'Diterima')
         ->latest()
         ->get();
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kelompokkan berdasarkan Perguruan Tinggi
+    |--------------------------------------------------------------------------
+    */
+
     $universitas = [];
+
 
     foreach ($pengajuans as $pengajuan) {
 
@@ -532,21 +551,96 @@ public function perguruanTinggi(Request $request)
             continue;
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Buat data universitas jika belum ada
+        |--------------------------------------------------------------------------
+        */
+
         if (!isset($universitas[$key])) {
+
             $universitas[$key] = [
+
                 'universitas' => $key,
+
+                'pengajuan_aktif' => 0,
+
+                'pengajuan_nonaktif' => 0,
+
                 'pengajuan_count' => 0,
+
+                'peserta_aktif' => 0,
+
+                'peserta_nonaktif' => 0,
+
                 'peserta_count' => 0,
+
             ];
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tentukan status arsip
+        |--------------------------------------------------------------------------
+        */
+
+        $isAktif = is_null($pengajuan->archived_at);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jumlah Peserta
+        |--------------------------------------------------------------------------
+        |
+        | Ketua dihitung sebagai 1 peserta
+        | + seluruh anggota kelompok
+        |
+        */
+
+        $jumlahPeserta = 1 + $pengajuan->anggota->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Hitung Pengajuan & Peserta
+        |--------------------------------------------------------------------------
+        */
+
+        if ($isAktif) {
+
+            // Pengajuan aktif
+            $universitas[$key]['pengajuan_aktif']++;
+
+            // Peserta aktif
+            $universitas[$key]['peserta_aktif'] += $jumlahPeserta;
+
+        } else {
+
+            // Pengajuan nonaktif
+            $universitas[$key]['pengajuan_nonaktif']++;
+
+            // Peserta nonaktif
+            $universitas[$key]['peserta_nonaktif'] += $jumlahPeserta;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total
+        |--------------------------------------------------------------------------
+        */
+
         $universitas[$key]['pengajuan_count']++;
 
-        $universitas[$key]['peserta_count'] +=
-            1 + $pengajuan->anggota->count();
+        $universitas[$key]['peserta_count'] += $jumlahPeserta;
     }
 
+
     $data = array_values($universitas);
+
 
     /*
     |--------------------------------------------------------------------------
@@ -568,17 +662,32 @@ public function perguruanTinggi(Request $request)
     */
 
     $headers = [
+
         'No',
+
         'Perguruan Tinggi',
-        'Jumlah Pengajuan',
-        'Jumlah Peserta',
+
+        'Pengajuan Aktif',
+
+        'Pengajuan Nonaktif',
+
+        'Total Pengajuan',
+
+        'Peserta Aktif',
+
+        'Peserta Nonaktif',
+
+        'Total Peserta',
+
     ];
+
 
     foreach ($headers as $index => $header) {
 
-        $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
-            $index + 1
-        );
+        $column =
+            \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(
+                $index + 1
+            );
 
         $sheet->setCellValue(
             $column . '1',
@@ -595,27 +704,88 @@ public function perguruanTinggi(Request $request)
 
     $row = 2;
 
+
     foreach ($data as $index => $item) {
+
+        /*
+        | No
+        */
 
         $sheet->setCellValue(
             'A' . $row,
             $index + 1
         );
 
+
+        /*
+        | Perguruan Tinggi
+        */
+
         $sheet->setCellValue(
             'B' . $row,
             $item['universitas']
         );
 
+
+        /*
+        | Pengajuan Aktif
+        */
+
         $sheet->setCellValue(
             'C' . $row,
-            $item['pengajuan_count']
+            $item['pengajuan_aktif']
         );
+
+
+        /*
+        | Pengajuan Nonaktif
+        */
 
         $sheet->setCellValue(
             'D' . $row,
+            $item['pengajuan_nonaktif']
+        );
+
+
+        /*
+        | Total Pengajuan
+        */
+
+        $sheet->setCellValue(
+            'E' . $row,
+            $item['pengajuan_count']
+        );
+
+
+        /*
+        | Peserta Aktif
+        */
+
+        $sheet->setCellValue(
+            'F' . $row,
+            $item['peserta_aktif']
+        );
+
+
+        /*
+        | Peserta Nonaktif
+        */
+
+        $sheet->setCellValue(
+            'G' . $row,
+            $item['peserta_nonaktif']
+        );
+
+
+        /*
+        | Total Peserta
+        */
+
+        $sheet->setCellValue(
+            'H' . $row,
             $item['peserta_count']
         );
+
 
         $row++;
     }
@@ -627,17 +797,19 @@ public function perguruanTinggi(Request $request)
     |--------------------------------------------------------------------------
     */
 
-    $sheet->getStyle('A1:D1')
+    $sheet->getStyle('A1:H1')
         ->getFont()
         ->setBold(true);
 
-    $sheet->getStyle('A1:D1')
+
+    $sheet->getStyle('A1:H1')
         ->getAlignment()
         ->setHorizontal(
             \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
         );
 
-    $sheet->getStyle('A1:D1')
+
+    $sheet->getStyle('A1:H1')
         ->getAlignment()
         ->setVertical(
             \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
@@ -653,7 +825,7 @@ public function perguruanTinggi(Request $request)
     if ($row > 2) {
 
         $sheet->getStyle(
-            'A1:D' . ($row - 1)
+            'A1:H' . ($row - 1)
         )->getBorders()->getAllBorders()
             ->setBorderStyle(
                 \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
@@ -674,8 +846,9 @@ public function perguruanTinggi(Request $request)
             \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
         );
 
+
     $sheet->getStyle(
-        'C2:D' . max(2, $row - 1)
+        'C2:H' . max(2, $row - 1)
     )->getAlignment()
         ->setHorizontal(
             \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
@@ -688,7 +861,7 @@ public function perguruanTinggi(Request $request)
     |--------------------------------------------------------------------------
     */
 
-    foreach (range('A', 'D') as $column) {
+    foreach (range('A', 'H') as $column) {
 
         $sheet->getColumnDimension($column)
             ->setAutoSize(true);
@@ -713,7 +886,7 @@ public function perguruanTinggi(Request $request)
     if ($row > 2) {
 
         $sheet->setAutoFilter(
-            'A1:D' . ($row - 1)
+            'A1:H' . ($row - 1)
         );
     }
 
@@ -2662,4 +2835,823 @@ public function logbookPeserta(Request $request)
         ]
     );
 }
+
+/**
+ * Export Detail Arsip Pengajuan ke Excel
+ */
+public function arsipPengajuan($id)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL PENGAJUAN
+    |--------------------------------------------------------------------------
+    */
+
+    $pengajuan = PengajuanMagang::with([
+        'mentor',
+        'anggota',
+    ])
+        ->whereNotNull('archived_at')
+        ->findOrFail($id);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL ANGGOTA
+    |--------------------------------------------------------------------------
+    */
+
+    $anggota = \App\Models\AnggotaMagang::query()
+        ->where(
+            'pengajuan_magang_id',
+            $pengajuan->id
+        )
+        ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KUMPULKAN EMAIL PESERTA
+    |--------------------------------------------------------------------------
+    */
+
+    $emails = collect();
+
+    if ($pengajuan->email_ketua) {
+
+        $emails->push(
+            strtolower(
+                trim($pengajuan->email_ketua)
+            )
+        );
+
+    }
+
+
+    foreach ($anggota as $item) {
+
+        if ($item->email) {
+
+            $emails->push(
+                strtolower(
+                    trim($item->email)
+                )
+            );
+
+        }
+
+    }
+
+
+    $emails = $emails
+        ->filter()
+        ->unique()
+        ->values();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL USER
+    |--------------------------------------------------------------------------
+    */
+
+    $users = \App\Models\User::query()
+        ->where(function ($query) use ($emails) {
+
+            foreach ($emails as $email) {
+
+                $query->orWhereRaw(
+                    'LOWER(email) = ?',
+                    [$email]
+                );
+
+            }
+
+        })
+        ->with('mentor')
+        ->get();
+
+
+    $usersByEmail = $users->keyBy(function ($user) {
+
+        return strtolower(
+            trim($user->email ?? '')
+        );
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PESERTA
+    |--------------------------------------------------------------------------
+    */
+
+    $peserta = collect();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KETUA
+    |--------------------------------------------------------------------------
+    */
+
+    $emailKetua = strtolower(
+        trim($pengajuan->email_ketua ?? '')
+    );
+
+
+    $userKetua =
+        $usersByEmail->get(
+            $emailKetua
+        );
+
+
+    $peserta->push([
+
+        'id' =>
+            optional($userKetua)->id,
+
+        'nama' =>
+            $pengajuan->nama_ketua
+            ?: optional($userKetua)->name
+            ?: '-',
+
+        'email' =>
+            $pengajuan->email_ketua
+            ?: optional($userKetua)->email
+            ?: '-',
+
+        'no_hp' =>
+            $pengajuan->no_hp
+            ?: '-',
+
+        'peran' =>
+            'Ketua',
+
+        'mentor' =>
+            optional($pengajuan->mentor)->nama_mentor
+            ?: optional(
+                optional($userKetua)->mentor
+            )->nama_mentor
+            ?: '-',
+
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ANGGOTA
+    |--------------------------------------------------------------------------
+    */
+
+    foreach ($anggota as $item) {
+
+        $emailAnggota = strtolower(
+            trim($item->email ?? '')
+        );
+
+
+        if (
+            $emailAnggota !== '' &&
+            $emailAnggota === $emailKetua
+        ) {
+
+            continue;
+
+        }
+
+
+        $user =
+            $usersByEmail->get(
+                $emailAnggota
+            );
+
+
+        $peserta->push([
+
+            'id' =>
+                optional($user)->id,
+
+            'nama' =>
+                $item->nama_anggota
+                ?: optional($user)->name
+                ?: '-',
+
+            'email' =>
+                $item->email
+                ?: optional($user)->email
+                ?: '-',
+
+            'no_hp' =>
+                $item->no_hp
+                ?: '-',
+
+            'peran' =>
+                'Anggota',
+
+            'mentor' =>
+                optional($pengajuan->mentor)->nama_mentor
+                ?: optional(
+                    optional($user)->mentor
+                )->nama_mentor
+                ?: '-',
+
+        ]);
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER ID PESERTA
+    |--------------------------------------------------------------------------
+    */
+
+    $userIds = $peserta
+        ->pluck('id')
+        ->filter()
+        ->unique()
+        ->values();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOGBOOK
+    |--------------------------------------------------------------------------
+    */
+
+    $logbooks = \App\Models\Logbook::query()
+        ->with('user')
+        ->where(function ($query) use (
+            $pengajuan,
+            $userIds
+        ) {
+
+            /*
+            |------------------------------------------------------------------
+            | Logbook yang terhubung langsung dengan pengajuan
+            |------------------------------------------------------------------
+            */
+
+            $query->where(
+                'pengajuan_magang_id',
+                $pengajuan->id
+            );
+
+
+            /*
+            |------------------------------------------------------------------
+            | Logbook peserta yang belum punya
+            | pengajuan_magang_id
+            |------------------------------------------------------------------
+            */
+
+            if ($userIds->isNotEmpty()) {
+
+                $query->orWhere(function ($subQuery) use ($userIds) {
+
+                    $subQuery
+                        ->whereNull('pengajuan_magang_id')
+                        ->whereIn(
+                            'user_id',
+                            $userIds
+                        );
+
+                });
+
+            }
+
+        })
+        ->orderBy('tanggal', 'asc')
+        ->orderBy('id', 'asc')
+        ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BUAT SPREADSHEET
+    |--------------------------------------------------------------------------
+    */
+
+    $spreadsheet =
+        new Spreadsheet();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHEET 1 - DATA PENGAJUAN
+    |--------------------------------------------------------------------------
+    */
+
+    $sheet =
+        $spreadsheet->getActiveSheet();
+
+
+    $sheet->setTitle(
+        'Data Pengajuan'
+    );
+
+
+    $dataPengajuan = [
+
+        ['Data Pengajuan', ''],
+
+        ['Kode Pengajuan', $pengajuan->kode_pengajuan],
+
+        ['Nama Ketua', $pengajuan->nama_ketua],
+
+        ['Email Ketua', $pengajuan->email_ketua],
+
+        ['No. HP Ketua', $pengajuan->no_hp],
+
+        ['Perguruan Tinggi', $pengajuan->universitas],
+
+        ['Semester', $pengajuan->semester],
+
+        ['Tanggal Mulai', $pengajuan->tanggal_mulai],
+
+        ['Tanggal Selesai', $pengajuan->tanggal_selesai],
+
+        ['Status', $pengajuan->status],
+
+        [
+            'Mentor',
+            optional($pengajuan->mentor)->nama_mentor
+                ?: '-'
+        ],
+
+        ['Diarsipkan', $pengajuan->archived_at],
+
+        ['Catatan', $pengajuan->catatan ?: '-'],
+
+    ];
+
+
+    foreach ($dataPengajuan as $rowIndex => $rowData) {
+
+        $excelRow =
+            $rowIndex + 1;
+
+
+        $sheet->setCellValue(
+            'A' . $excelRow,
+            $rowData[0]
+        );
+
+
+        $sheet->setCellValue(
+            'B' . $excelRow,
+            $rowData[1]
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STYLE DATA PENGAJUAN
+    |--------------------------------------------------------------------------
+    */
+
+    $sheet->getStyle('A1:B1')
+        ->getFont()
+        ->setBold(true);
+
+
+    $sheet->getStyle('A1:B13')
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(
+            Border::BORDER_THIN
+        );
+
+
+    $sheet->getStyle('A1:A13')
+        ->getFont()
+        ->setBold(true);
+
+
+    $sheet->getStyle('A1:B13')
+        ->getAlignment()
+        ->setVertical(
+            Alignment::VERTICAL_TOP
+        );
+
+
+    $sheet->getStyle('B13')
+        ->getAlignment()
+        ->setWrapText(true);
+
+
+    $sheet->getColumnDimension('A')
+        ->setWidth(25);
+
+
+    $sheet->getColumnDimension('B')
+        ->setWidth(50);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHEET 2 - PESERTA
+    |--------------------------------------------------------------------------
+    */
+
+    $pesertaSheet =
+        $spreadsheet->createSheet();
+
+
+    $pesertaSheet->setTitle(
+        'Data Peserta'
+    );
+
+
+    $headersPeserta = [
+
+        'No',
+
+        'Nama Peserta',
+
+        'Email',
+
+        'No. HP',
+
+        'Peran',
+
+        'Mentor',
+
+    ];
+
+
+    foreach (
+        $headersPeserta
+        as $index => $header
+    ) {
+
+        $column =
+            Coordinate::stringFromColumnIndex(
+                $index + 1
+            );
+
+
+        $pesertaSheet->setCellValue(
+            $column . '1',
+            $header
+        );
+
+    }
+
+
+    $pesertaSheet
+        ->getStyle('A1:F1')
+        ->getFont()
+        ->setBold(true);
+
+
+    $row = 2;
+
+
+    foreach (
+        $peserta as $index => $item
+    ) {
+
+        $pesertaSheet->setCellValue(
+            'A' . $row,
+            $index + 1
+        );
+
+        $pesertaSheet->setCellValue(
+            'B' . $row,
+            $item['nama']
+        );
+
+        $pesertaSheet->setCellValue(
+            'C' . $row,
+            $item['email']
+        );
+
+        $pesertaSheet->setCellValue(
+            'D' . $row,
+            $item['no_hp']
+        );
+
+        $pesertaSheet->setCellValue(
+            'E' . $row,
+            $item['peran']
+        );
+
+        $pesertaSheet->setCellValue(
+            'F' . $row,
+            $item['mentor']
+        );
+
+        $row++;
+
+    }
+
+
+    $pesertaLastRow =
+        max(
+            1,
+            $row - 1
+        );
+
+
+    $pesertaSheet
+        ->getStyle(
+            'A1:F' . $pesertaLastRow
+        )
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(
+            Border::BORDER_THIN
+        );
+
+
+    foreach (
+        range('A', 'F')
+        as $column
+    ) {
+
+        $pesertaSheet
+            ->getColumnDimension($column)
+            ->setAutoSize(true);
+
+    }
+
+
+    $pesertaSheet->freezePane('A2');
+
+
+    if ($pesertaLastRow >= 2) {
+
+        $pesertaSheet->setAutoFilter(
+            'A1:F' . $pesertaLastRow
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SHEET 3 - LOGBOOK
+    |--------------------------------------------------------------------------
+    */
+
+    $logbookSheet =
+        $spreadsheet->createSheet();
+
+
+    $logbookSheet->setTitle(
+        'Riwayat Logbook'
+    );
+
+
+    $headersLogbook = [
+
+        'No',
+
+        'Tanggal',
+
+        'Peserta',
+
+        'Email',
+
+        'Aktivitas',
+
+        'Hasil',
+
+        'Catatan Peserta',
+
+        'Catatan Mentor',
+
+        'Status',
+
+        'Bukti',
+
+    ];
+
+
+    foreach (
+        $headersLogbook
+        as $index => $header
+    ) {
+
+        $column =
+            Coordinate::stringFromColumnIndex(
+                $index + 1
+            );
+
+
+        $logbookSheet->setCellValue(
+            $column . '1',
+            $header
+        );
+
+    }
+
+
+    $logbookSheet
+        ->getStyle('A1:J1')
+        ->getFont()
+        ->setBold(true);
+
+
+    $row = 2;
+
+
+    foreach (
+        $logbooks as $index => $logbook
+    ) {
+
+        $user =
+            $logbook->user;
+
+
+        $logbookSheet->setCellValue(
+            'A' . $row,
+            $index + 1
+        );
+
+
+        $logbookSheet->setCellValue(
+            'B' . $row,
+            $logbook->tanggal
+        );
+
+
+        $logbookSheet->setCellValue(
+            'C' . $row,
+            $user?->name
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'D' . $row,
+            $user?->email
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'E' . $row,
+            $logbook->aktivitas
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'F' . $row,
+            $logbook->hasil
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'G' . $row,
+            $logbook->catatan
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'H' . $row,
+            $logbook->catatan_mentor
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'I' . $row,
+            $logbook->status
+                ?? '-'
+        );
+
+
+        $logbookSheet->setCellValue(
+            'J' . $row,
+            $logbook->bukti
+                ?? '-'
+        );
+
+
+        $row++;
+
+    }
+
+
+    $logbookLastRow =
+        max(
+            1,
+            $row - 1
+        );
+
+
+    $logbookSheet
+        ->getStyle(
+            'A1:J' . $logbookLastRow
+        )
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(
+            Border::BORDER_THIN
+        );
+
+
+    $logbookSheet
+        ->getStyle(
+            'A1:J' . $logbookLastRow
+        )
+        ->getAlignment()
+        ->setVertical(
+            Alignment::VERTICAL_TOP
+        );
+
+
+    foreach (
+        range('A', 'J')
+        as $column
+    ) {
+
+        $logbookSheet
+            ->getColumnDimension($column)
+            ->setAutoSize(true);
+
+    }
+
+
+    $logbookSheet
+        ->getStyle(
+            'E2:H' . $logbookLastRow
+        )
+        ->getAlignment()
+        ->setWrapText(true);
+
+
+    $logbookSheet->freezePane('A2');
+
+
+    if ($logbookLastRow >= 2) {
+
+        $logbookSheet->setAutoFilter(
+            'A1:J' . $logbookLastRow
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | NAMA FILE
+    |--------------------------------------------------------------------------
+    */
+
+    $kode =
+        preg_replace(
+            '/[^A-Za-z0-9_-]/',
+            '-',
+            $pengajuan->kode_pengajuan
+        );
+
+
+    $filename =
+        'arsip-' .
+        $kode .
+        '-' .
+        now()->format('Y-m-d-His') .
+        '.xlsx';
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD
+    |--------------------------------------------------------------------------
+    */
+
+    $writer =
+        new Xlsx(
+            $spreadsheet
+        );
+
+
+    return response()->streamDownload(
+        function () use ($writer) {
+
+            $writer->save(
+                'php://output'
+            );
+
+        },
+        $filename,
+        [
+
+            'Content-Type' =>
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+
+        ]
+    );
+}
+
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\BackOffice\PengajuanController as BackOfficePengajuanCo
 
 use App\Http\Controllers\Peserta\LogbookController as PesertaLogbookController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Public API
@@ -24,11 +25,18 @@ use App\Http\Controllers\Peserta\LogbookController as PesertaLogbookController;
 
 Route::prefix('public')->group(function () {
 
-    Route::post('/pengajuan',[PengajuanController::class,'store']);
+    Route::post(
+        '/pengajuan',
+        [PengajuanController::class, 'store']
+    );
 
-    Route::post('/hasil',[HasilController::class,'cari']);
+    Route::post(
+        '/hasil',
+        [HasilController::class, 'cari']
+    );
 
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,70 +44,195 @@ Route::prefix('public')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('back-office')->group(function(){
+Route::prefix('back-office')->group(function () {
 
-    Route::get('/role-user',[RoleUserController::class,'getData']);
+    /*
+    |--------------------------------------------------------------------------
+    | Role User
+    |--------------------------------------------------------------------------
+    */
 
-    Route::get('/role-user/{id}',[RoleUserController::class,'show']);
+    Route::get(
+        '/role-user',
+        [RoleUserController::class, 'getData']
+    );
 
-    Route::post('/role-user',[RoleUserController::class,'store']);
+    Route::get(
+        '/role-user/{id}',
+        [RoleUserController::class, 'show']
+    );
 
-    Route::put('/role-user/{id}',[RoleUserController::class,'update']);
+    Route::post(
+        '/role-user',
+        [RoleUserController::class, 'store']
+    );
 
-    Route::delete('/role-user/{id}',[RoleUserController::class,'destroy']);
+    Route::put(
+        '/role-user/{id}',
+        [RoleUserController::class, 'update']
+    );
 
-
-
-    Route::get('/role-menu',[RoleMenuController::class,'getData']);
-
-    Route::get('/role-menu/{id}',[RoleMenuController::class,'show']);
-
-    Route::post('/role-menu',[RoleMenuController::class,'store']);
-
-Route::put('/role-menu/{roleMenu}',
-[RoleMenuController::class,'update']);
-
-Route::delete('/role-menu/{roleMenu}',
-[RoleMenuController::class,'destroy']);
-
-
-    Route::get('/pengajuan',[BackOfficePengajuanController::class,'getData']);
-
-    Route::put('/pengajuan/{id}',[BackOfficePengajuanController::class,'update']);
-
-
-
-    Route::get('/peserta',[PesertaController::class,'getData']);
+    Route::delete(
+        '/role-user/{id}',
+        [RoleUserController::class, 'destroy']
+    );
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Role Menu
+    |--------------------------------------------------------------------------
+    */
 
-    Route::get('/mentor',[MentorController::class,'getData']);
+    Route::get(
+        '/role-menu',
+        [RoleMenuController::class, 'getData']
+    );
 
-    Route::get('/mentor/{id}',[MentorController::class,'show']);
+    Route::get(
+        '/role-menu/{id}',
+        [RoleMenuController::class, 'show']
+    );
 
-    Route::post('/mentor',[MentorController::class,'store']);
+    Route::post(
+        '/role-menu',
+        [RoleMenuController::class, 'store']
+    );
 
-    Route::put('/mentor/{id}',[MentorController::class,'update']);
+    Route::put(
+        '/role-menu/{roleMenu}',
+        [RoleMenuController::class, 'update']
+    );
 
-    Route::delete('/mentor/{id}',[MentorController::class,'destroy']);
-
-    Route::get('/mentor-peserta',[MentorController::class,'peserta']);
-
-
-
-    Route::get('/perguruan-tinggi',[PerguruanTinggiController::class,'getData']);
-
-
-
-    Route::get('/logbook',[LogbookController::class,'getData']);
-
-    Route::post('/logbook',[LogbookController::class,'store']);
-
-    Route::delete('/logbook/{id}',[LogbookController::class,'destroy']);
+    Route::delete(
+        '/role-menu/{roleMenu}',
+        [RoleMenuController::class, 'destroy']
+    );
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pengajuan
+    |--------------------------------------------------------------------------
+    */
 
-    Route::get('/history',[HistoryController::class,'getData']);
+    Route::get(
+        '/pengajuan',
+        [BackOfficePengajuanController::class, 'getData']
+    );
+
+    Route::put(
+        '/pengajuan/{id}',
+        [BackOfficePengajuanController::class, 'update']
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Arsip Pengajuan
+    |--------------------------------------------------------------------------
+    |
+    | Arsip dilakukan MANUAL melalui tombol Arsip.
+    |
+    */
+
+    Route::put(
+        '/pengajuan/{id}/archive',
+        [BackOfficePengajuanController::class, 'archive']
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Peserta
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/peserta',
+        [PesertaController::class, 'getData']
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mentor
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/mentor',
+        [MentorController::class, 'getData']
+    );
+
+    Route::get(
+        '/mentor/{id}',
+        [MentorController::class, 'show']
+    );
+
+    Route::post(
+        '/mentor',
+        [MentorController::class, 'store']
+    );
+
+    Route::put(
+        '/mentor/{id}',
+        [MentorController::class, 'update']
+    );
+
+    Route::delete(
+        '/mentor/{id}',
+        [MentorController::class, 'destroy']
+    );
+
+    Route::get(
+        '/mentor-peserta',
+        [MentorController::class, 'peserta']
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Perguruan Tinggi
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/perguruan-tinggi',
+        [PerguruanTinggiController::class, 'getData']
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logbook
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/logbook',
+        [LogbookController::class, 'getData']
+    );
+
+    Route::post(
+        '/logbook',
+        [LogbookController::class, 'store']
+    );
+
+    Route::delete(
+        '/logbook/{id}',
+        [LogbookController::class, 'destroy']
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | History
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/history',
+        [HistoryController::class, 'getData']
+    );
 
 });
-

@@ -12,15 +12,10 @@ class AnggotaMagang extends Model
     protected $table = 'anggota_magangs';
 
     protected $fillable = [
-
         'pengajuan_magang_id',
-
         'nama_anggota',
-
         'email',
-
         'no_hp',
-
     ];
 
     public function pengajuan()
@@ -28,6 +23,15 @@ class AnggotaMagang extends Model
         return $this->belongsTo(
             PengajuanMagang::class,
             'pengajuan_magang_id'
+        );
+    }
+
+    public function user()
+    {
+        return $this->hasOne(
+            User::class,
+            'email',
+            'email'
         );
     }
 }

@@ -41,9 +41,6 @@
 {{-- Navigation --}}
 <div class="offcanvas-body">
 
-    <div class="sidebar-menu-label">
-        MENU UTAMA
-    </div>
 
     <nav>
 

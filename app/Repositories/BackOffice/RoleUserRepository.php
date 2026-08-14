@@ -5,6 +5,7 @@ namespace App\Repositories\BackOffice;
 use App\Models\User;
 use App\Models\Role;
 use App\Helpers\ActivityLogger;
+use App\Models\PengajuanMagang;
 
 class RoleUserRepository
 {
@@ -26,18 +27,47 @@ class RoleUserRepository
         );
     }
 
-    public function getData()
-    {
-        $users = User::with('role')
-            ->latest()
-            ->get();
+public function getData()
+{
+    $users = User::with('role')
+        ->where(function ($query) {
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $users,
-        ]);
-    }
+            // User yang bukan peserta tetap ditampilkan
+            $query->where('role_id', '!=', 2)
 
+                // Peserta hanya ditampilkan jika memiliki
+                // pengajuan yang masih aktif
+                ->orWhere(function ($q) {
+
+                    $q->where('role_id', 2)
+                        ->where(function ($userQuery) {
+
+                            // Peserta sebagai ketua
+                            $userQuery->whereHas('pengajuanKetua', function ($pengajuanQuery) {
+                                $pengajuanQuery
+                                    ->where('status', 'Diterima')
+                                    ->whereNull('archived_at');
+                            })
+
+                            // Peserta sebagai anggota
+                            ->orWhereHas('anggotaMagang', function ($anggotaQuery) {
+                                $anggotaQuery->whereHas('pengajuan', function ($pengajuanQuery) {
+                                    $pengajuanQuery
+                                        ->where('status', 'Diterima')
+                                        ->whereNull('archived_at');
+                                });
+                            });
+                        });
+                });
+        })
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $users,
+    ]);
+}
     public function show($id)
     {
         $user = User::with('role')

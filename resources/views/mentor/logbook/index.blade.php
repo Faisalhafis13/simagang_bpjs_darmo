@@ -274,7 +274,8 @@ let selectedPesertaId = null;
 |--------------------------------------------------------------------------
 */
 
-const csrfToken = $('meta[name="csrf-token"]').attr('content');
+const csrfToken =
+    $('meta[name="csrf-token"]').attr('content');
 
 
 /*
@@ -340,6 +341,227 @@ function escapeAttribute(value) {
         .replace(/'/g, '&#039;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| FORMAT TANGGAL
+|--------------------------------------------------------------------------
+|
+| PENTING:
+|
+| Jangan menggunakan:
+|
+| new Date('2026-08-14')
+|
+| karena JavaScript dapat memperlakukannya sebagai UTC
+| dan tanggal bisa bergeser di timezone Indonesia.
+|
+| Fungsi ini memproses tanggal database secara manual.
+|
+| Contoh:
+|
+| 2026-08-14
+|       ↓
+| 14-08-2026
+|
+| 2026-08-14 00:00:00
+|       ↓
+| 14-08-2026
+|
+| 2026-08-14T00:00:00
+|       ↓
+| 14-08-2026
+|
+| 14-08-2026
+|       ↓
+| 14-08-2026
+|
+| 14/08/2026
+|       ↓
+| 14-08-2026
+|
+*/
+
+function formatTanggal(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return '-';
+
+    }
+
+
+    const rawValue =
+        String(value).trim();
+
+
+    if (rawValue === '') {
+
+        return '-';
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT DATABASE:
+    | YYYY-MM-DD
+    |--------------------------------------------------------------------------
+    */
+
+    const isoDateMatch =
+        rawValue.match(
+            /^(\d{4})-(\d{2})-(\d{2})(?:$|[ T])/
+        );
+
+
+    if (isoDateMatch) {
+
+        const year =
+            isoDateMatch[1];
+
+        const month =
+            isoDateMatch[2];
+
+        const day =
+            isoDateMatch[3];
+
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT DD-MM-YYYY
+    |--------------------------------------------------------------------------
+    */
+
+    const dmyMatch =
+        rawValue.match(
+            /^(\d{2})-(\d{2})-(\d{4})/
+        );
+
+
+    if (dmyMatch) {
+
+        const day =
+            dmyMatch[1];
+
+        const month =
+            dmyMatch[2];
+
+        const year =
+            dmyMatch[3];
+
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT DD/MM/YYYY
+    |--------------------------------------------------------------------------
+    */
+
+    const slashMatch =
+        rawValue.match(
+            /^(\d{2})\/(\d{2})\/(\d{4})/
+        );
+
+
+    if (slashMatch) {
+
+        const day =
+            slashMatch[1];
+
+        const month =
+            slashMatch[2];
+
+        const year =
+            slashMatch[3];
+
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT YYYY/MM/DD
+    |--------------------------------------------------------------------------
+    */
+
+    const yearSlashMatch =
+        rawValue.match(
+            /^(\d{4})\/(\d{2})\/(\d{2})/
+        );
+
+
+    if (yearSlashMatch) {
+
+        const year =
+            yearSlashMatch[1];
+
+        const month =
+            yearSlashMatch[2];
+
+        const day =
+            yearSlashMatch[3];
+
+
+        return `${day}-${month}-${year}`;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FALLBACK
+    |--------------------------------------------------------------------------
+    |
+    | Hanya digunakan jika format tanggal tidak dikenali.
+    |
+    */
+
+    const date =
+        new Date(rawValue);
+
+
+    if (isNaN(date.getTime())) {
+
+        return escapeHtml(rawValue);
+
+    }
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, '0');
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, '0');
+
+
+    const year =
+        date.getFullYear();
+
+
+    return `${day}-${month}-${year}`;
 
 }
 
@@ -421,7 +643,9 @@ function statusBadge(status) {
 
 async function loadPeserta() {
 
-    const select = $('#peserta');
+    const select =
+        $('#peserta');
+
 
     select
         .prop('disabled', true)
@@ -431,21 +655,25 @@ async function loadPeserta() {
             </option>
         `);
 
+
     $('#btnExportExcel')
         .prop('disabled', true);
 
 
     try {
 
-        const response = await fetch(
-            '/mentor/logbook/peserta',
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
+        const response =
+            await fetch(
+                '/mentor/logbook/peserta',
+                {
+                    method: 'GET',
+
+                    headers: {
+                        'Accept':
+                            'application/json'
+                    }
                 }
-            }
-        );
+            );
 
 
         const result =
@@ -619,6 +847,7 @@ async function loadLogbook(userId) {
                 colspan="9"
                 class="text-center py-5"
             >
+
                 <div
                     class="spinner-border spinner-border-sm text-primary me-2"
                     role="status"
@@ -627,6 +856,7 @@ async function loadLogbook(userId) {
                 <span class="text-muted">
                     Memuat logbook...
                 </span>
+
             </td>
         </tr>
     `);
@@ -643,6 +873,7 @@ async function loadLogbook(userId) {
                 url,
                 {
                     method: 'GET',
+
                     headers: {
                         'Accept':
                             'application/json'
@@ -685,12 +916,14 @@ async function loadLogbook(userId) {
                     colspan="9"
                     class="text-center text-danger py-4"
                 >
+
                     <i class="bi bi-exclamation-circle me-1"></i>
 
                     ${escapeHtml(
                         error.message ||
                         'Gagal memuat logbook.'
                     )}
+
                 </td>
             </tr>
         `);
@@ -719,9 +952,11 @@ function renderLogbook(data) {
                     colspan="9"
                     class="text-center text-muted py-5"
                 >
+
                     <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
 
                     Belum ada logbook untuk peserta ini.
+
                 </td>
             </tr>
         `);
@@ -863,22 +1098,44 @@ function renderLogbook(data) {
                         ${index + 1}
                     </td>
 
-                    <td>
-                        ${escapeHtml(
+                    <td class="text-nowrap">
+                        ${formatTanggal(
                             item.tanggal
                         )}
                     </td>
 
                     <td>
-                        ${escapeHtml(
-                            item.aktivitas
-                        )}
+
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(
+                                item.aktivitas
+                            )}
+                        </div>
+
                     </td>
 
                     <td>
-                        ${escapeHtml(
-                            item.hasil
-                        )}
+
+                        <div
+                            style="
+                                min-width:180px;
+                                max-width:300px;
+                                white-space:normal;
+                                word-break:break-word;
+                            "
+                        >
+                            ${escapeHtml(
+                                item.hasil
+                            )}
+                        </div>
+
                     </td>
 
                     <td>
@@ -945,7 +1202,8 @@ function renderLogbook(data) {
     );
 
 
-    $('#logbookData').html(html);
+    $('#logbookData')
+        .html(html);
 
 }
 
@@ -1010,7 +1268,9 @@ $(document).on(
 
 
         if (!confirm.isConfirmed) {
+
             return;
+
         }
 
 

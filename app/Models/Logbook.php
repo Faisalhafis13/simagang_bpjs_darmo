@@ -9,8 +9,11 @@ class Logbook extends Model
 {
     use HasFactory;
 
+    protected $table = 'logbooks';
+
     protected $fillable = [
         'user_id',
+        'pengajuan_magang_id',
         'tanggal',
         'aktivitas',
         'hasil',
@@ -24,8 +27,31 @@ class Logbook extends Model
         'tanggal' => 'date',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | USER / PESERTA
+    |--------------------------------------------------------------------------
+    */
+
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(
+            User::class,
+            'user_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PENGAJUAN MAGANG
+    |--------------------------------------------------------------------------
+    */
+
+    public function pengajuan()
+    {
+        return $this->belongsTo(
+            PengajuanMagang::class,
+            'pengajuan_magang_id'
+        );
     }
 }

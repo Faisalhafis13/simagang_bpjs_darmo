@@ -24,7 +24,8 @@ HERO
             <h1>
                 Sistem Informasi
                 <span class="text-primary">
-                    Magang
+                    Penerimaan Magang
+                    Mahasiswa
                 </span>
             </h1>
 

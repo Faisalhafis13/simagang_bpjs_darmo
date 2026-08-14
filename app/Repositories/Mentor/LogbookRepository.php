@@ -20,26 +20,28 @@ class LogbookRepository
         )->first();
     }
 
-    public function peserta()
-    {
-        $mentor = $this->getMentor();
+public function peserta()
+{
+    $mentor = $this->getMentor();
 
-        if (!$mentor) {
-            return collect([]);
-        }
-
-        return $mentor->peserta()
-            ->select(
-                'id',
-                'name'
-            )
-            ->orderBy(
-                'name',
-                'asc'
-            )
-            ->get();
+    if (!$mentor) {
+        return collect([]);
     }
 
+    return $mentor->peserta()
+        ->whereHas('logbooks.pengajuan', function ($query) {
+            $query->whereNull('archived_at');
+        })
+        ->select(
+            'id',
+            'name'
+        )
+        ->orderBy(
+            'name',
+            'asc'
+        )
+        ->get();
+}
     public function getData($request)
     {
         $mentor = $this->getMentor();
@@ -48,42 +50,50 @@ class LogbookRepository
             return collect([]);
         }
 
-        return Logbook::with('user')
-            ->whereHas('user', function ($query) use ($mentor) {
+return Logbook::with([
+        'user',
+        'pengajuan',
+    ])
+    ->whereHas('user', function ($query) use ($mentor) {
 
-                $query->where(
-                    'mentor_id',
-                    $mentor->id
-                );
+        $query->where(
+            'mentor_id',
+            $mentor->id
+        );
 
-            })
-            ->where(
-                'user_id',
-                $request->user_id
-            )
-            ->orderBy(
-                'tanggal',
-                'desc'
-            )
-            ->get()
-            ->map(function ($logbook) {
+    })
+    ->whereHas('pengajuan', function ($query) {
 
-                return [
-                    'id' => $logbook->id,
-                    'tanggal' => $logbook->tanggal?->format('Y-m-d'),
-                    'aktivitas' => $logbook->aktivitas,
-                    'hasil' => $logbook->hasil,
-                    'catatan' => $logbook->catatan,
-                    'bukti' => $logbook->bukti,
-                    'bukti_url' => $logbook->bukti
-                        ? asset('storage/' . $logbook->bukti)
-                        : null,
-                    'status' => $logbook->status ?? 'Menunggu',
-                    'catatan_mentor' => $logbook->catatan_mentor,
-                ];
+        $query->whereNull('archived_at');
 
-            });
-    }
+    })
+    ->where(
+        'user_id',
+        $request->user_id
+    )
+    ->orderBy(
+        'tanggal',
+        'desc'
+    )
+    ->get()
+    ->map(function ($logbook) {
+
+        return [
+            'id' => $logbook->id,
+            'tanggal' => $logbook->tanggal?->format('Y-m-d'),
+            'aktivitas' => $logbook->aktivitas,
+            'hasil' => $logbook->hasil,
+            'catatan' => $logbook->catatan,
+            'bukti' => $logbook->bukti,
+            'bukti_url' => $logbook->bukti
+                ? asset('storage/' . $logbook->bukti)
+                : null,
+            'status' => $logbook->status ?? 'Menunggu',
+            'catatan_mentor' => $logbook->catatan_mentor,
+        ];
+
+    });
+        }
 
     public function approve(Request $request, $id)
     {
@@ -96,20 +106,24 @@ class LogbookRepository
             ], 404);
         }
 
-        $logbook = Logbook::with('user')
-            ->whereHas(
-                'user',
-                function ($query) use ($mentor) {
+$logbook = Logbook::with([
+        'user',
+        'pengajuan',
+    ])
+    ->whereHas('user', function ($query) use ($mentor) {
 
-                    $query->where(
-                        'mentor_id',
-                        $mentor->id
-                    );
+        $query->where(
+            'mentor_id',
+            $mentor->id
+        );
 
-                }
-            )
-            ->findOrFail($id);
+    })
+    ->whereHas('pengajuan', function ($query) {
 
+        $query->whereNull('archived_at');
+
+    })
+    ->findOrFail($id);
         /*
         |--------------------------------------------------------------------------
         | Simpan data lama untuk Activity Log
@@ -163,20 +177,27 @@ class LogbookRepository
             'catatan_mentor' => 'nullable|string|max:5000',
         ]);
 
-        $logbook = Logbook::with('user')
-            ->whereHas(
-                'user',
-                function ($query) use ($mentor) {
+$logbook = Logbook::with([
+        'user',
+        'pengajuan',
+    ])
+    ->whereHas(
+        'user',
+        function ($query) use ($mentor) {
 
-                    $query->where(
-                        'mentor_id',
-                        $mentor->id
-                    );
+            $query->where(
+                'mentor_id',
+                $mentor->id
+            );
 
-                }
-            )
-            ->findOrFail($id);
+        }
+    )
+    ->whereHas('pengajuan', function ($query) {
 
+        $query->whereNull('archived_at');
+
+    })
+    ->findOrFail($id);
         /*
         |--------------------------------------------------------------------------
         | Simpan data lama untuk Activity Log

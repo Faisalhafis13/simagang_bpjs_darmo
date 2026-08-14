@@ -16,36 +16,36 @@ class MentorRepository
         return view('back-office.mentor.index');
     }
 
-    public function getData()
-    {
-        $mentors = Mentor::with('peserta')
-            ->latest()
-            ->get();
+public function getData()
+{
+    $emailPesertaAktif = $this->emailPesertaAktif();
 
-        $data = $mentors->map(function ($mentor) {
+    $mentors = Mentor::latest()->get();
 
-            $pesertaNames = $mentor->peserta
-                ->pluck('name')
-                ->filter()
-                ->values()
-                ->toArray();
+    $data = $mentors->map(function ($mentor) use ($emailPesertaAktif) {
 
-            return [
-                'id' => $mentor->id,
-                'nama_mentor' => $mentor->nama_mentor,
-                'divisi' => $mentor->divisi,
-                'peserta_preview' => !empty($pesertaNames)
-                    ? implode(', ', $pesertaNames)
-                    : '-',
-            ];
-        });
+        $pesertaNames = User::where('mentor_id', $mentor->id)
+            ->whereIn('email', $emailPesertaAktif)
+            ->pluck('name')
+            ->filter()
+            ->values()
+            ->toArray();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $data,
-        ]);
-    }
+        return [
+            'id' => $mentor->id,
+            'nama_mentor' => $mentor->nama_mentor,
+            'divisi' => $mentor->divisi,
+            'peserta_preview' => !empty($pesertaNames)
+                ? implode(', ', $pesertaNames)
+                : '-',
+        ];
+    });
 
+    return response()->json([
+        'status' => 'success',
+        'data' => $data,
+    ]);
+}
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -110,16 +110,19 @@ class MentorRepository
 
         if ($rolePeserta) {
 
-            $peserta = User::where('role_id', $rolePeserta->id)
-                ->select(
-                    'id',
-                    'name',
-                    'email',
-                    'mentor_id'
-                )
-                ->orderBy('name')
-                ->get();
-        }
+$emailPesertaAktif = $this->emailPesertaAktif();
+
+$peserta = User::where('role_id', $rolePeserta->id)
+    ->whereIn('email', $emailPesertaAktif)
+    ->select(
+        'id',
+        'name',
+        'email',
+        'mentor_id'
+    )
+    ->orderBy('name')
+    ->get();       
+     }
 
         return response()->json([
             'status' => 'success',
@@ -305,23 +308,54 @@ class MentorRepository
         ]);
     }
 
-    public function peserta()
-    {
-        $rolePeserta = Role::where('name', 'Peserta')->first();
+public function peserta()
+{
+    $rolePeserta = Role::where('name', 'Peserta')->first();
 
-        $peserta = User::where('role_id', $rolePeserta->id)
-            ->select(
-                'id',
-                'name',
-                'email',
-                'mentor_id'
-            )
-            ->orderBy('name')
-            ->get();
-
+    if (!$rolePeserta) {
         return response()->json([
             'status' => 'success',
-            'data' => $peserta
+            'data' => [],
         ]);
     }
+
+    $emailPesertaAktif = $this->emailPesertaAktif();
+
+    $peserta = User::where('role_id', $rolePeserta->id)
+        ->whereIn('email', $emailPesertaAktif)
+        ->select(
+            'id',
+            'name',
+            'email',
+            'mentor_id'
+        )
+        ->orderBy('name')
+        ->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $peserta,
+    ]);
+}
+    private function emailPesertaAktif()
+{
+    $pengajuan = PengajuanMagang::where('status', 'Diterima')
+        ->whereNull('archived_at')
+        ->with('anggota')
+        ->get();
+
+    $emailKetua = $pengajuan
+        ->pluck('email_ketua');
+
+    $emailAnggota = $pengajuan
+        ->pluck('anggota')
+        ->flatten()
+        ->pluck('email');
+
+    return $emailKetua
+        ->merge($emailAnggota)
+        ->filter()
+        ->unique()
+        ->values();
+}
 }

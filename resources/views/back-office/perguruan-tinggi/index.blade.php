@@ -53,7 +53,7 @@
                     <tr>
 
                         <th
-                            width="7%"
+                            width="5%"
                             class="text-center"
                         >
                             No
@@ -64,32 +64,56 @@
                         </th>
 
                         <th
-                            width="20%"
                             class="text-center"
                         >
-                            Jumlah Pengajuan
+                            Pengajuan Aktif
                         </th>
 
                         <th
-                            width="20%"
                             class="text-center"
                         >
-                            Jumlah Peserta
+                            Pengajuan Nonaktif
+                        </th>
+
+                        <th
+                            class="text-center"
+                        >
+                            Total Pengajuan
+                        </th>
+
+                        <th
+                            class="text-center"
+                        >
+                            Peserta Aktif
+                        </th>
+
+                        <th
+                            class="text-center"
+                        >
+                            Peserta Nonaktif
+                        </th>
+
+                        <th
+                            class="text-center"
+                        >
+                            Total Peserta
                         </th>
 
                     </tr>
 
                 </thead>
 
+
                 <tbody>
 
                     <tr>
 
                         <td
-                            colspan="4"
+                            colspan="8"
                             class="text-center text-muted py-5"
                         >
                             Memuat data...
+
                         </td>
 
                     </tr>
@@ -285,13 +309,83 @@ $(document).ready(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Jumlah Pengajuan
+            | Pengajuan Aktif
             |--------------------------------------------------------------------------
             */
 
             {
 
-                data: 'pengajuan_count',
+                data: 'pengajuan_aktif',
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    const jumlah =
+                        Number(data) || 0;
+
+
+                    return `
+
+                        <span class="badge bg-success">
+
+                            <i class="bi bi-check-circle me-1"></i>
+
+                            ${jumlah}
+
+                        </span>
+
+                    `;
+
+                }
+
+            },
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Pengajuan Nonaktif
+            |--------------------------------------------------------------------------
+            */
+
+            {
+
+                data: 'pengajuan_nonaktif',
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    const jumlah =
+                        Number(data) || 0;
+
+
+                    return `
+
+                        <span class="badge bg-secondary">
+
+                            <i class="bi bi-archive me-1"></i>
+
+                            ${jumlah}
+
+                        </span>
+
+                    `;
+
+                }
+
+            },
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Total Pengajuan
+            |--------------------------------------------------------------------------
+            */
+
+            {
+
+                data: 'pengajuan_total',
 
                 className: 'text-center',
 
@@ -307,7 +401,7 @@ $(document).ready(function () {
 
                             <i class="bi bi-file-earmark-text me-1"></i>
 
-                            ${jumlah} Pengajuan
+                            ${jumlah}
 
                         </span>
 
@@ -320,13 +414,13 @@ $(document).ready(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Jumlah Peserta
+            | Peserta Aktif
             |--------------------------------------------------------------------------
             */
 
             {
 
-                data: 'peserta_count',
+                data: 'peserta_aktif',
 
                 className: 'text-center',
 
@@ -340,9 +434,79 @@ $(document).ready(function () {
 
                         <span class="badge bg-success">
 
+                            <i class="bi bi-person-check me-1"></i>
+
+                            ${jumlah}
+
+                        </span>
+
+                    `;
+
+                }
+
+            },
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Peserta Nonaktif
+            |--------------------------------------------------------------------------
+            */
+
+            {
+
+                data: 'peserta_nonaktif',
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    const jumlah =
+                        Number(data) || 0;
+
+
+                    return `
+
+                        <span class="badge bg-secondary">
+
+                            <i class="bi bi-person-x me-1"></i>
+
+                            ${jumlah}
+
+                        </span>
+
+                    `;
+
+                }
+
+            },
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Total Peserta
+            |--------------------------------------------------------------------------
+            */
+
+            {
+
+                data: 'peserta_total',
+
+                className: 'text-center',
+
+                render: function (data) {
+
+                    const jumlah =
+                        Number(data) || 0;
+
+
+                    return `
+
+                        <span class="badge bg-primary">
+
                             <i class="bi bi-people me-1"></i>
 
-                            ${jumlah} Peserta
+                            ${jumlah}
 
                         </span>
 
@@ -371,7 +535,6 @@ $(document).ready(function () {
 
             search:
                 'Cari:',
-
 
             lengthMenu:
                 'Tampilkan _MENU_ data',
@@ -419,6 +582,7 @@ $(document).ready(function () {
             [10, 25, 50, 100],
             [10, 25, 50, 100]
         ],
+
 
         order: [
             [1, 'asc']

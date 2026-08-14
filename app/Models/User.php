@@ -57,4 +57,21 @@ public function mentor()
 public function logbooks()
 {
     return $this->hasMany(Logbook::class);
-}}
+}
+public function pengajuanKetua()
+{
+    return $this->hasMany(
+        PengajuanMagang::class,
+        'email_ketua',
+        'email'
+    );
+}
+public function anggotaMagang()
+{
+    return $this->hasMany(
+        AnggotaMagang::class,
+        'email',
+        'email'
+    );
+}
+}

@@ -17,7 +17,7 @@
         </h3>
 
         <small class="text-muted">
-            Kelola pengajuan peserta dengan tombol Approve / Reject.
+            Kelola pengajuan peserta, keputusan penerimaan, penolakan, dan pengarsipan.
         </small>
 
     </div>
@@ -135,10 +135,12 @@
                     <tr>
 
                         <td
-                            colspan="14"
+                            colspan="15"
                             class="text-center text-muted py-5"
                         >
+
                             Memuat data...
+
                         </td>
 
                     </tr>
@@ -191,9 +193,7 @@
                     </h5>
 
                     <small class="text-muted">
-
                         Pilih filter data yang ingin diekspor.
-
                     </small>
 
                 </div>
@@ -228,9 +228,7 @@
                             for="export_status"
                             class="form-label fw-semibold"
                         >
-
                             Status Pengajuan
-
                         </label>
 
                         <select
@@ -270,9 +268,7 @@
                             for="export_universitas"
                             class="form-label fw-semibold"
                         >
-
                             Perguruan Tinggi
-
                         </label>
 
                         <input
@@ -284,9 +280,7 @@
                         >
 
                         <small class="text-muted">
-
                             Kosongkan jika ingin mengambil semua perguruan tinggi.
-
                         </small>
 
                     </div>
@@ -304,9 +298,7 @@
                                 for="export_tanggal_mulai_dari"
                                 class="form-label fw-semibold"
                             >
-
                                 Tanggal Mulai Dari
-
                             </label>
 
                             <input
@@ -325,9 +317,7 @@
                                 for="export_tanggal_mulai_sampai"
                                 class="form-label fw-semibold"
                             >
-
                                 Tanggal Mulai Sampai
-
                             </label>
 
                             <input
@@ -435,14 +425,120 @@
 
 /*
 |--------------------------------------------------------------------------
-| Status Badge
+| HELPER
+|--------------------------------------------------------------------------
+| Format tanggal disamakan dengan halaman Arsip Pengajuan.
+|
+| Contoh:
+| 2026-08-14
+| menjadi:
+| 14 Agustus 2026
 |--------------------------------------------------------------------------
 */
 
-function renderStatusBadge(status) {
+function escapeHtml(value)
+{
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
 
+        return '-';
+
+    }
+
+    return $('<div>')
+        .text(String(value))
+        .html();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| FORMAT TANGGAL
+|--------------------------------------------------------------------------
+*/
+
+function formatTanggal(value)
+{
+    if (!value) {
+
+        return '-';
+
+    }
+
+
+    const date = new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+
+        return escapeHtml(value);
+
+    }
+
+
+    return date.toLocaleDateString(
+        'id-ID',
+        {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        }
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| FORMAT TANGGAL + JAM
+|--------------------------------------------------------------------------
+| Disiapkan agar konsisten dengan halaman Arsip Pengajuan
+| apabila nantinya ada kolom tanggal dan jam.
+|--------------------------------------------------------------------------
+*/
+
+function formatTanggalJam(value)
+{
+    if (!value) {
+
+        return '-';
+
+    }
+
+
+    const date = new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+
+        return escapeHtml(value);
+
+    }
+
+
+    return date.toLocaleString(
+        'id-ID',
+        {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        }
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS BADGE
+|--------------------------------------------------------------------------
+*/
+
+function renderStatusBadge(status)
+{
     const normalized =
-        String(status || '').toLowerCase();
+        String(status || '')
+            .toLowerCase();
 
 
     if (
@@ -451,6 +547,7 @@ function renderStatusBadge(status) {
     ) {
 
         return `
+
             <span class="badge bg-success">
 
                 <i class="bi bi-check-circle me-1"></i>
@@ -458,6 +555,7 @@ function renderStatusBadge(status) {
                 Diterima
 
             </span>
+
         `;
 
     }
@@ -469,6 +567,7 @@ function renderStatusBadge(status) {
     ) {
 
         return `
+
             <span class="badge bg-danger">
 
                 <i class="bi bi-x-circle me-1"></i>
@@ -476,12 +575,14 @@ function renderStatusBadge(status) {
                 Ditolak
 
             </span>
+
         `;
 
     }
 
 
     return `
+
         <span class="badge bg-warning text-dark">
 
             <i class="bi bi-clock me-1"></i>
@@ -489,8 +590,8 @@ function renderStatusBadge(status) {
             Menunggu
 
         </span>
-    `;
 
+    `;
 }
 
 
@@ -499,7 +600,7 @@ let tablePengajuan;
 
 /*
 |--------------------------------------------------------------------------
-| DataTable
+| DATATABLE
 |--------------------------------------------------------------------------
 */
 
@@ -579,15 +680,16 @@ $(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Columns
+            | COLUMNS
             |--------------------------------------------------------------------------
             */
 
             columns: [
 
+
                 /*
                 |--------------------------------------------------------------------------
-                | No
+                | NO
                 |--------------------------------------------------------------------------
                 */
 
@@ -614,7 +716,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Kode Pengajuan
+                | KODE PENGAJUAN
                 |--------------------------------------------------------------------------
                 */
 
@@ -631,7 +733,7 @@ $(function () {
 
                             <span class="fw-semibold">
 
-                                ${data ?? '-'}
+                                ${escapeHtml(data)}
 
                             </span>
 
@@ -644,7 +746,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Nama Ketua
+                | NAMA KETUA
                 |--------------------------------------------------------------------------
                 */
 
@@ -654,7 +756,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -663,7 +765,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Email
+                | EMAIL
                 |--------------------------------------------------------------------------
                 */
 
@@ -673,7 +775,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -682,7 +784,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Nomor HP
+                | NOMOR HP
                 |--------------------------------------------------------------------------
                 */
 
@@ -692,7 +794,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -701,7 +803,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Perguruan Tinggi
+                | PERGURUAN TINGGI
                 |--------------------------------------------------------------------------
                 */
 
@@ -711,7 +813,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -720,7 +822,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Semester
+                | SEMESTER
                 |--------------------------------------------------------------------------
                 */
 
@@ -733,7 +835,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -742,7 +844,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Status
+                | STATUS
                 |--------------------------------------------------------------------------
                 */
 
@@ -764,8 +866,16 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Periode
+                | PERIODE
                 |--------------------------------------------------------------------------
+                |
+                | PENTING:
+                | Tanggal sekarang menggunakan formatTanggal()
+                | agar sama dengan halaman Arsip Pengajuan.
+                |
+                | Contoh:
+                | 14 Agustus 2026 - 14 September 2026
+                |
                 */
 
                 {
@@ -778,10 +888,15 @@ $(function () {
                     render: function (data) {
 
                         const mulai =
-                            data.tanggal_mulai || '-';
+                            formatTanggal(
+                                data.tanggal_mulai
+                            );
+
 
                         const selesai =
-                            data.tanggal_selesai || '-';
+                            formatTanggal(
+                                data.tanggal_selesai
+                            );
 
 
                         return `
@@ -805,7 +920,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Anggota
+                | ANGGOTA
                 |--------------------------------------------------------------------------
                 */
 
@@ -828,7 +943,9 @@ $(function () {
                         return data
                             .map(function (anggota) {
 
-                                return anggota.nama_anggota;
+                                return escapeHtml(
+                                    anggota.nama_anggota
+                                );
 
                             })
                             .join(', ');
@@ -840,7 +957,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Catatan
+                | CATATAN
                 |--------------------------------------------------------------------------
                 */
 
@@ -850,7 +967,7 @@ $(function () {
 
                     render: function (data) {
 
-                        return data || '-';
+                        return escapeHtml(data);
 
                     }
 
@@ -859,7 +976,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Proposal
+                | PROPOSAL
                 |--------------------------------------------------------------------------
                 */
 
@@ -874,7 +991,11 @@ $(function () {
                     className:
                         'text-center text-nowrap',
 
-                    render: function (data) {
+                    render: function (
+                        data,
+                        type,
+                        row
+                    ) {
 
                         if (!data) {
 
@@ -895,22 +1016,18 @@ $(function () {
                         }
 
 
-                        const filename =
-                            String(data)
-                                .split('/')
-                                .pop();
-
-
                         const url =
-                            `/file/preview/proposal/${encodeURIComponent(filename)}`;
+                            `/back-office/pengajuan/${row.id}/file/proposal`;
 
 
                         return `
 
                             <a
-                                href="${url}"
+                                href="${escapeHtml(url)}"
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 class="btn btn-sm btn-outline-primary"
+                                title="Lihat Proposal"
                             >
 
                                 <i
@@ -930,7 +1047,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Surat Permohonan
+                | SURAT PERMOHONAN
                 |--------------------------------------------------------------------------
                 */
 
@@ -945,7 +1062,11 @@ $(function () {
                     className:
                         'text-center text-nowrap',
 
-                    render: function (data) {
+                    render: function (
+                        data,
+                        type,
+                        row
+                    ) {
 
                         if (!data) {
 
@@ -966,22 +1087,18 @@ $(function () {
                         }
 
 
-                        const filename =
-                            String(data)
-                                .split('/')
-                                .pop();
-
-
                         const url =
-                            `/file/preview/surat_permohonan/${encodeURIComponent(filename)}`;
+                            `/back-office/pengajuan/${row.id}/file/surat-permohonan`;
 
 
                         return `
 
                             <a
-                                href="${url}"
+                                href="${escapeHtml(url)}"
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 class="btn btn-sm btn-outline-primary"
+                                title="Lihat Surat Permohonan"
                             >
 
                                 <i
@@ -1001,7 +1118,7 @@ $(function () {
 
                 /*
                 |--------------------------------------------------------------------------
-                | Aksi
+                | AKSI
                 |--------------------------------------------------------------------------
                 */
 
@@ -1024,12 +1141,62 @@ $(function () {
                             ).toLowerCase();
 
 
-                        const sudahDiputus =
+                        const sudahDiterima =
                             status === 'diterima' ||
-                            status === 'accepted' ||
+                            status === 'accepted';
+
+
+                        const sudahDitolak =
                             status === 'ditolak' ||
                             status === 'rejected';
 
+
+                        const sudahDiputus =
+                            sudahDiterima ||
+                            sudahDitolak;
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | SUDAH DIARSIPKAN
+                        |--------------------------------------------------------------------------
+                        */
+
+                        if (data.archived_at) {
+
+                            return `
+
+                                <div
+                                    class="d-flex flex-column gap-1"
+                                    style="min-width: 150px;"
+                                >
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary btn-sm"
+                                        disabled
+                                    >
+
+                                        <i
+                                            class="bi bi-archive-fill me-1"
+                                        ></i>
+
+                                        Sudah Diarsipkan
+
+                                    </button>
+
+                                </div>
+
+                            `;
+
+                        }
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | SUDAH MEMILIKI KEPUTUSAN
+                        |--------------------------------------------------------------------------
+                        */
 
                         if (sudahDiputus) {
 
@@ -1037,7 +1204,7 @@ $(function () {
 
                                 <div
                                     class="d-flex flex-column gap-1"
-                                    style="min-width: 120px;"
+                                    style="min-width: 150px;"
                                 >
 
                                     <button
@@ -1070,13 +1237,19 @@ $(function () {
                                     </button>
 
 
-                                    <small
-                                        class="text-muted text-center"
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm"
+                                        onclick="archivePengajuan(${data.id})"
                                     >
 
-                                        Sudah diputuskan
+                                        <i
+                                            class="bi bi-archive me-1"
+                                        ></i>
 
-                                    </small>
+                                        Arsipkan
+
+                                    </button>
 
                                 </div>
 
@@ -1085,11 +1258,17 @@ $(function () {
                         }
 
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | BELUM ADA KEPUTUSAN
+                        |--------------------------------------------------------------------------
+                        */
+
                         return `
 
                             <div
                                 class="d-flex flex-column gap-1"
-                                style="min-width: 120px;"
+                                style="min-width: 150px;"
                             >
 
                                 <button
@@ -1140,7 +1319,7 @@ $(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Bahasa DataTable
+            | BAHASA DATATABLE
             |--------------------------------------------------------------------------
             */
 
@@ -1190,7 +1369,7 @@ $(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Export Excel
+    | EXPORT EXCEL
     |--------------------------------------------------------------------------
     */
 
@@ -1201,19 +1380,26 @@ $(function () {
             const status =
                 $('#export_status').val();
 
+
             const universitas =
-                $('#export_universitas').val().trim();
+                $('#export_universitas')
+                    .val()
+                    .trim();
+
 
             const tanggalMulaiDari =
-                $('#export_tanggal_mulai_dari').val();
+                $('#export_tanggal_mulai_dari')
+                    .val();
+
 
             const tanggalMulaiSampai =
-                $('#export_tanggal_mulai_sampai').val();
+                $('#export_tanggal_mulai_sampai')
+                    .val();
 
 
             /*
             |--------------------------------------------------------------------------
-            | Validasi Tanggal
+            | VALIDASI TANGGAL
             |--------------------------------------------------------------------------
             */
 
@@ -1244,7 +1430,7 @@ $(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Buat URL Export
+            | BUAT URL EXPORT
             |--------------------------------------------------------------------------
             */
 
@@ -1308,7 +1494,7 @@ $(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Tutup Modal
+            | TUTUP MODAL
             |--------------------------------------------------------------------------
             */
 
@@ -1333,7 +1519,7 @@ $(function () {
 
             /*
             |--------------------------------------------------------------------------
-            | Mulai Download
+            | DOWNLOAD FILE
             |--------------------------------------------------------------------------
             */
 
@@ -1346,7 +1532,7 @@ $(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Reset Filter Export
+    | RESET FILTER EXPORT
     |--------------------------------------------------------------------------
     */
 
@@ -1364,7 +1550,7 @@ $(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Update Status Pengajuan
+| UPDATE STATUS PENGAJUAN
 |--------------------------------------------------------------------------
 */
 
@@ -1379,7 +1565,7 @@ function updatePengajuanStatus(
 
     /*
     |--------------------------------------------------------------------------
-    | Konfirmasi Terima
+    | KONFIRMASI TERIMA
     |--------------------------------------------------------------------------
     */
 
@@ -1444,7 +1630,7 @@ function updatePengajuanStatus(
 
     /*
     |--------------------------------------------------------------------------
-    | Konfirmasi Tolak + Catatan
+    | KONFIRMASI TOLAK + CATATAN
     |--------------------------------------------------------------------------
     */
 
@@ -1517,7 +1703,7 @@ function updatePengajuanStatus(
 
 /*
 |--------------------------------------------------------------------------
-| Request Update
+| REQUEST UPDATE
 |--------------------------------------------------------------------------
 */
 
@@ -1607,6 +1793,7 @@ function prosesUpdatePengajuan(
 
                 text:
                     response.message ||
+
                     (
                         status === 'Diterima'
                             ? 'Pengajuan berhasil diterima.'
@@ -1649,7 +1836,7 @@ function prosesUpdatePengajuan(
 
             /*
             |--------------------------------------------------------------------------
-            | Validation Error
+            | VALIDATION ERROR
             |--------------------------------------------------------------------------
             */
 
@@ -1687,6 +1874,215 @@ function prosesUpdatePengajuan(
             });
 
         }
+
+    });
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ARSIPKAN PENGAJUAN
+|--------------------------------------------------------------------------
+*/
+
+function archivePengajuan(id)
+{
+
+    /*
+    |--------------------------------------------------------------------------
+    | KONFIRMASI
+    |--------------------------------------------------------------------------
+    */
+
+    Swal.fire({
+
+        icon: 'warning',
+
+        title: 'Arsipkan Pengajuan?',
+
+        text:
+            'Pengajuan yang sudah diarsipkan akan dipindahkan dari halaman pengajuan aktif ke halaman arsip.',
+
+        showCancelButton: true,
+
+        confirmButtonText: `
+
+            <i class="bi bi-archive me-1"></i>
+
+            Ya, Arsipkan
+
+        `,
+
+        cancelButtonText: `
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Batal
+
+        `,
+
+        confirmButtonColor:
+            '#0d6efd',
+
+        cancelButtonColor:
+            '#6c757d',
+
+        reverseButtons: true
+
+    }).then(function (result) {
+
+        if (!result.isConfirmed) {
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOADING
+        |--------------------------------------------------------------------------
+        */
+
+        Swal.fire({
+
+            title:
+                'Mengarsipkan...',
+
+            text:
+                'Mohon tunggu sebentar.',
+
+            allowOutsideClick:
+                false,
+
+            allowEscapeKey:
+                false,
+
+            didOpen: function () {
+
+                Swal.showLoading();
+
+            }
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REQUEST
+        |--------------------------------------------------------------------------
+        */
+
+        $.ajax({
+
+            url:
+                `/api/back-office/pengajuan/${id}/archive`,
+
+            type:
+                'PUT',
+
+            contentType:
+                'application/json',
+
+            headers: {
+
+                'X-CSRF-TOKEN':
+                    $('meta[name="csrf-token"]')
+                        .attr('content')
+
+            },
+
+
+            success: function (response) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | RELOAD DATATABLE
+                |--------------------------------------------------------------------------
+                */
+
+                if (tablePengajuan) {
+
+                    tablePengajuan.ajax.reload(
+                        null,
+                        false
+                    );
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | SUCCESS
+                |--------------------------------------------------------------------------
+                */
+
+                Swal.fire({
+
+                    icon:
+                        'success',
+
+                    title:
+                        'Berhasil!',
+
+                    text:
+                        response.message ||
+                        'Pengajuan berhasil diarsipkan.',
+
+                    timer:
+                        1800,
+
+                    showConfirmButton:
+                        false
+
+                });
+
+            },
+
+
+            error: function (xhr) {
+
+                console.error(
+                    'Archive Pengajuan Error:',
+                    xhr
+                );
+
+
+                let message =
+                    'Terjadi kesalahan saat mengarsipkan pengajuan.';
+
+
+                if (
+                    xhr.responseJSON &&
+                    xhr.responseJSON.message
+                ) {
+
+                    message =
+                        xhr.responseJSON.message;
+
+                }
+
+
+                Swal.fire({
+
+                    icon:
+                        'error',
+
+                    title:
+                        'Gagal!',
+
+                    text:
+                        message,
+
+                    confirmButtonText:
+                        'OK'
+
+                });
+
+            }
+
+        });
 
     });
 

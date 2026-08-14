@@ -44,6 +44,7 @@ use App\Http\Controllers\Peserta\LogbookController as PesertaLogbookController;
 // =====================================================
 
 use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
+use App\Http\Controllers\BackOffice\ArsipPengajuanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,9 @@ use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan');
+    Route::post('/pengajuan', [PengajuanController::class, 'store'])
+    ->name('pengajuan.store');
+
 
 Route::get('/hasil', [HasilController::class, 'index'])->name('hasil');
 
@@ -95,7 +99,41 @@ Route::get('/file/preview/{type}/{filename}', [\App\Http\Controllers\BackOffice\
 
 Route::middleware('auth')->prefix('back-office')->name('back-office.')->group(function () {
 
-    /*
+
+/*
+|--------------------------------------------------------------------------
+| ARSIP PENGAJUAN MAGANG
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/arsip-pengajuan',
+    [ArsipPengajuanController::class, 'index']
+)->name('arsip-pengajuan');
+
+
+Route::get(
+    '/arsip-pengajuan/data',
+    [ArsipPengajuanController::class, 'getData']
+)->name('arsip-pengajuan.data');
+
+
+Route::get(
+    '/arsip-pengajuan/{id}',
+    [ArsipPengajuanController::class, 'detail']
+)->name('arsip-pengajuan.detail');
+
+
+Route::get(
+    '/arsip-pengajuan/{id}/file/{type}',
+    [ArsipPengajuanController::class, 'file']
+)->name('arsip-pengajuan.file');   
+
+Route::get(
+    '/arsip-pengajuan/{id}/export',
+    [ExportController::class, 'arsipPengajuan']
+)->name('back-office.arsip-pengajuan.export');
+/*
     |--------------------------------------------------------------------------
     | DASHBOARD
     |--------------------------------------------------------------------------
@@ -148,12 +186,17 @@ Route::get('/role-user/export', [ExportController::class, 'roleUser'])
 
     Route::get('/pengajuan', [BackOfficePengajuanController::class, 'index'])->name('pengajuan');
 
+
     Route::get('/pengajuan/data', [BackOfficePengajuanController::class, 'getData'])->name('pengajuan.data');
 
     Route::put('/pengajuan/{id}', [BackOfficePengajuanController::class, 'update'])->name('pengajuan.update');
 
     Route::get('/pengajuan/export', [ExportController::class, 'pengajuan'])->name('pengajuan.export');
 
+Route::get(
+    '/pengajuan/{id}/file/{type}',
+    [BackOfficePengajuanController::class, 'file']
+)->name('pengajuan.file');
     /*
     |--------------------------------------------------------------------------
     | PESERTA - ADMIN
@@ -281,3 +324,5 @@ Route::middleware('auth')->prefix('mentor')->name('mentor.')->group(function () 
     Route::put('/logbook/{id}/feedback', [MentorLogbookController::class, 'feedback'])->name('logbook.feedback');
 
 });
+
+

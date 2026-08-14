@@ -49,14 +49,14 @@ class PengajuanRepository
 
         $pengajuan = DB::transaction(function () use ($request) {
 
-            $proposal = $request
-                ->file('proposal')
-                ->store('proposal');
+$proposal = $request
+    ->file('proposal')
+    ->store('proposal', 'public');
 
-            $surat = $request
-                ->file('surat_permohonan')
-                ->store('surat_permohonan');
-
+$surat = $request
+    ->file('surat_permohonan')
+    ->store('surat_permohonan', 'public');
+    
             $pengajuan = PengajuanMagang::create([
 
                 'kode_pengajuan' => 'MAGANG-' . strtoupper(substr(md5(uniqid()), 0, 8)),
@@ -109,14 +109,18 @@ class PengajuanRepository
 
         });
 
-        return response()->json([
+$pengajuan->load('anggota');
 
-            'success' => true,
+return response()->json([
 
-            'message' => 'Pengajuan berhasil dikirim.',
+    'success' => true,
 
-            'kode_pengajuan' => $pengajuan->kode_pengajuan,
+    'message' => 'Pengajuan berhasil dikirim.',
 
-        ]);
+    'kode_pengajuan' => $pengajuan->kode_pengajuan,
+
+    'data' => $pengajuan,
+
+]);
     }
 }

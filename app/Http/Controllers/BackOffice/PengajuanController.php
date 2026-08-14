@@ -29,4 +29,20 @@ class PengajuanController extends Controller
     {
         return $this->repository->update($request, $id);
     }
+
+    public function archive($id)
+    {
+        return $this->repository->archive($id);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Preview Dokumen Pengajuan Aktif
+    |--------------------------------------------------------------------------
+    */
+
+    public function file($id, $type)
+    {
+        return $this->repository->file($id, $type);
+    }
 }
