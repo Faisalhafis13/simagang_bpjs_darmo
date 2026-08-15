@@ -14,18 +14,48 @@ class PasswordChangeController extends Controller
         return view('public.auth.password-change');
     }
 
+
     public function update(Request $request)
     {
         $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
         ]);
 
+
         $user = Auth::user();
-        $user->password = Hash::make($request->password);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE PASSWORD
+        |--------------------------------------------------------------------------
+        */
+
+        $user->password = Hash::make(
+            $request->password
+        );
+
         $user->must_change_password = false;
+
         $user->save();
 
-        return redirect()->route('back-office.dashboard')
-            ->with('success', 'Password berhasil diubah. Selamat datang.');
+
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECT KE DASHBOARD
+        |--------------------------------------------------------------------------
+        */
+
+        return redirect()
+            ->route('back-office.dashboard')
+            ->with(
+                'success',
+                'Password berhasil diubah. Selamat datang.'
+            );
     }
 }

@@ -1,6 +1,18 @@
 <nav class="bo-navbar">
 
-    <div>
+    <div class="bo-navbar-left">
+
+        {{-- Hamburger khusus mobile --}}
+        <button
+            type="button"
+            class="sidebar-toggle"
+            id="sidebarToggle"
+            aria-label="Buka sidebar"
+            aria-expanded="false"
+        >
+            <i class="bi bi-list"></i>
+        </button>
+
 
         <h5 class="mb-0 fw-bold">
 
@@ -10,9 +22,13 @@
 
     </div>
 
+
     <div class="d-flex align-items-center gap-3">
 
-        <form action="{{ route('logout') }}" method="POST">
+        <form
+            action="{{ route('logout') }}"
+            method="POST"
+        >
 
             @csrf
 
@@ -20,7 +36,7 @@
 
                 <i class="bi bi-box-arrow-right"></i>
 
-                Logout
+                <span>Logout</span>
 
             </button>
 

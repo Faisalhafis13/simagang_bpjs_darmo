@@ -5098,6 +5098,432 @@ HOME RESPONSIVE
     }
 
 }
+/* =========================================================
+   BACK OFFICE RESPONSIVE SIDEBAR
+========================================================= */
 
+
+/* =========================================================
+   SIDEBAR TOGGLE
+========================================================= */
+
+.sidebar-toggle {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: var(--primary);
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   NAVBAR LEFT
+========================================================= */
+
+.bo-navbar-left {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.bo-navbar-left h5 {
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SIDEBAR CLOSE
+========================================================= */
+
+.sidebar-close {
+    display: none;
+
+    width: 38px;
+    height: 38px;
+
+    margin-left: auto;
+
+    flex-shrink: 0;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    color: #ffffff;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BACKDROP
+========================================================= */
+
+.sidebar-backdrop {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1035;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    opacity: 0;
+
+    transition: opacity 0.3s ease;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+
+    :root {
+        --sidebar-width: 230px;
+    }
+
+    body.back-office .content {
+        padding: 24px;
+    }
+
+    .bo-navbar {
+        padding: 0 24px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE BACK OFFICE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /* -----------------------------------------------------
+       SIDEBAR
+    ----------------------------------------------------- */
+
+    body.back-office .sidebar {
+        position: fixed;
+
+        top: 0;
+        left: 0;
+        bottom: 0;
+
+        z-index: 1045;
+
+        width: min(280px, 82vw);
+
+        height: 100vh;
+
+        margin: 0;
+
+        transform: translateX(-100%);
+
+        transition: transform 0.3s ease;
+
+        box-shadow:
+            8px 0 30px rgba(0, 0, 0, 0.18);
+    }
+
+
+    body.back-office .sidebar.show {
+        transform: translateX(0);
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR HEADER
+    ----------------------------------------------------- */
+
+    body.back-office .sidebar-header {
+        min-height: 76px;
+
+        padding: 14px 16px;
+    }
+
+
+    body.back-office .sidebar-header img {
+        width: 44px;
+        height: 44px;
+
+        border-radius: 10px;
+    }
+
+
+    body.back-office .sidebar-header h5 {
+        font-size: 16px;
+    }
+
+
+    .sidebar-close {
+        display: flex;
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR MENU
+    ----------------------------------------------------- */
+
+    body.back-office .sidebar-menu {
+        padding: 16px 10px;
+    }
+
+
+    body.back-office .sidebar .menu-item {
+        padding: 11px 12px;
+
+        margin-bottom: 5px;
+
+        border-radius: 10px;
+
+        font-size: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       SIDEBAR FOOTER
+    ----------------------------------------------------- */
+
+    body.back-office .sidebar-footer {
+        padding: 14px;
+    }
+
+
+    /* -----------------------------------------------------
+       BACKDROP
+    ----------------------------------------------------- */
+
+    body.back-office .sidebar-backdrop {
+        display: block;
+
+        pointer-events: none;
+    }
+
+
+    body.back-office .sidebar-backdrop.show {
+        opacity: 1;
+
+        pointer-events: auto;
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN
+    ----------------------------------------------------- */
+
+    body.back-office .main {
+        width: 100%;
+
+        min-width: 0;
+
+        margin-left: 0;
+    }
+
+
+    /* -----------------------------------------------------
+       NAVBAR
+    ----------------------------------------------------- */
+
+    body.back-office .bo-navbar {
+        height: 64px;
+
+        min-height: 64px;
+
+        padding: 0 16px;
+
+        gap: 10px;
+    }
+
+
+    .sidebar-toggle {
+        display: flex;
+    }
+
+
+    body.back-office .bo-navbar h5 {
+        font-size: 0.95rem;
+    }
+
+
+    body.back-office .bo-navbar .btn {
+        white-space: nowrap;
+    }
+
+
+    /* -----------------------------------------------------
+       CONTENT
+    ----------------------------------------------------- */
+
+    body.back-office .content {
+        width: 100%;
+
+        max-width: 100%;
+
+        padding: 18px;
+
+        overflow-x: hidden;
+    }
+
+
+    /* -----------------------------------------------------
+       TABLE
+    ----------------------------------------------------- */
+
+    body.back-office .table-responsive {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+
+    body.back-office table {
+        min-width: 650px;
+    }
+
+
+    /* -----------------------------------------------------
+       DATATABLE
+    ----------------------------------------------------- */
+
+    body.back-office .dataTables_wrapper {
+        width: 100%;
+
+        overflow-x: hidden;
+    }
+
+
+    body.back-office .dataTables_wrapper .row {
+        margin-left: 0;
+
+        margin-right: 0;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    body.back-office .sidebar {
+        width: min(270px, 86vw);
+    }
+
+
+    body.back-office .bo-navbar {
+        padding: 0 12px;
+    }
+
+
+    .sidebar-toggle {
+        width: 38px;
+        height: 38px;
+
+        font-size: 21px;
+    }
+
+
+    body.back-office .bo-navbar-left {
+        gap: 9px;
+    }
+
+
+    body.back-office .bo-navbar h5 {
+        font-size: 0.88rem;
+    }
+
+
+    body.back-office .bo-navbar .btn {
+        padding: 6px 9px;
+
+        font-size: 0.75rem;
+    }
+
+
+    body.back-office .bo-navbar .btn span {
+        display: none;
+    }
+
+
+    body.back-office .content {
+        padding: 14px;
+    }
+
+
+    body.back-office .card {
+        border-radius: 14px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    body.back-office .sidebar {
+        width: 250px;
+    }
+
+
+    body.back-office .content {
+        padding: 12px;
+    }
+
+
+    body.back-office .bo-navbar h5 {
+        max-width: 150px;
+    }
+
+}
   
 

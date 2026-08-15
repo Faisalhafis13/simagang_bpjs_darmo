@@ -14,6 +14,7 @@
 
                 <div class="login-card">
 
+
                     {{-- ========================================================= --}}
                     {{-- LOGIN ICON --}}
                     {{-- ========================================================= --}}
@@ -21,18 +22,27 @@
                     <div class="text-center mb-4">
 
                         <div class="login-icon">
+
                             <i class="bi bi-person-lock"></i>
+
                         </div>
 
+
                         <h3 class="mt-4 fw-bold">
+
                             Login Yuk!
+
                         </h3>
 
+
                         <p class="text-muted mb-0">
+
                             Masuk untuk melanjutkan
+
                         </p>
 
                     </div>
+
 
 
                     {{-- ========================================================= --}}
@@ -58,14 +68,18 @@
                                 for="email"
                                 class="form-label fw-semibold"
                             >
+
                                 Email
+
                             </label>
 
 
                             <div class="input-group input-group-lg">
 
                                 <span class="input-group-text">
+
                                     <i class="bi bi-envelope"></i>
+
                                 </span>
 
 
@@ -86,12 +100,15 @@
                             @error('email')
 
                                 <div class="invalid-feedback d-block">
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
 
                         </div>
+
 
 
                         {{-- ===================================================== --}}
@@ -104,14 +121,18 @@
                                 for="password"
                                 class="form-label fw-semibold"
                             >
+
                                 Password
+
                             </label>
 
 
                             <div class="input-group input-group-lg">
 
                                 <span class="input-group-text">
+
                                     <i class="bi bi-lock"></i>
+
                                 </span>
 
 
@@ -131,12 +152,15 @@
                             @error('password')
 
                                 <div class="invalid-feedback d-block">
+
                                     {{ $message }}
+
                                 </div>
 
                             @enderror
 
                         </div>
+
 
 
                         {{-- ===================================================== --}}
@@ -158,6 +182,7 @@
                     </form>
 
 
+
                     {{-- ========================================================= --}}
                     {{-- FOOTER INFORMATION --}}
                     {{-- ========================================================= --}}
@@ -165,7 +190,9 @@
                     <div class="text-center mt-4">
 
                         <small class="text-muted">
+
                             SIMAGANG BPJS Ketenagakerjaan
+
                         </small>
 
                     </div>
@@ -183,6 +210,7 @@
 @endsection
 
 
+
 @push('js')
 
 <script>
@@ -192,9 +220,14 @@ $(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | MAGANG SUDAH SELESAI / AKUN SUDAH DIARSIPKAN
+    | MAGANG TELAH SELESAI / PENGAJUAN SUDAH DIARSIPKAN
     |--------------------------------------------------------------------------
+    |
+    | Pesan ini ditampilkan ketika peserta mencoba login
+    | tetapi pengajuan magangnya sudah masuk arsip.
+    |
     */
+
 
     @if(session('magang_selesai'))
 
@@ -202,45 +235,89 @@ $(function () {
 
             icon: 'info',
 
-            title: 'Magang Anda Telah Selesai',
+            title: 'Masa Magang Telah Selesai',
+
+            width: '520px',
 
             html: `
+
                 <div class="text-center">
+
+
+                    {{-- ICON --}}
 
                     <div class="mb-3">
 
                         <i
                             class="bi bi-mortarboard-fill text-primary"
-                            style="font-size: 3rem;"
+                            style="font-size: 3.5rem;"
                         ></i>
 
                     </div>
 
 
+                    {{-- PESAN UTAMA --}}
+
                     <p class="mb-3">
+
                         {{ session('magang_selesai_message') }}
+
                     </p>
 
+
+                    {{-- INFORMASI AKUN --}}
+
+                    <div
+                        class="alert alert-light border text-start mb-3"
+                        style="
+                            border-radius: 12px;
+                            border-left: 4px solid #0d6efd !important;
+                        "
+                    >
+
+                        <div class="fw-semibold mb-2">
+
+                            <i class="bi bi-person-lock me-1"></i>
+
+                            Akses Akun Dinonaktifkan
+
+                        </div>
+
+
+                        <div class="small text-muted">
+
+                            Pengajuan magang Anda telah diarsipkan
+                            karena masa magang telah selesai.
+                            Oleh karena itu, akun peserta sudah tidak
+                            dapat digunakan untuk masuk ke sistem.
+
+                        </div>
+
+                    </div>
+
+
+                    {{-- INFORMASI SERTIFIKAT --}}
 
                     <div
                         class="alert alert-info text-start mb-3"
                         style="border-radius: 12px;"
                     >
 
-                        <div class="fw-semibold mb-1">
+                        <div class="fw-semibold mb-2">
 
                             <i class="bi bi-award me-1"></i>
 
-                            Membutuhkan sertifikat?
+                            Membutuhkan Sertifikat?
 
                         </div>
+
 
                         <div class="small">
 
                             Jika Anda memerlukan sertifikat magang
                             atau membutuhkan informasi lebih lanjut,
-                            silakan menghubungi admin/pengelola
-                            SIMAGANG melalui nomor kontak yang telah
+                            silakan menghubungi admin atau pengelola
+                            SIMAGANG melalui kontak yang telah
                             ditentukan.
 
                         </div>
@@ -248,16 +325,19 @@ $(function () {
                     </div>
 
 
+                    {{-- INFORMASI TAMBAHAN --}}
+
                     <div class="small text-muted">
 
                         <i class="bi bi-info-circle me-1"></i>
 
-                        Akun tidak dapat digunakan kembali
-                        setelah pengajuan magang diarsipkan.
+                        Terima kasih telah mengikuti program magang
+                        melalui SIMAGANG BPJS Ketenagakerjaan.
 
                     </div>
 
                 </div>
+
             `,
 
             confirmButtonText: 'Saya Mengerti',
@@ -273,14 +353,17 @@ $(function () {
     @endif
 
 
+
     /*
     |--------------------------------------------------------------------------
     | LOGIN GAGAL
     |--------------------------------------------------------------------------
     |
-    | Jangan tampilkan jika statusnya adalah peserta yang sudah selesai.
+    | Jangan tampilkan pesan Login Gagal apabila sistem sedang
+    | menampilkan informasi bahwa magang peserta telah selesai.
     |
     */
+
 
     @if(session('error') && !session('magang_selesai'))
 
@@ -299,11 +382,13 @@ $(function () {
     @endif
 
 
+
     /*
     |--------------------------------------------------------------------------
     | VALIDATION ERROR
     |--------------------------------------------------------------------------
     */
+
 
     @if($errors->any() && !session('error') && !session('magang_selesai'))
 
@@ -322,11 +407,13 @@ $(function () {
     @endif
 
 
+
     /*
     |--------------------------------------------------------------------------
     | LOGOUT BERHASIL
     |--------------------------------------------------------------------------
     */
+
 
     @if(session('logout_success'))
 
@@ -347,11 +434,17 @@ $(function () {
     @endif
 
 
+
     /*
     |--------------------------------------------------------------------------
     | LOGIN SUBMIT
     |--------------------------------------------------------------------------
+    |
+    | Ketika tombol Login ditekan, tombol dinonaktifkan sementara
+    | untuk mencegah submit berkali-kali.
+    |
     */
+
 
     $('#formLogin').on('submit', function () {
 
@@ -359,9 +452,7 @@ $(function () {
 
 
         button
-
             .prop('disabled', true)
-
             .html(`
 
                 <span

@@ -12,36 +12,38 @@ class HasilRepository
         return view('public.hasil.index');
     }
 
-    public function cari(Request $request)
-    {
+public function cari(Request $request)
+{
+    $request->validate([
+        'kode_pengajuan' => 'required|string',
+    ]);
 
-        $request->validate([
-            'kode_pengajuan'=>'required'
-        ]);
+    $kode = trim($request->kode_pengajuan);
 
-        $pengajuan = PengajuanMagang::with('anggota')
-            ->where('kode_pengajuan',$request->kode_pengajuan)
-            ->first();
+    $pengajuan = PengajuanMagang::with('anggota')
+        ->where('kode_pengajuan', $kode)
+        ->first();
 
-        if(!$pengajuan){
-
-            return response()->json([
-
-                'success'=>false,
-
-                'message'=>'Kode pengajuan tidak ditemukan.'
-
-            ],404);
-
-        }
+    if (!$pengajuan) {
 
         return response()->json([
-
-            'success'=>true,
-
-            'data'=>$pengajuan
-
-        ]);
-
+            'success' => false,
+            'type' => 'not_found',
+            'message' => 'Kode pengajuan tidak ditemukan.',
+        ], 404);
     }
+
+    if (!is_null($pengajuan->archived_at)) {
+
+        return response()->json([
+            'success' => false,
+            'type' => 'inactive',
+        ], 410);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $pengajuan,
+    ]);
+}
 }

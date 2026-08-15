@@ -158,6 +158,123 @@
 
     @endif
 
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const sidebar = document.getElementById('backOfficeSidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const close = document.getElementById('sidebarClose');
+    const backdrop = document.getElementById('sidebarBackdrop');
+
+
+    if (!sidebar || !toggle || !backdrop) {
+        return;
+    }
+
+
+    function openSidebar() {
+
+        sidebar.classList.add('show');
+
+        backdrop.classList.add('show');
+
+        toggle.setAttribute('aria-expanded', 'true');
+
+        document.body.classList.add('sidebar-open');
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove('show');
+
+        backdrop.classList.remove('show');
+
+        toggle.setAttribute('aria-expanded', 'false');
+
+        document.body.classList.remove('sidebar-open');
+    }
+
+
+    toggle.addEventListener('click', function () {
+
+        if (sidebar.classList.contains('show')) {
+
+            closeSidebar();
+
+        } else {
+
+            openSidebar();
+
+        }
+
+    });
+
+
+    if (close) {
+
+        close.addEventListener('click', function () {
+
+            closeSidebar();
+
+        });
+
+    }
+
+
+    backdrop.addEventListener('click', function () {
+
+        closeSidebar();
+
+    });
+
+
+    /* Tutup sidebar setelah klik menu di mobile */
+
+    sidebar.querySelectorAll('.menu-item').forEach(function (item) {
+
+        item.addEventListener('click', function () {
+
+            if (window.innerWidth <= 768) {
+
+                closeSidebar();
+
+            }
+
+        });
+
+    });
+
+
+    /* ESC untuk menutup sidebar */
+
+    document.addEventListener('keydown', function (event) {
+
+        if (event.key === 'Escape') {
+
+            closeSidebar();
+
+        }
+
+    });
+
+
+    /* Reset ketika kembali ke desktop */
+
+    window.addEventListener('resize', function () {
+
+        if (window.innerWidth > 768) {
+
+            closeSidebar();
+
+        }
+
+    });
+
+});
+
+</script>
 
     @stack('js')
 
