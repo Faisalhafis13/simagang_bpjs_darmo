@@ -1,6 +1,6 @@
 @extends('layouts.back-office')
 
-@section('title', 'Arsip Pengajuan')
+@section('title', 'Arsip')
 
 @section('content')
 

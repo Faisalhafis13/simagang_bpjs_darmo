@@ -20,34 +20,61 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-public function boot(): void
-{
-    View::composer('components.back-office.sidebar', function ($view) {
+    public function boot(): void
+    {
+        View::composer('components.back-office.sidebar', function ($view) {
 
-        if (!Auth::check()) {
-            return;
-        }
+            /*
+            |--------------------------------------------------------------------------
+            | Pastikan user sudah login
+            |--------------------------------------------------------------------------
+            */
 
-        $user = Auth::user();
+            if (!Auth::check()) {
+                return;
+            }
 
-        if ($user->role->name === 'Admin') {
 
-            $menus = Menu::orderBy('urutan','asc')->get();
+            /*
+            |--------------------------------------------------------------------------
+            | Ambil user yang sedang login
+            |--------------------------------------------------------------------------
+            */
 
-        } else {
+            $user = Auth::user();
 
-            $menus = Menu::whereHas('roleMenus', function ($q) use ($user) {
 
-                $q->where('role_id', $user->role_id)
-                  ->where('status', 'active');
+            /*
+            |--------------------------------------------------------------------------
+            | Ambil menu berdasarkan Role Menu
+            |--------------------------------------------------------------------------
+            |
+            | Semua role, termasuk Admin, mengikuti pengaturan Role Menu.
+            |
+            | Menu hanya ditampilkan apabila:
+            | - role_id sesuai dengan role user
+            | - status RoleMenu = active
+            |
+            */
+
+            $menus = Menu::whereHas('roleMenus', function ($query) use ($user) {
+
+                $query->where('role_id', $user->role_id)
+                      ->where('status', 'active');
 
             })
-            ->orderBy('urutan','asc')
+            ->orderBy('urutan', 'asc')
             ->get();
 
-        }
 
-        $view->with('menus', $menus);
+            /*
+            |--------------------------------------------------------------------------
+            | Kirim menu ke sidebar
+            |--------------------------------------------------------------------------
+            */
 
-    });
-}}
+            $view->with('menus', $menus);
+
+        });
+    }
+}
