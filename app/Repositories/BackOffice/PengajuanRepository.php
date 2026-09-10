@@ -11,33 +11,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 class PengajuanRepository
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Index
-    |--------------------------------------------------------------------------
-    */
-
     public function index()
     {
         return view('back-office.pengajuan.index');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Get Data Pengajuan Aktif
-    |--------------------------------------------------------------------------
-    |
-    | Semua pengajuan yang belum diarsipkan tetap tampil.
-    |
-    | Termasuk:
-    | - Pending
-    | - Diterima
-    | - Ditolak
-    |
-    | Arsip hanya ditentukan oleh archived_at.
-    |
-    */
-
     public function getData()
     {
         $pengajuan = PengajuanMagang::query()
@@ -55,13 +32,6 @@ class PengajuanRepository
             'data' => $pengajuan,
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Pengajuan
-    |--------------------------------------------------------------------------
-    */
-
     public function update(Request $request, $id)
     {
         $data = $request->validate([
@@ -69,19 +39,11 @@ class PengajuanRepository
                 'required',
                 'in:menunggu,Menunggu,pending,Pending,diterima,Diterima,accepted,Accepted,ditolak,Ditolak,rejected,Rejected'
             ],
-
             'catatan' => [
                 'nullable',
                 'string',
             ],
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Normalisasi Status
-        |--------------------------------------------------------------------------
-        */
-
         $statusMap = [
             'menunggu' => 'Pending',
             'pending' => 'Pending',
@@ -92,18 +54,9 @@ class PengajuanRepository
             'ditolak' => 'Ditolak',
             'rejected' => 'Ditolak',
         ];
-
         $statusKey = strtolower($data['status']);
-
         $status = $statusMap[$statusKey]
             ?? $data['status'];
-
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil Pengajuan
-        |--------------------------------------------------------------------------
-        */
-
         $pengajuan = PengajuanMagang::query()
             ->with([
                 'anggota',
@@ -111,13 +64,6 @@ class PengajuanRepository
                 'logbooks',
             ])
             ->findOrFail($id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pengajuan Sudah Diarsipkan
-        |--------------------------------------------------------------------------
-        */
-
         if ($pengajuan->isArchived()) {
             return response()->json([
                 'status' => 'error',
@@ -125,13 +71,6 @@ class PengajuanRepository
                     'Pengajuan ini sudah masuk arsip dan tidak dapat diubah dari halaman pengajuan aktif.',
             ], 422);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pengajuan Sudah Memiliki Keputusan
-        |--------------------------------------------------------------------------
-        */
-
         if (
             in_array(
                 $pengajuan->status,
@@ -144,32 +83,9 @@ class PengajuanRepository
                     'Pengajuan ini sudah memiliki keputusan dan tidak dapat diubah lagi.',
             ], 422);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Data Lama
-        |--------------------------------------------------------------------------
-        */
-
         $oldData = $pengajuan->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE STATUS
-        |--------------------------------------------------------------------------
-        |
-        | PENTING:
-        |
-        | Tidak ada lagi pengisian archived_at di sini.
-        |
-        | Baik Diterima maupun Ditolak tetap berada di halaman Pengajuan
-        | sampai admin menekan tombol Arsipkan.
-        |
-        */
-
         $pengajuan->update([
             'status' => $status,
-
             'catatan' => array_key_exists(
                 'catatan',
                 $data
@@ -177,39 +93,16 @@ class PengajuanRepository
                 ? $data['catatan']
                 : $pengajuan->catatan,
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Jika Diterima, Buat Akun Peserta
-        |--------------------------------------------------------------------------
-        */
-
         if ($status === 'Diterima') {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Akun Ketua
-            |--------------------------------------------------------------------------
-            */
-
             $this->createPesertaAccount(
                 $pengajuan->nama_ketua,
                 $pengajuan->email_ketua,
                 $pengajuan->kode_pengajuan
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Akun Anggota
-            |--------------------------------------------------------------------------
-            */
-
             foreach ($pengajuan->anggota as $anggota) {
-
                 if (empty($anggota->email)) {
                     continue;
                 }
-
                 $this->createPesertaAccount(
                     $anggota->nama_anggota,
                     $anggota->email,
@@ -217,13 +110,6 @@ class PengajuanRepository
                 );
             }
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-
         ActivityLogger::log(
             'Pengajuan Magang',
             'UPDATE',
@@ -233,13 +119,6 @@ class PengajuanRepository
                 ->fresh()
                 ->toArray()
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Response
-        |--------------------------------------------------------------------------
-        */
-
         $message = $status === 'Ditolak'
             ? 'Pengajuan berhasil ditolak. Pengajuan belum diarsipkan.'
             : (
@@ -247,30 +126,12 @@ class PengajuanRepository
                     ? 'Pengajuan berhasil diterima. Pengajuan belum diarsipkan.'
                     : 'Status pengajuan berhasil diperbarui.'
             );
-
         return response()->json([
             'status' => 'success',
-
             'message' => $message,
-
             'data' => $pengajuan->fresh(),
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Arsipkan Pengajuan Secara Manual
-    |--------------------------------------------------------------------------
-    |
-    | Pengajuan hanya boleh diarsipkan jika sudah mempunyai keputusan:
-    |
-    | - Diterima
-    | - Ditolak
-    |
-    | Pending tidak boleh langsung diarsipkan.
-    |
-    */
-
     public function archive($id)
     {
         $pengajuan = PengajuanMagang::query()
@@ -281,11 +142,6 @@ class PengajuanRepository
             ])
             ->findOrFail($id);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sudah Diarsipkan
-        |--------------------------------------------------------------------------
-        */
 
         if ($pengajuan->isArchived()) {
             return response()->json([
@@ -295,11 +151,6 @@ class PengajuanRepository
             ], 422);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Harus Sudah Memiliki Keputusan
-        |--------------------------------------------------------------------------
-        */
 
         if (
             !in_array(
@@ -314,29 +165,14 @@ class PengajuanRepository
             ], 422);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Data Lama
-        |--------------------------------------------------------------------------
-        */
 
         $oldData = $pengajuan->toArray();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Arsipkan
-        |--------------------------------------------------------------------------
-        */
 
         $pengajuan->update([
             'archived_at' => now(),
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Pengajuan Magang',
@@ -348,11 +184,6 @@ class PengajuanRepository
                 ->toArray()
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | Response
-        |--------------------------------------------------------------------------
-        */
 
         return response()->json([
             'status' => 'success',
@@ -365,11 +196,6 @@ class PengajuanRepository
         ]);
     }
 
-    /*
-|--------------------------------------------------------------------------
-| Tampilkan File Pengajuan
-|--------------------------------------------------------------------------
-*/
 
 public function file($id, $type)
 {
@@ -525,11 +351,6 @@ public function file($id, $type)
         ]
     );
 }
-    /*
-    |--------------------------------------------------------------------------
-    | Create Peserta Account
-    |--------------------------------------------------------------------------
-    */
 
     protected function createPesertaAccount(
         $nama,
@@ -545,22 +366,12 @@ public function file($id, $type)
             'name' => 'Peserta',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Cari User berdasarkan Email
-        |--------------------------------------------------------------------------
-        */
 
         $user = User::where(
             'email',
             $email
         )->first();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Buat User Baru
-        |--------------------------------------------------------------------------
-        */
 
         if (!$user) {
 
@@ -588,11 +399,6 @@ public function file($id, $type)
             return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update User Lama
-        |--------------------------------------------------------------------------
-        */
 
         $oldUserData = $user->toArray();
 

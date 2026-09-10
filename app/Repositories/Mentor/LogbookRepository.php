@@ -23,11 +23,9 @@ class LogbookRepository
 public function peserta()
 {
     $mentor = $this->getMentor();
-
     if (!$mentor) {
         return collect([]);
     }
-
     return $mentor->peserta()
         ->whereHas('logbooks.pengajuan', function ($query) {
             $query->whereNull('archived_at');
@@ -49,23 +47,18 @@ public function peserta()
         if (!$mentor) {
             return collect([]);
         }
-
 return Logbook::with([
         'user',
         'pengajuan',
     ])
     ->whereHas('user', function ($query) use ($mentor) {
-
         $query->where(
             'mentor_id',
             $mentor->id
         );
-
     })
     ->whereHas('pengajuan', function ($query) {
-
         $query->whereNull('archived_at');
-
     })
     ->where(
         'user_id',
@@ -77,7 +70,6 @@ return Logbook::with([
     )
     ->get()
     ->map(function ($logbook) {
-
         return [
             'id' => $logbook->id,
             'tanggal' => $logbook->tanggal?->format('Y-m-d'),
@@ -91,10 +83,9 @@ return Logbook::with([
             'status' => $logbook->status ?? 'Menunggu',
             'catatan_mentor' => $logbook->catatan_mentor,
         ];
-
     });
         }
-
+        
     public function approve(Request $request, $id)
     {
         $mentor = $this->getMentor();
@@ -124,29 +115,14 @@ $logbook = Logbook::with([
 
     })
     ->findOrFail($id);
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan data lama untuk Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         $oldData = $logbook->toArray();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update status logbook
-        |--------------------------------------------------------------------------
-        */
 
         $logbook->update([
             'status' => 'Disetujui',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Logbook',
@@ -198,29 +174,14 @@ $logbook = Logbook::with([
 
     })
     ->findOrFail($id);
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan data lama untuk Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         $oldData = $logbook->toArray();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan catatan mentor
-        |--------------------------------------------------------------------------
-        */
 
         $logbook->update([
             'catatan_mentor' => $data['catatan_mentor'] ?? null,
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Logbook',

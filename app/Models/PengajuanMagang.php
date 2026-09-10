@@ -35,11 +35,6 @@ class PengajuanMagang extends Model
         'archived_at' => 'datetime',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Anggota Kelompok
-    |--------------------------------------------------------------------------
-    */
 
     public function anggota()
     {
@@ -49,11 +44,6 @@ class PengajuanMagang extends Model
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Mentor Pengajuan
-    |--------------------------------------------------------------------------
-    */
 
     public function mentor()
     {
@@ -63,11 +53,6 @@ class PengajuanMagang extends Model
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Logbook Kelompok
-    |--------------------------------------------------------------------------
-    */
 
     public function logbooks()
     {
@@ -77,17 +62,6 @@ class PengajuanMagang extends Model
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scope Pengajuan Aktif
-    |--------------------------------------------------------------------------
-    |
-    | Aktif berarti belum diarsipkan.
-    |
-    | Jadi Pending, Diterima, dan Ditolak semuanya tetap aktif
-    | selama archived_at masih NULL.
-    |
-    */
 
     public function scopeAktif($query)
     {
@@ -95,11 +69,6 @@ class PengajuanMagang extends Model
             ->whereNull('archived_at');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scope Pengajuan Arsip
-    |--------------------------------------------------------------------------
-    */
 
     public function scopeArsip($query)
     {
@@ -107,11 +76,6 @@ class PengajuanMagang extends Model
             ->whereNotNull('archived_at');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scope Pengajuan Ditolak
-    |--------------------------------------------------------------------------
-    */
 
     public function scopeDitolak($query)
     {
@@ -119,26 +83,12 @@ class PengajuanMagang extends Model
             ->where('status', 'Ditolak');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cek Arsip
-    |--------------------------------------------------------------------------
-    */
 
     public function isArchived(): bool
     {
         return !is_null($this->archived_at);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cek Masa Magang Selesai
-    |--------------------------------------------------------------------------
-    |
-    | Tetap dipertahankan karena mungkin digunakan bagian sistem lain.
-    | Tetapi fungsi ini TIDAK lagi digunakan untuk otomatis mengarsipkan.
-    |
-    */
 
     public function isMasaMagangSelesai(): bool
     {
@@ -149,22 +99,12 @@ class PengajuanMagang extends Model
         return $this->tanggal_selesai->lt(today());
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cek Pengajuan Ditolak
-    |--------------------------------------------------------------------------
-    */
 
     public function isDitolak(): bool
     {
         return strtolower($this->status ?? '') === 'ditolak';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cek Pengajuan Diterima
-    |--------------------------------------------------------------------------
-    */
 
     public function isDiterima(): bool
     {

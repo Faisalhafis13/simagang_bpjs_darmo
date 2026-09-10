@@ -12,92 +12,48 @@ use Illuminate\Support\Facades\Storage;
 
 class LogbookRepository
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Halaman Index
-    |--------------------------------------------------------------------------
-    */
 
     public function index()
     {
         return view('peserta.logbook.index');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cari Pengajuan Aktif Peserta
-    |--------------------------------------------------------------------------
-    |
-    | Peserta dapat dikenali sebagai:
-    | 1. Ketua
-    | 2. Anggota
-    |
-    */
-
     protected function getPengajuanPeserta(): ?PengajuanMagang
     {
         $user = Auth::user();
-
         if (!$user) {
             return null;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Prioritas 1: peserta adalah ketua
-        |--------------------------------------------------------------------------
-        */
-
         $pengajuanKetua = PengajuanMagang::query()
             ->where('email_ketua', $user->email)
             ->where('status', 'Diterima')
             ->whereNull('archived_at')
             ->latest('id')
             ->first();
-
         if ($pengajuanKetua) {
             return $pengajuanKetua;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Prioritas 2: peserta adalah anggota
-        |--------------------------------------------------------------------------
-        */
-
         $anggota = AnggotaMagang::query()
             ->where('email', $user->email)
             ->latest('id')
             ->first();
-
         if (!$anggota) {
             return null;
         }
-
         return PengajuanMagang::query()
             ->whereKey($anggota->pengajuan_magang_id)
             ->where('status', 'Diterima')
             ->whereNull('archived_at')
             ->first();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Get Data
-    |--------------------------------------------------------------------------
-    */
-
     public function getData()
     {
         $pengajuan = $this->getPengajuanPeserta();
-
         if (!$pengajuan) {
             return response()->json([
                 'status' => 'success',
                 'data' => [],
             ]);
         }
-
         $data = Logbook::query()
             ->where('user_id', Auth::id())
             ->where('pengajuan_magang_id', $pengajuan->id)
@@ -107,42 +63,26 @@ class LogbookRepository
             ->map(function ($logbook) {
                 return [
                     'id' => $logbook->id,
-
                     'tanggal' => $logbook->tanggal?->format('Y-m-d'),
-
                     'aktivitas' => $logbook->aktivitas,
-
                     'hasil' => $logbook->hasil,
-
                     'catatan' => $logbook->catatan,
-
                     'bukti' => $logbook->bukti,
-
                     'bukti_url' => $logbook->bukti
                         ? Storage::url($logbook->bukti)
                         : null,
-
                     'status' => $logbook->status ?? 'Menunggu',
-
                     'catatan_mentor' => $logbook->catatan_mentor,
-
                     'pengajuan_magang_id' =>
                         $logbook->pengajuan_magang_id,
                 ];
             });
-
         return response()->json([
             'status' => 'success',
             'data' => $data,
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Store
-    |--------------------------------------------------------------------------
-    */
-
+    
     public function store(Request $request)
     {
         $pengajuan = $this->getPengajuanPeserta();
@@ -171,17 +111,6 @@ class LogbookRepository
                 ->store('logbook/bukti', 'public');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Buat Logbook
-        |--------------------------------------------------------------------------
-        |
-        | PENTING:
-        | pengajuan_magang_id wajib diisi agar logbook masuk
-        | ke arsip kelompok yang benar.
-        |
-        */
-
         $logbook = Logbook::create([
             'user_id' => Auth::id(),
 
@@ -202,11 +131,6 @@ class LogbookRepository
             'catatan_mentor' => null,
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Logbook',
@@ -222,11 +146,6 @@ class LogbookRepository
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Show
-    |--------------------------------------------------------------------------
-    */
 
     public function show($id)
     {
@@ -282,11 +201,6 @@ class LogbookRepository
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update
-    |--------------------------------------------------------------------------
-    */
 
     public function update(Request $request, $id)
     {
@@ -305,11 +219,6 @@ class LogbookRepository
             ->where('pengajuan_magang_id', $pengajuan->id)
             ->findOrFail($id);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Logbook Disetujui Tidak Boleh Diubah
-        |--------------------------------------------------------------------------
-        */
 
         if (strtolower($logbook->status ?? '') === 'disetujui') {
             return response()->json([
@@ -338,28 +247,13 @@ class LogbookRepository
 
             'catatan' => $data['catatan'] ?? null,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Pastikan tetap terikat ke kelompok
-            |--------------------------------------------------------------------------
-            */
 
             'pengajuan_magang_id' => $pengajuan->id,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Setelah diedit kembali menunggu review
-            |--------------------------------------------------------------------------
-            */
 
             'status' => 'Menunggu',
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ganti Bukti
-        |--------------------------------------------------------------------------
-        */
 
         if ($request->hasFile('bukti')) {
 
@@ -375,11 +269,6 @@ class LogbookRepository
 
         $logbook->update($updateData);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Logbook',
@@ -391,15 +280,10 @@ class LogbookRepository
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Logbook berhasil diperbarui.',
+            'message' => 'Logbook berhasil diperbarui', 
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Destroy
-    |--------------------------------------------------------------------------
-    */
 
     public function destroy($id)
     {
@@ -407,9 +291,9 @@ class LogbookRepository
 
         if (!$pengajuan) {
             return response()->json([
-                'status' => 'error',
+                'status' => 'errro',
                 'message' =>
-                    'Pengajuan magang aktif tidak ditemukan.',
+                    'Pengajuan magang sudah tidak aktif',
             ], 404);
         }
 
@@ -418,11 +302,6 @@ class LogbookRepository
             ->where('pengajuan_magang_id', $pengajuan->id)
             ->findOrFail($id);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Logbook Disetujui Tidak Boleh Dihapus
-        |--------------------------------------------------------------------------
-        */
 
         if (strtolower($logbook->status ?? '') === 'disetujui') {
             return response()->json([
@@ -434,11 +313,6 @@ class LogbookRepository
 
         $oldData = $logbook->toArray();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus File Bukti
-        |--------------------------------------------------------------------------
-        */
 
         if ($logbook->bukti) {
             Storage::disk('public')
@@ -447,11 +321,6 @@ class LogbookRepository
 
         $logbook->delete();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
 
         ActivityLogger::log(
             'Logbook',

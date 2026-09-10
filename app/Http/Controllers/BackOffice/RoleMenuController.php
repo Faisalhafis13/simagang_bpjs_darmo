@@ -17,27 +17,22 @@ class RoleMenuController extends Controller
     {
         $this->repository = $repository;
     }
-
     public function index()
     {
         return $this->repository->index();
     }
-
     public function getData(Request $request)
     {
         return $this->repository->getData($request);
     }
-
     public function store(Request $request)
     {
         return $this->repository->store($request);
     }
-
     public function update(Request $request, RoleMenu $roleMenu)
     {
         return $this->repository->update($request, $roleMenu);
     }
-
     public function destroy(RoleMenu $roleMenu)
     {
         return $this->repository->destroy($roleMenu);

@@ -14,12 +14,10 @@ class PerguruanTinggiController extends Controller
     {
         $this->repository = $repository;
     }
-
     public function index()
     {
         return $this->repository->index();
     }
-
     public function getData()
     {
         return $this->repository->getData();

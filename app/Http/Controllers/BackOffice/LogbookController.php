@@ -14,22 +14,18 @@ class LogbookController extends Controller
     {
         $this->repository = $repository;
     }
-
     public function index()
     {
         return $this->repository->index();
     }
-
     public function getData()
     {
         return $this->repository->getData();
     }
-
     public function store(Request $request)
     {
         return $this->repository->store($request);
     }
-
     public function destroy($id)
     {
         return $this->repository->destroy($id);

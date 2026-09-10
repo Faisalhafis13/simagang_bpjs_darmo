@@ -2024,6 +2024,22 @@ body.back-office .dataTables_wrapper .dataTables_scrollBody {
         white-space: nowrap;
     }
 
+    body.back-office .btn,
+    body.back-office .btn-sm,
+    body.back-office .btn-xs {
+        padding: 0.45rem 0.8rem;
+
+        font-size: 0.75rem;
+
+        border-radius: 0.7rem;
+    }
+
+    body.back-office .btn i,
+    body.back-office .btn-sm i,
+    body.back-office .btn-xs i {
+        font-size: 0.9rem;
+    }
+
     .sidebar-header {
         min-height: 80px;
 
@@ -5481,11 +5497,26 @@ HOME RESPONSIVE
 
 
     body.back-office .bo-navbar .btn {
-        padding: 6px 9px;
+        padding: 5px 8px;
 
-        font-size: 0.75rem;
+        font-size: 0.7rem;
     }
 
+    body.back-office .btn,
+    body.back-office .btn-sm,
+    body.back-office .btn-xs {
+        padding: 0.38rem 0.7rem !important;
+
+        font-size: 0.7rem !important;
+
+        border-radius: 0.65rem;
+    }
+
+    body.back-office .btn i,
+    body.back-office .btn-sm i,
+    body.back-office .btn-xs i {
+        font-size: 0.8rem;
+    }
 
     body.back-office .bo-navbar .btn span {
         display: none;
@@ -5525,5 +5556,1783 @@ HOME RESPONSIVE
     }
 
 }
-  
+  /* =========================================================
+   FIX MOBILE HOME
+   KHUSUS HALAMAN PUBLIC HOME
+   TIDAK MENGGANGGU BACK OFFICE
+========================================================= */
 
+@media (max-width: 768px) {
+
+    /* -----------------------------------------
+       CEGAH HOME MELEBAR KELUAR LAYAR
+    ----------------------------------------- */
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    .public-content {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .public-content > section {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+
+    /* -----------------------------------------
+       CONTAINER HOME
+    ----------------------------------------- */
+
+    .public-content .container {
+        width: 100%;
+        max-width: 100%;
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .public-content .row {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .public-content .row > * {
+        max-width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       HEADER MOBILE
+    ----------------------------------------- */
+
+    .header {
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .header-wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .logo {
+        min-width: 0;
+        max-width: calc(100% - 55px);
+    }
+
+    .logo-text {
+        min-width: 0;
+    }
+
+    .logo-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    /* -----------------------------------------
+       HERO MOBILE
+    ----------------------------------------- */
+
+    .hero {
+        width: 100%;
+        max-width: 100%;
+        min-height: auto;
+
+        padding: 105px 0 55px !important;
+
+        overflow: hidden;
+
+        text-align: center;
+    }
+
+    .hero .container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .hero .row {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .hero .row > div {
+        width: 100%;
+        max-width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       HERO TEXT DIPERKECIL
+    ----------------------------------------- */
+
+    .hero h1 {
+        width: 100%;
+        max-width: 100%;
+
+        margin-top: 16px;
+
+        font-size: 29px !important;
+        line-height: 1.15;
+
+        letter-spacing: -0.8px;
+
+        overflow-wrap: break-word;
+        word-break: normal;
+    }
+
+    .hero p {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 17px auto 0;
+
+        font-size: 13px !important;
+        line-height: 1.7;
+
+        overflow-wrap: break-word;
+    }
+
+    .badge-system {
+        max-width: 100%;
+
+        padding: 7px 12px;
+
+        font-size: 9px;
+        line-height: 1.4;
+
+        white-space: normal;
+    }
+
+
+    /* -----------------------------------------
+       BUTTON HERO
+    ----------------------------------------- */
+
+    .hero-button {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 8px;
+
+        margin-top: 18px;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        width: 100%;
+        max-width: 100%;
+
+        min-height: 42px;
+
+        padding: 9px 14px;
+
+        font-size: 11.5px;
+
+        border-radius: 10px;
+    }
+
+
+    /* -----------------------------------------
+       HERO INFO
+    ----------------------------------------- */
+
+    .hero-info {
+        width: 100%;
+        max-width: 100%;
+
+        display: grid;
+
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        gap: 6px;
+
+        margin-top: 16px;
+    }
+
+    .info-box {
+        width: 100%;
+        min-width: 0;
+
+        padding: 8px 4px;
+
+        border-radius: 10px;
+    }
+
+    .info-box h3 {
+        font-size: 13px;
+    }
+
+    .info-box span {
+        font-size: 7px;
+
+        line-height: 1.3;
+    }
+
+
+    /* -----------------------------------------
+       HERO IMAGE
+       kalau ada di bawah hero
+    ----------------------------------------- */
+
+    .hero-image-wrapper {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 22px auto 0;
+
+        padding: 7px;
+
+        border-radius: 19px;
+    }
+
+    .hero-image-wrapper .hero-image {
+        width: 100%;
+        max-width: 100%;
+
+        height: 250px;
+
+        border-radius: 14px;
+    }
+
+    .hero-image-overlay {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+
+        max-width: calc(100% - 28px);
+
+        padding: 8px 10px;
+
+        border-radius: 12px;
+    }
+
+    .hero-overlay-icon {
+        width: 26px;
+        height: 26px;
+
+        font-size: 11px;
+
+        flex-shrink: 0;
+    }
+
+    .hero-image-overlay strong {
+        font-size: 9px;
+    }
+
+    .hero-image-overlay small {
+        font-size: 7px;
+    }
+
+
+    /* -----------------------------------------
+       HOME SECTION MOBILE
+    ----------------------------------------- */
+
+    .about,
+    .advantages,
+    .flow,
+    .gallery-section {
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: hidden;
+
+        padding: 65px 0;
+    }
+
+    .section-heading {
+        max-width: 100%;
+
+        font-size: 27px !important;
+        line-height: 1.2;
+    }
+
+    .section-description {
+        max-width: 100%;
+
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+
+    /* -----------------------------------------
+       ABOUT IMAGE
+    ----------------------------------------- */
+
+    .about-image-wrapper {
+        width: 100%;
+        max-width: 100%;
+
+        padding-right: 10px;
+        padding-bottom: 15px;
+    }
+
+    .about-image {
+        width: 100%;
+        max-width: 100%;
+
+        height: 260px;
+    }
+
+
+    /* -----------------------------------------
+       ADVANTAGE CARD
+    ----------------------------------------- */
+
+    .advantage-card {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 22px 15px;
+
+        border-radius: 18px;
+    }
+
+    .advantage-icon {
+        width: 58px;
+        height: 58px;
+
+        margin-bottom: 15px;
+
+        border-radius: 16px;
+
+        font-size: 23px;
+    }
+
+    .advantage-card h5 {
+        font-size: 14px;
+    }
+
+    .advantage-card p {
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+
+    /* -----------------------------------------
+       FLOW
+    ----------------------------------------- */
+
+    .flow-item {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 18px 10px;
+    }
+
+    .flow-icon {
+        width: 62px;
+        height: 62px;
+
+        border-radius: 18px;
+
+        font-size: 25px;
+    }
+
+    .flow-item h5 {
+        font-size: 14px;
+    }
+
+    .flow-item p {
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+
+    /* -----------------------------------------
+       GALLERY
+    ----------------------------------------- */
+
+    .gallery-section .gallery-heading {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 0;
+    }
+
+    .gallery-section .section-title {
+        font-size: 28px !important;
+        line-height: 1.2;
+    }
+
+    .gallery-section .section-subtitle {
+        width: 100%;
+        max-width: 100%;
+
+        font-size: 12px;
+
+        line-height: 1.7;
+    }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL PHONE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    .public-content .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+
+    /* HERO LEBIH KECIL */
+
+    .hero {
+        padding: 98px 0 45px !important;
+    }
+
+    .hero h1 {
+        font-size: 25px !important;
+
+        line-height: 1.16;
+
+        letter-spacing: -0.5px;
+    }
+
+    .hero p {
+        font-size: 12px !important;
+
+        line-height: 1.7;
+
+        margin-top: 14px;
+    }
+
+    .badge-system {
+        font-size: 8px;
+
+        padding: 6px 10px;
+    }
+
+
+    /* BUTTON */
+
+    .hero-button {
+        margin-top: 16px;
+
+        gap: 7px;
+    }
+
+    .btn-primary-custom,
+    .btn-outline-custom {
+        min-height: 40px;
+
+        padding: 9px 12px;
+
+        font-size: 11px;
+
+        border-radius: 10px;
+    }
+
+
+    /* INFO BOX */
+
+    .hero-info {
+        gap: 6px;
+
+        margin-top: 14px;
+    }
+
+    .info-box {
+        padding: 8px 3px;
+    }
+
+    .info-box h3 {
+        font-size: 12px;
+    }
+
+    .info-box span {
+        font-size: 6.5px;
+    }
+
+
+    /* HERO IMAGE */
+
+    .hero-image-wrapper {
+        margin-top: 18px;
+
+        padding: 6px;
+    }
+
+    .hero-image-wrapper .hero-image {
+        height: 220px;
+    }
+
+
+    /* SECTION TITLE */
+
+    .section-heading {
+        font-size: 25px !important;
+    }
+
+    .section-description {
+        font-size: 12px;
+    }
+
+
+    /* ABOUT */
+
+    .about,
+    .advantages,
+    .flow,
+    .gallery-section {
+        padding: 55px 0;
+    }
+
+    .about-image {
+        height: 230px;
+    }
+
+
+    /* ADVANTAGES */
+
+    .advantage-card {
+        padding: 20px 12px;
+    }
+
+    .advantage-icon {
+        width: 52px;
+        height: 52px;
+
+        font-size: 21px;
+    }
+
+    .advantage-card h5 {
+        font-size: 13px;
+    }
+
+    .advantage-card p {
+        font-size: 10px;
+    }
+
+
+    /* GALLERY */
+
+    .gallery-section .section-title {
+        font-size: 25px !important;
+    }
+
+}
+
+/* =========================================================
+   FINAL MOBILE HOME FIX
+   KHUSUS HALAMAN HOME / PUBLIC
+   BACK OFFICE TIDAK TERPENGARUH
+========================================================= */
+
+
+/* =========================================================
+   MOBILE HOME - GENERAL
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /*
+       -------------------------------------------------------
+       CEGAH HOME BERGESER / KE POTONG KE SAMPING
+       -------------------------------------------------------
+    */
+
+    body:has(.public-content) {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body:has(.public-content) .public-content {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        overflow-x: hidden;
+    }
+
+
+    /*
+       -------------------------------------------------------
+       SEMUA CONTAINER HOME
+       -------------------------------------------------------
+       Penting:
+       Hero menggunakan .container-xxl,
+       bukan hanya .container.
+    */
+
+    .public-content .container,
+    .public-content .container-sm,
+    .public-content .container-md,
+    .public-content .container-lg,
+    .public-content .container-xl,
+    .public-content .container-xxl {
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        box-sizing: border-box;
+    }
+
+
+    /*
+       -------------------------------------------------------
+       BOOTSTRAP ROW
+       -------------------------------------------------------
+       Bootstrap row biasanya memiliki margin kiri/kanan
+       negatif. Di layar kecil ini bisa membuat konten
+       melebar keluar viewport.
+    */
+
+    .public-content .row {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        --bs-gutter-x: 0.75rem;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .row > * {
+
+        min-width: 0 !important;
+        max-width: 100%;
+
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       HEADER MOBILE
+    ===================================================== */
+
+    .public-content ~ * {
+        max-width: 100%;
+    }
+
+    .header {
+
+        width: 100%;
+        max-width: 100vw;
+
+        height: 74px;
+
+        overflow: hidden;
+    }
+
+
+    .header .container {
+
+        width: 100%;
+        max-width: 100%;
+
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+
+    .header-wrapper {
+
+        width: 100%;
+        max-width: 100%;
+
+        min-width: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 10px;
+    }
+
+
+    .logo {
+
+        min-width: 0;
+        max-width: calc(100% - 54px);
+
+        gap: 9px;
+
+        overflow: hidden;
+    }
+
+
+    .logo img {
+
+        width: 45px;
+        height: 45px;
+
+        flex-shrink: 0;
+    }
+
+
+    .logo-text {
+
+        min-width: 0;
+        max-width: 100%;
+
+        overflow: hidden;
+    }
+
+
+    .logo-text h5 {
+
+        max-width: 100%;
+
+        font-size: 17px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    .logo-text small {
+
+        font-size: 9px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    .menu-button {
+
+        width: 43px;
+        height: 43px;
+
+        flex-shrink: 0;
+
+        border-radius: 12px;
+
+        font-size: 22px;
+    }
+
+
+    /* =====================================================
+       HERO MOBILE
+    ===================================================== */
+
+    .public-content .hero {
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        min-height: auto;
+
+        display: block;
+
+        padding: 96px 0 48px !important;
+
+        overflow: hidden;
+
+        text-align: center;
+
+        box-sizing: border-box;
+    }
+
+
+    /*
+       HERO CONTAINER
+       Ini bagian yang sebelumnya kelewat karena hero
+       menggunakan .container-xxl.
+    */
+
+    .public-content .hero .container,
+    .public-content .hero .container-xxl {
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .hero .row {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        display: flex;
+
+        flex-direction: column;
+    }
+
+
+    .public-content .hero .row > * {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        min-width: 0 !important;
+
+        flex: 0 0 100%;
+    }
+
+
+    /* =====================================================
+       HERO BADGE
+    ===================================================== */
+
+    .public-content .hero .badge-system {
+
+        display: inline-flex;
+
+        max-width: 100%;
+
+        padding: 6px 10px;
+
+        font-size: 8px;
+
+        line-height: 1.4;
+
+        text-align: center;
+
+        white-space: normal;
+
+        overflow-wrap: break-word;
+
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       HERO TITLE
+    ===================================================== */
+
+    .public-content .hero h1 {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-top: 15px;
+        margin-bottom: 0;
+
+        padding: 0;
+
+        font-size: 26px !important;
+
+        line-height: 1.17;
+
+        letter-spacing: -0.7px;
+
+        text-align: center;
+
+        overflow-wrap: anywhere;
+        word-break: normal;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .hero h1 br {
+
+        display: none;
+    }
+
+
+    /* =====================================================
+       HERO DESCRIPTION
+    ===================================================== */
+
+    .public-content .hero p {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 14px auto 0;
+
+        padding: 0;
+
+        font-size: 12px !important;
+
+        line-height: 1.7;
+
+        text-align: center;
+
+        overflow-wrap: break-word;
+
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       HERO BUTTON
+    ===================================================== */
+
+    .public-content .hero-button {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 8px;
+
+        margin-top: 18px;
+    }
+
+
+    .public-content .hero-button a,
+    .public-content .hero-button .btn-primary-custom,
+    .public-content .hero-button .btn-outline-custom {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        min-width: 0;
+
+        min-height: 44px;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        padding: 9px 13px;
+
+        font-size: 12px;
+
+        border-radius: 11px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       HERO INFO
+    ===================================================== */
+
+    .public-content .hero-info {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 6px;
+
+        margin-top: 15px;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .hero-info .info-box {
+
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        padding: 9px 4px;
+
+        border-radius: 11px;
+
+        overflow: hidden;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .hero-info .info-box h3 {
+
+        margin: 0;
+
+        font-size: 14px;
+
+        line-height: 1.2;
+    }
+
+
+    .public-content .hero-info .info-box span {
+
+        display: block;
+
+        margin-top: 3px;
+
+        font-size: 7px;
+
+        line-height: 1.3;
+
+        overflow-wrap: break-word;
+    }
+
+
+    /* =====================================================
+       HERO IMAGE
+    ===================================================== */
+
+    .public-content .hero-image-wrapper {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 20px auto 0;
+
+        padding: 6px;
+
+        border-radius: 18px;
+
+        box-sizing: border-box;
+
+        overflow: hidden;
+    }
+
+
+    .public-content .hero-image-wrapper .hero-image {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        height: 220px;
+
+        border-radius: 13px;
+
+        object-fit: cover;
+
+        display: block;
+    }
+
+
+    .public-content .hero-image-overlay {
+
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+
+        width: auto;
+
+        max-width: calc(100% - 24px);
+
+        padding: 8px 10px;
+
+        border-radius: 11px;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .hero-overlay-icon {
+
+        width: 30px;
+        height: 30px;
+
+        flex-shrink: 0;
+
+        font-size: 14px;
+    }
+
+
+    .public-content .hero-image-overlay strong {
+
+        font-size: 9px;
+    }
+
+
+    .public-content .hero-image-overlay small {
+
+        font-size: 7px;
+    }
+
+
+    /* =====================================================
+       ABOUT / TENTANG PROGRAM
+    ===================================================== */
+
+    .public-content .about {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 58px 0 !important;
+
+        overflow: hidden;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .about .container,
+    .public-content .about .container-xxl {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+
+    .public-content .about .row {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+
+    .public-content .about .row > * {
+
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+
+    /* =====================================================
+       ABOUT LABEL
+    ===================================================== */
+
+    .public-content .about .section-label {
+
+        display: block;
+
+        width: 100%;
+
+        margin-bottom: 9px;
+
+        font-size: 10px;
+
+        letter-spacing: 1.5px;
+
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       ABOUT TITLE
+    ===================================================== */
+
+    .public-content .about h2,
+    .public-content .about h2.section-heading {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin: 0 auto 20px !important;
+
+        padding: 0;
+
+        font-size: 25px !important;
+
+        line-height: 1.2;
+
+        letter-spacing: -0.5px;
+
+        text-align: center !important;
+
+        overflow-wrap: break-word;
+
+        word-break: normal;
+
+        box-sizing: border-box;
+    }
+
+
+    /*
+       Kalau HTML menggunakan span untuk kata
+       "Mengembangkan Potensi", span dibuat satu blok.
+       Jadi tidak akan lari ke kanan.
+    */
+
+    .public-content .about h2.section-heading span {
+
+        display: block;
+
+        width: 100%;
+        max-width: 100%;
+
+        margin: 0;
+
+        padding: 0;
+
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       ABOUT PARAGRAPH
+    ===================================================== */
+
+    .public-content .about p {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        margin-left: auto;
+        margin-right: auto;
+
+        font-size: 13px !important;
+
+        line-height: 1.8;
+
+        text-align: center;
+
+        overflow-wrap: break-word;
+    }
+
+
+    /* =====================================================
+       ABOUT IMAGE
+    ===================================================== */
+
+    .public-content .about-image-wrapper {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding-right: 8px;
+        padding-bottom: 15px;
+
+        box-sizing: border-box;
+    }
+
+
+    .public-content .about-image {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        height: 230px;
+
+        object-fit: cover;
+
+        border-radius: 20px !important;
+    }
+
+
+    .public-content .about-image-card {
+
+        right: 0;
+        bottom: 0;
+
+        max-width: calc(100% - 10px);
+
+        padding: 10px 11px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       ABOUT POINTS
+    ===================================================== */
+
+    .public-content .about-points {
+
+        width: 100%;
+        max-width: 100%;
+
+        gap: 11px;
+    }
+
+
+    .public-content .about-point {
+
+        width: 100%;
+        max-width: 100%;
+
+        display: flex;
+
+        align-items: flex-start;
+
+        gap: 9px;
+
+        font-size: 12px;
+
+        line-height: 1.5;
+    }
+
+
+    .public-content .about-point i {
+
+        flex-shrink: 0;
+
+        margin-top: 1px;
+    }
+
+
+    /* =====================================================
+       ADVANTAGES
+    ===================================================== */
+
+    .public-content .advantages {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 58px 0 !important;
+
+        overflow: hidden;
+    }
+
+
+    .public-content .advantages h2 {
+
+        width: 100%;
+
+        font-size: 25px !important;
+
+        line-height: 1.2;
+
+        text-align: center !important;
+    }
+
+
+    .public-content .advantages .text-center > p {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+        text-align: center;
+    }
+
+
+    .public-content .advantage-card {
+
+        width: 100%;
+
+        min-height: 145px;
+
+        padding: 20px 12px;
+
+        border-radius: 17px;
+    }
+
+
+    .public-content .advantage-card i {
+
+        width: 52px;
+        height: 52px;
+
+        margin-bottom: 13px;
+
+        font-size: 21px;
+    }
+
+
+    .public-content .advantage-card h5 {
+
+        font-size: 13px;
+    }
+
+
+    .public-content .advantage-card p {
+
+        font-size: 10px;
+
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       FLOW / ALUR
+    ===================================================== */
+
+    .public-content .flow {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 58px 0 !important;
+
+        overflow: hidden;
+    }
+
+
+    .public-content .flow h2 {
+
+        width: 100%;
+
+        font-size: 25px !important;
+
+        line-height: 1.2;
+
+        text-align: center !important;
+    }
+
+
+    .public-content .flow-item {
+
+        width: 100%;
+
+        padding: 15px 8px;
+    }
+
+
+    .public-content .flow-number {
+
+        width: 52px;
+        height: 52px;
+
+        font-size: 16px;
+    }
+
+
+    .public-content .flow-icon {
+
+        width: 60px;
+        height: 60px;
+
+        font-size: 24px;
+    }
+
+
+    .public-content .flow-item h5 {
+
+        font-size: 13px;
+    }
+
+
+    .public-content .flow-item p {
+
+        font-size: 10px;
+
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       GALLERY
+    ===================================================== */
+
+    .public-content .gallery-section {
+
+        width: 100% !important;
+        max-width: 100% !important;
+
+        padding: 58px 0 !important;
+
+        overflow: hidden;
+    }
+
+
+    .public-content .gallery-section .gallery-heading {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        margin-bottom: 30px;
+
+        padding: 0;
+
+        text-align: center;
+    }
+
+
+    .public-content .gallery-section .section-title {
+
+        width: 100%;
+
+        font-size: 25px !important;
+
+        line-height: 1.2;
+
+        text-align: center !important;
+    }
+
+
+    .public-content .gallery-section .section-subtitle {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        font-size: 12px;
+
+        line-height: 1.7;
+
+        text-align: center !important;
+    }
+
+
+    .public-content .gallerySwiper {
+
+        width: 100%;
+
+        max-width: 100%;
+
+        overflow: hidden;
+    }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL PHONE
+   400px KE BAWAH
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .public-content .container,
+    .public-content .container-sm,
+    .public-content .container-md,
+    .public-content .container-lg,
+    .public-content .container-xl,
+    .public-content .container-xxl {
+
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+
+    /* HEADER */
+
+    .header .container {
+
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+
+    .logo {
+
+        gap: 8px;
+    }
+
+
+    .logo img {
+
+        width: 42px;
+        height: 42px;
+    }
+
+
+    .logo-text h5 {
+
+        font-size: 16px;
+    }
+
+
+    .menu-button {
+
+        width: 41px;
+        height: 41px;
+
+        font-size: 21px;
+    }
+
+
+    /* HERO */
+
+    .public-content .hero {
+
+        padding-top: 94px !important;
+        padding-bottom: 42px !important;
+    }
+
+
+    .public-content .hero h1 {
+
+        font-size: 24px !important;
+
+        line-height: 1.18;
+    }
+
+
+    .public-content .hero p {
+
+        font-size: 11.5px !important;
+
+        line-height: 1.7;
+    }
+
+
+    .public-content .badge-system {
+
+        font-size: 7.5px;
+
+        padding: 6px 9px;
+    }
+
+
+    .public-content .hero-button {
+
+        margin-top: 16px;
+
+        gap: 7px;
+    }
+
+
+    .public-content .hero-button a,
+    .public-content .hero-button .btn-primary-custom,
+    .public-content .hero-button .btn-outline-custom {
+
+        min-height: 42px;
+
+        font-size: 11px;
+
+        padding: 9px 12px;
+    }
+
+
+    .public-content .hero-info {
+
+        gap: 5px;
+
+        margin-top: 13px;
+    }
+
+
+    .public-content .hero-info .info-box {
+
+        padding: 8px 3px;
+
+        border-radius: 10px;
+    }
+
+
+    .public-content .hero-info .info-box h3 {
+
+        font-size: 13px;
+    }
+
+
+    .public-content .hero-info .info-box span {
+
+        font-size: 6.5px;
+    }
+
+
+    .public-content .hero-image-wrapper {
+
+        margin-top: 17px;
+
+        padding: 5px;
+
+        border-radius: 16px;
+    }
+
+
+    .public-content .hero-image-wrapper .hero-image {
+
+        height: 205px;
+
+        border-radius: 12px;
+    }
+
+
+    /* ABOUT */
+
+    .public-content .about {
+
+        padding-top: 52px !important;
+        padding-bottom: 52px !important;
+    }
+
+
+    .public-content .about .section-label {
+
+        font-size: 9px;
+
+        letter-spacing: 1.4px;
+    }
+
+
+    .public-content .about h2,
+    .public-content .about h2.section-heading {
+
+        font-size: 22px !important;
+
+        line-height: 1.2;
+
+        margin-bottom: 17px !important;
+    }
+
+
+    .public-content .about p {
+
+        font-size: 12px !important;
+
+        line-height: 1.8;
+    }
+
+
+    .public-content .about-image {
+
+        height: 215px;
+    }
+
+
+    .public-content .about-point {
+
+        font-size: 11.5px;
+    }
+
+
+    /* ADVANTAGES */
+
+    .public-content .advantages,
+    .public-content .flow,
+    .public-content .gallery-section {
+
+        padding-top: 52px !important;
+        padding-bottom: 52px !important;
+    }
+
+
+    .public-content .advantages h2,
+    .public-content .flow h2,
+    .public-content .gallery-section .section-title {
+
+        font-size: 23px !important;
+    }
+
+}

@@ -15,7 +15,6 @@ class MentorRepository
     {
         return view('back-office.mentor.index');
     }
-
 public function getData()
 {
     $emailPesertaAktif = $this->emailPesertaAktif();
@@ -54,37 +53,20 @@ public function getData()
             'peserta' => 'nullable|array',
             'peserta.*' => 'integer|exists:users,id',
         ]);
-
         // Pastikan tugas tetap tersedia untuk kompatibilitas database
         $data['tugas'] = '';
-
         // Buat mentor
         $mentor = Mentor::create([
             'nama_mentor' => $data['nama_mentor'],
             'divisi' => $data['divisi'],
             'tugas' => $data['tugas'],
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hubungkan peserta ke mentor
-        |--------------------------------------------------------------------------
-        */
-
         if (!empty($data['peserta'])) {
-
             User::whereIn('id', $data['peserta'])
                 ->update([
                     'mentor_id' => $mentor->id,
                 ]);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-
         ActivityLogger::log(
             'Mentor',
             'CREATE',
@@ -92,26 +74,19 @@ public function getData()
             null,
             $mentor->fresh()->load('peserta')->toArray()
         );
-
         return response()->json([
             'status' => 'success',
             'message' => 'Mentor berhasil ditambahkan.',
             'data' => $mentor->fresh()->load('peserta'),
         ]);
     }
-
     public function show($id)
     {
         $mentor = Mentor::findOrFail($id);
-
         $rolePeserta = Role::where('name', 'Peserta')->first();
-
         $peserta = collect();
-
         if ($rolePeserta) {
-
 $emailPesertaAktif = $this->emailPesertaAktif();
-
 $peserta = User::where('role_id', $rolePeserta->id)
     ->whereIn('email', $emailPesertaAktif)
     ->select(
@@ -123,7 +98,6 @@ $peserta = User::where('role_id', $rolePeserta->id)
     ->orderBy('name')
     ->get();       
      }
-
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -132,25 +106,10 @@ $peserta = User::where('role_id', $rolePeserta->id)
             ],
         ]);
     }
-
     public function update(Request $request, $id)
     {
         $mentor = Mentor::findOrFail($id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan data lama mentor
-        |--------------------------------------------------------------------------
-        */
-
         $oldMentorData = $mentor->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan peserta lama
-        |--------------------------------------------------------------------------
-        */
-
         $oldPeserta = User::where('mentor_id', $mentor->id)
             ->select(
                 'id',
@@ -161,56 +120,26 @@ $peserta = User::where('role_id', $rolePeserta->id)
             ->orderBy('name')
             ->get()
             ->toArray();
-
         $data = $request->validate([
             'nama_mentor' => 'required|string|max:255',
             'divisi' => 'required|string|max:255',
             'peserta' => 'nullable|array',
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update data mentor
-        |--------------------------------------------------------------------------
-        */
-
         $mentor->update([
             'nama_mentor' => $data['nama_mentor'],
             'divisi' => $data['divisi'],
             'tugas' => '',
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus semua peserta yang sebelumnya dimiliki mentor ini
-        |--------------------------------------------------------------------------
-        */
-
         User::where('mentor_id', $mentor->id)
             ->update([
                 'mentor_id' => null
             ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pasangkan peserta yang dipilih
-        |--------------------------------------------------------------------------
-        */
-
         if (!empty($data['peserta'])) {
-
             User::whereIn('id', $data['peserta'])
                 ->update([
                     'mentor_id' => $mentor->id
                 ]);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil peserta setelah perubahan
-        |--------------------------------------------------------------------------
-        */
-
         $newPeserta = User::where('mentor_id', $mentor->id)
             ->select(
                 'id',
@@ -221,13 +150,6 @@ $peserta = User::where('role_id', $rolePeserta->id)
             ->orderBy('name')
             ->get()
             ->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-
         ActivityLogger::log(
             'Mentor',
             'UPDATE',
@@ -241,31 +163,15 @@ $peserta = User::where('role_id', $rolePeserta->id)
                 'peserta' => $newPeserta,
             ]
         );
-
         return response()->json([
             'status' => 'success',
             'message' => 'Mentor berhasil diperbarui.',
         ]);
     }
-
     public function destroy($id)
     {
         $mentor = Mentor::findOrFail($id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan data mentor lama
-        |--------------------------------------------------------------------------
-        */
-
         $oldMentorData = $mentor->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan peserta yang dimiliki mentor
-        |--------------------------------------------------------------------------
-        */
-
         $oldPeserta = User::where('mentor_id', $mentor->id)
             ->select(
                 'id',
@@ -276,21 +182,7 @@ $peserta = User::where('role_id', $rolePeserta->id)
             ->orderBy('name')
             ->get()
             ->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus mentor
-        |--------------------------------------------------------------------------
-        */
-
         $mentor->delete();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Activity Log
-        |--------------------------------------------------------------------------
-        */
-
         ActivityLogger::log(
             'Mentor',
             'DELETE',
@@ -301,26 +193,21 @@ $peserta = User::where('role_id', $rolePeserta->id)
             ],
             null
         );
-
         return response()->json([
             'status' => 'success',
             'message' => 'Mentor berhasil dihapus.',
         ]);
     }
-
 public function peserta()
 {
     $rolePeserta = Role::where('name', 'Peserta')->first();
-
     if (!$rolePeserta) {
         return response()->json([
             'status' => 'success',
             'data' => [],
         ]);
     }
-
     $emailPesertaAktif = $this->emailPesertaAktif();
-
     $peserta = User::where('role_id', $rolePeserta->id)
         ->whereIn('email', $emailPesertaAktif)
         ->select(
@@ -331,7 +218,6 @@ public function peserta()
         )
         ->orderBy('name')
         ->get();
-
     return response()->json([
         'status' => 'success',
         'data' => $peserta,
@@ -343,15 +229,12 @@ public function peserta()
         ->whereNull('archived_at')
         ->with('anggota')
         ->get();
-
     $emailKetua = $pengajuan
         ->pluck('email_ketua');
-
     $emailAnggota = $pengajuan
         ->pluck('anggota')
         ->flatten()
         ->pluck('email');
-
     return $emailKetua
         ->merge($emailAnggota)
         ->filter()

@@ -6,7 +6,6 @@
 
 <section class="hasil-page">
 
-```
 <div class="container">
 
     <div class="row justify-content-center">
@@ -131,7 +130,6 @@
     </div>
 
 </div>
-```
 
 </section>
 

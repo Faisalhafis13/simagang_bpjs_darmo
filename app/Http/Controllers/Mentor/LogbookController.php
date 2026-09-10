@@ -11,31 +11,20 @@ class LogbookController extends Controller
 {
 
     protected $repository;
-
-
     public function __construct(LogbookRepository $repository )
     {
         $this->repository = $repository;
     }
-
-
-
     public function index()
     {
         return view('mentor.logbook.index');
     }
-
-
-
     public function peserta()
     {
         return response()->json(
             $this->repository->peserta()
         );
     }
-
-
-
     public function getData(Request $request)
     {
         return response()->json(

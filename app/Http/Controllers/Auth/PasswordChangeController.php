@@ -13,8 +13,6 @@ class PasswordChangeController extends Controller
     {
         return view('public.auth.password-change');
     }
-
-
     public function update(Request $request)
     {
         $request->validate([
@@ -25,32 +23,12 @@ class PasswordChangeController extends Controller
                 'confirmed',
             ],
         ]);
-
-
         $user = Auth::user();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE PASSWORD
-        |--------------------------------------------------------------------------
-        */
-
         $user->password = Hash::make(
             $request->password
         );
-
         $user->must_change_password = false;
-
-        $user->save();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT KE DASHBOARD
-        |--------------------------------------------------------------------------
-        */
-
+       $user->save();
         return redirect()
             ->route('back-office.dashboard')
             ->with(

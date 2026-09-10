@@ -11,13 +11,11 @@ class HistoryRepository
     {
         return View::make('back-office.history.index');
     }
-
     public function getData()
     {
         $logs = ActivityLog::with('user')
             ->orderBy('created_at', 'desc')
             ->get();
-
         $data = [
             'data' => $logs->map(function ($log) {
                 return [
@@ -29,7 +27,6 @@ class HistoryRepository
 'old_data' => $log->old_data
     ? json_encode(json_decode($log->old_data), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
     : null,
-
 'new_data' => $log->new_data
     ? json_encode(json_decode($log->new_data), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
     : null,                    'ip_address' => $log->ip_address,
@@ -38,7 +35,6 @@ class HistoryRepository
                 ];
             }),
         ];
-
         return response()->json($data);
     }
 }

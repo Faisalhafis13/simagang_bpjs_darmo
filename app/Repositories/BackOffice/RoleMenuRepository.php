@@ -34,50 +34,30 @@ class RoleMenuRepository
         $roles = Role::with([
             'roleMenus.menu'
         ])->orderBy('name')->get();
-
         $data = $roles->map(function ($role) {
-
             $roleMenus = $role->roleMenus;
-
             return [
-
                 'id' => $role->id,
-
                 'role' => $role->name,
-
                 'status' => $roleMenus->contains('status', 'active')
                     ? 'active'
                     : 'inactive',
-
                 'menus' => $roleMenus->map(function ($item) {
-
                     return [
-
                         'role_menu_id' => $item->id,
-
                         'menu_id' => $item->menu_id,
-
                         'name' => $item->menu->name,
-
                         'status' => $item->status,
-
                     ];
-
                 })->values(),
-
             ];
-
         });
-
         return response()->json([
-
             'status' => 'success',
-
             'data' => $data,
-
         ]);
     }
-
+    
     public function store(Request $request)
     {
         $data = $request->validate([

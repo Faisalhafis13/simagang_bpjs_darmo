@@ -14,12 +14,10 @@ class PengajuanController extends Controller
     {
         $this->repository = $repository;
     }
-
     public function index()
     {
         return $this->repository->index();
     }
-
     public function store(Request $request)
     {
         return $this->repository->store($request);

@@ -14,26 +14,14 @@ class PesertaController extends Controller
     {
         $this->repository = $repository;
     }
-
-    /**
-     * Halaman Data Peserta
-     */
     public function index()
     {
         return $this->repository->index();
     }
-
-    /**
-     * Data peserta
-     */
     public function getData()
     {
         return $this->repository->getData();
     }
-
-    /**
-     * Upload surat penerimaan untuk satu kelompok
-     */
     public function uploadSuratPenerimaan(Request $request, $id)
     {
         return $this->repository->uploadSuratPenerimaan(
@@ -41,10 +29,6 @@ class PesertaController extends Controller
             $id
         );
     }
-
-    /**
-     * Hapus surat penerimaan
-     */
     public function deleteSuratPenerimaan($id)
     {
         return $this->repository->deleteSuratPenerimaan($id);
