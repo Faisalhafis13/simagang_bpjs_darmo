@@ -13,14 +13,6 @@ class RoleUserRepository
     {
         $roles = Role::orderBy('name')->get();
 
-        ActivityLogger::log(
-            'Role User',
-            'VIEW',
-            'Membuka halaman manajemen user',
-            null,
-            null
-        );
-
         return view(
             'back-office.role-user.index',
             compact('roles')

@@ -2,20 +2,12 @@
 
 namespace App\Repositories\BackOffice;
 
-use App\Helpers\ActivityLogger;
 use App\Models\PengajuanMagang;
 
 class PerguruanTinggiRepository
 {
     public function index()
     {
-        ActivityLogger::log(
-            'Perguruan Tinggi',
-            'VIEW',
-            'Membuka halaman data perguruan tinggi',
-            null,
-            null
-        );
         return view('back-office.perguruan-tinggi.index');
     }
     public function getData()

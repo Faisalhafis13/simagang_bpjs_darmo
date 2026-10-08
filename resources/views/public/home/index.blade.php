@@ -152,7 +152,7 @@ TENTANG PROGRAM
             <div class="about-image-wrapper">
 
                 <img
-                    src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=900"
+                    src="{{ asset('assets/images/foto12.jpeg') }}"
                     class="about-image"
                     alt="Lingkungan kerja profesional"
                 >
@@ -517,12 +517,20 @@ Galeri
         @php
 
             $photos = [
-                'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200',
-                'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200',
-                'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200',
-                'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200',
-                'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200',
-                'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200',
+                'foto1.jpeg',
+                'foto2.jpeg',
+                'foto3.jpeg',
+                'foto4.jpeg',
+                'foto5.jpeg',
+                'foto6.jpeg',
+                'foto7.jpeg',
+                'foto8.jpeg',
+                'foto9.jpeg',
+                'foto10.jpeg',  
+                'foto11.jpeg',  
+                'foto12.jpeg',  
+                'foto13.jpeg',  
+
             ];
 
         @endphp
@@ -538,9 +546,10 @@ Galeri
                         <div class="gallery-card">
 
                             <img
-                                src="{{ $photo }}"
+                                src="{{ asset('assets/images/' . $photo) }}"
                                 class="gallery-image"
-                                alt="Galeri Magang">
+                                alt="Galeri Magang"
+                            >
 
                         </div>
 
@@ -580,7 +589,7 @@ CTA
                 </span>
 
                 <h2>
-                    Ajukan Magang Anda Sekarang
+                    Ajukan Magang Sekarang
                 </h2>
 
                 <p>

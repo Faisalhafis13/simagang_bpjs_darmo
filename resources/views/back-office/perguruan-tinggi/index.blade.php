@@ -540,7 +540,7 @@ $(document).ready(function () {
                 'Tampilkan _MENU_ data',
 
             info:
-                'Menampilkan _START_ sampai _END_ dari _TOTAL_ perguruan tinggi',
+                'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
 
             infoEmpty:
                 'Tidak ada data',

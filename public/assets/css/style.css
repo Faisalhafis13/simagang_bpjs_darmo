@@ -1746,6 +1746,48 @@ body.back-office .dataTables_wrapper .dataTables_scrollBody {
     max-width: 100%;
 }
 
+body.back-office .table-responsive {
+    min-width: 0;
+    overscroll-behavior-x: contain;
+}
+
+body.back-office .dataTables_wrapper {
+    min-width: 0;
+    overflow: hidden;
+}
+
+body.back-office .dataTables_wrapper .row {
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+body.back-office .dataTables_wrapper .dt-layout-cell {
+    min-width: 0;
+}
+
+body.back-office .dataTables_wrapper .dt-info,
+body.back-office .dataTables_wrapper .dt-paging {
+    white-space: nowrap;
+}
+
+body.back-office .dataTables_wrapper .dt-layout-table {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+body.back-office .dataTables_wrapper .dt-layout-table table {
+    min-width: 650px;
+}
+
+body.back-office #historyTable td.history-description-cell {
+    text-align: left !important;
+}
+
 
 /* =========================================================
    GENERAL RESPONSIVE

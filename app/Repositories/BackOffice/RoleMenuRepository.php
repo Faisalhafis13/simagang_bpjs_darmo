@@ -15,14 +15,6 @@ class RoleMenuRepository
         $roles = Role::orderBy('name')->get();
         $menus = Menu::orderBy('name')->get();
 
-        ActivityLogger::log(
-            'Role Menu',
-            'VIEW',
-            'Membuka halaman pengaturan hak akses role',
-            null,
-            null
-        );
-
         return view(
             'back-office.role-menu.index',
             compact('roles', 'menus')

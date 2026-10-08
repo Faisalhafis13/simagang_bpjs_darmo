@@ -718,6 +718,9 @@ $(function () {
                 data:
                     'description',
 
+                className:
+                    'history-description-cell',
+
 
                 render:
                     function (data) {
@@ -736,6 +739,7 @@ $(function () {
                                 style="
                                     min-width:250px;
                                     max-width:400px;
+                                    text-align:left;
                                     white-space:pre-wrap;
                                     overflow-wrap:anywhere;
                                     word-break:break-word;

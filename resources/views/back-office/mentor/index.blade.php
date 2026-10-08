@@ -590,7 +590,7 @@
                     'Tampilkan _MENU_ data',
 
                 info:
-                    'Menampilkan _START_ sampai _END_ dari _TOTAL_ mentor',
+                    'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
 
                 infoEmpty:
                     'Tidak ada data',
